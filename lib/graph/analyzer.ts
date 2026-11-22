@@ -96,14 +96,18 @@ function formatVnd(amount: number): string {
   return `${Math.round(amount).toLocaleString("en-US").replace(/,/g, ".")}đ`;
 }
 
-// shortcut: UTC YYYY-MM-DD bucket from timestamp prefix, upgrade to Asia/Ho_Chi_Minh local day bucketing if cross-midnight local splits matter
+const VIETNAM_UTC_OFFSET_MS = 7 * 60 * 60 * 1000;
+
 function extractCalendarDay(timestamp: string): string {
-  const isoMatch = /^(\d{4}-\d{2}-\d{2})/.exec(timestamp.trim());
-  if (isoMatch) return isoMatch[1];
-  const parsed = new Date(timestamp);
-  return Number.isNaN(parsed.getTime())
-    ? "UNKNOWN_DAY"
-    : parsed.toISOString().slice(0, 10);
+  const trimmed = timestamp.trim();
+  const parsed = new Date(trimmed);
+  if (!Number.isNaN(parsed.getTime())) {
+    return new Date(parsed.getTime() + VIETNAM_UTC_OFFSET_MS)
+      .toISOString()
+      .slice(0, 10);
+  }
+  const datePrefix = /^(\d{4}-\d{2}-\d{2})/.exec(trimmed);
+  return datePrefix ? datePrefix[1] : "UNKNOWN_DAY";
 }
 
 function isNearBiometricThreshold(amountVnd: number): boolean {
@@ -668,6 +672,37 @@ function buildGraphFromTransactions(
   });
 }
 
+function evaluateGraphPipeline(
+  txs: SyntheticTransaction[],
+  parsedExisting?: GraphData,
+) {
+  const smurfing = detectSmurfing(txs);
+  const mules = detectMuleClusters(txs, parsedExisting);
+  const baseGraph =
+    parsedExisting ?? buildGraphFromTransactions(txs, smurfing, mules);
+  const cyber = inspectCyberNodes(baseGraph);
+  const { flaggedNodeIds, flaggedEdgeIds } = computeFlaggedElements(
+    baseGraph,
+    smurfing,
+    mules,
+    cyber,
+  );
+  const annotatedGraph = applyFlagsToGraph(
+    baseGraph,
+    flaggedNodeIds,
+    flaggedEdgeIds,
+  );
+  return {
+    smurfing,
+    mules,
+    baseGraph,
+    cyber,
+    flaggedNodeIds,
+    flaggedEdgeIds,
+    annotatedGraph,
+  };
+}
+
 /**
  * Pure function that builds or enriches a validated GraphData object linking accounts, devices, and IPs.
  * When existingGraph is provided, preserves its labels/positions/metadata while deterministically updating `flagged` states.
@@ -680,20 +715,7 @@ export function buildTransactionGraph(
   const parsedExisting = existingGraph
     ? GraphDataSchema.parse(existingGraph)
     : undefined;
-
-  const smurfing = detectSmurfing(txs);
-  const mules = detectMuleClusters(txs, parsedExisting);
-  const baseGraph =
-    parsedExisting ?? buildGraphFromTransactions(txs, smurfing, mules);
-  const cyber = inspectCyberNodes(baseGraph);
-  const { flaggedNodeIds, flaggedEdgeIds } = computeFlaggedElements(
-    baseGraph,
-    smurfing,
-    mules,
-    cyber,
-  );
-
-  return applyFlagsToGraph(baseGraph, flaggedNodeIds, flaggedEdgeIds);
+  return evaluateGraphPipeline(txs, parsedExisting).annotatedGraph;
 }
 
 /**
@@ -713,19 +735,15 @@ export function analyzeCaseGraph(input: AnalyzeCaseGraphInput): GraphAnalysisRes
     ? GraphDataSchema.parse(input.graphData)
     : undefined;
 
-  const smurfing = detectSmurfing(txs);
-  const mules = detectMuleClusters(txs, parsedExisting);
-  const baseGraph =
-    parsedExisting ?? buildGraphFromTransactions(txs, smurfing, mules);
-  const cyber = inspectCyberNodes(baseGraph);
-
-  const { flaggedNodeIds, flaggedEdgeIds } = computeFlaggedElements(
-    baseGraph,
+  const {
     smurfing,
     mules,
+    baseGraph,
     cyber,
-  );
-  const annotatedGraph = applyFlagsToGraph(baseGraph, flaggedNodeIds, flaggedEdgeIds);
+    flaggedNodeIds,
+    flaggedEdgeIds,
+    annotatedGraph,
+  } = evaluateGraphPipeline(txs, parsedExisting);
 
   // Build concise factual Vietnamese findings
   const keyFindings: string[] = [];

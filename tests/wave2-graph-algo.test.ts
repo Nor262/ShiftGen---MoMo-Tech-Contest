@@ -258,6 +258,62 @@ describe("Wave 2 Graph Algo — Edge Cases & From-Scratch Graph Builder", () => 
     });
   });
 
+  it("buckets smurfing days in Asia/Ho_Chi_Minh (UTC+7) across +07:00 and Z timestamp boundaries", () => {
+    // 17:05Z is 00:05+07:00 (2026-11-21), so it merges with +07:00 and 00:05Z (07:05+07:00) on 2026-11-21,
+    // while 16:55Z is 23:55+07:00 (2026-11-20) and stays in the prior VN calendar day.
+    const tzBoundaryTxs: SyntheticTransaction[] = [
+      {
+        txId: "TX_TZ_PREV_VN_DAY",
+        fromAccount: "ACC_TZ_SENDER",
+        toAccount: "ACC_TZ_RECV",
+        amountVnd: 9_500_000,
+        timestamp: "2026-11-20T16:55:00.000Z", // 2026-11-20 23:55 +07:00
+        deviceId: "DEV_TZ",
+        ipAddress: "10.2.2.1",
+      },
+      {
+        txId: "TX_TZ_NEXT_01",
+        fromAccount: "ACC_TZ_SENDER",
+        toAccount: "ACC_TZ_RECV",
+        amountVnd: 9_500_000,
+        timestamp: "2026-11-20T17:05:00.000Z", // 2026-11-21 00:05 +07:00
+        deviceId: "DEV_TZ",
+        ipAddress: "10.2.2.1",
+      },
+      {
+        txId: "TX_TZ_NEXT_02",
+        fromAccount: "ACC_TZ_SENDER",
+        toAccount: "ACC_TZ_RECV",
+        amountVnd: 9_500_000,
+        timestamp: "2026-11-21T00:06:00+07:00", // 2026-11-21 00:06 +07:00
+        deviceId: "DEV_TZ",
+        ipAddress: "10.2.2.1",
+      },
+      {
+        txId: "TX_TZ_NEXT_03",
+        fromAccount: "ACC_TZ_SENDER",
+        toAccount: "ACC_TZ_RECV",
+        amountVnd: 9_500_000,
+        timestamp: "2026-11-21T00:05:00.000Z", // 2026-11-21 07:05 +07:00
+        deviceId: "DEV_TZ",
+        ipAddress: "10.2.2.1",
+      },
+    ];
+
+    const res = detectSmurfing(tzBoundaryTxs);
+    expect(res.smurfing_detected).toBe(true);
+    expect(res.smurfing_groups).toEqual([
+      {
+        fromAccount: "ACC_TZ_SENDER",
+        toAccount: "ACC_TZ_RECV",
+        day: "2026-11-21",
+        txCount: 3,
+        totalVnd: 28_500_000,
+      },
+    ]);
+    expect(res.flagged_tx_ids).not.toContain("TX_TZ_PREV_VN_DAY");
+  });
+
   it("builds a validated GraphData from scratch via buildTransactionGraph and syncs flags deterministically", () => {
     const customTxs: SyntheticTransaction[] = [
       {
