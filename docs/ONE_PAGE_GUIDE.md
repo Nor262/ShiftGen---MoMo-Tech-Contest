@@ -18,7 +18,7 @@
    - Kiểm chứng 1 màn hình duyệt tối giản: **không** thấy số dư ví hay lịch sử chi tiêu của bố, chỉ thấy số tiền nghi vấn & bằng chứng đã ẩn PII → bấm **Xác nhận giữ chậm 24h & Chuyển MoMo Risk**.
 3. **Tab `FinCrime War-Room` (vai `Maker: Chị Huyền` → `Checker: Anh Tuấn`):**
    - Chọn hồ sơ `CASE-01` → bấm **Chạy Điều tra 4 Agent** (xem SSE streaming 4 Agent song song + đồ thị `@xyflow/react` cụm ví *mule* 4×9,5M né QĐ 2345 + **Thẻ Bàn giao CSKH Thấu cảm**).
-   - Thử bấm duyệt trực tiếp hoặc đề xuất `ACTIVE`: Maker đề xuất **Phát hành Cảnh báo Rủi ro Cao (`ACTIVE`)** → chuyển sang vai **`Checker: Anh Tuấn`** bấm **Phê duyệt Phát hành (TTL 72h)** *(Maker tự duyệt bị chặn HTTP `403`)*.
+   - Thử bấm duyệt trực tiếp hoặc đề xuất `ACTIVE`: Maker đề xuất **Phát hành Cảnh báo Rủi ro Cao (`ACTIVE`)** → chuyển sang vai **`Checker: Anh Tuấn`** bấm **Phê duyệt Phát hành (mặc định TTL `720h` / 30 ngày, tùy chọn `72h`)** *(Maker tự duyệt bị chặn HTTP `403`)*.
 4. **Tab `B2C Phút 00` (vai `Người dùng mới`):**
    - Tra cứu lại TK `990123456789` → nhận ngay **Cảnh báo từ Mạng lưới Miễn dịch MoMo TrustLoop**.
 
@@ -33,7 +33,7 @@
 
 ### Phút 2:50 – 3:00 | Khiếu nại Con người, `Rollback` & `Reset Demo`
 - Tại bảng **Quản trị Miễn dịch 4 Lớp**, thử gửi **Khiếu nại (TT 53/2026)** và bấm **Thu hồi tức thì (`Rollback`)** → cảnh báo gỡ ngay trên B2C kèm `AuditLog` bất biến.
-- Bấm **Reset Dữ liệu Demo** trên thanh trên cùng để khôi phục sạch phiên `?session=momo-final`.
+- Bấm **Reset Dữ liệu Demo** trên trang Tổng quan (`/`) để khôi phục sạch phiên `?session=momo-final`.
 
 ---
 

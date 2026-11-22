@@ -22,8 +22,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Install Prisma CLI matching package.json so container startup can run `db push` idempotently
-RUN npm install -g prisma@6.6.0
+# Install Prisma CLI matching package-lock.json so container startup can run `db push` idempotently
+RUN npm install -g prisma@6.19.3
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./

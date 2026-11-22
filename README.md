@@ -93,7 +93,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 
 ### Công cụ AI Hỗ trợ Lập trình (Minh bạch Phát triển)
 - **Điều phối đa tác nhân:** Antigravity Multi-Agent Swarm (`Orchestrator (Neon)`, `Gemini 4 Neon`, `Gemini 4 Hydrogen`) chia theo Waves 0–4 với ranh giới sở hữu thư mục nghiêm ngặt.
-- **Kỹ năng kỷ luật mã nguồn:** Áp dụng **`ponytail` skill** (level `full`, giấy phép **MIT**, từ cấu hình cục bộ `/home/nor/.gemini/config/skills/ponytail/SKILL.md`) xuyên suốt Waves 0–4 để giữ mã nguồn gọn, không phình to (*anti-bloat*) và ghi nhận mọi giới hạn MVP qua từ khóa `// shortcut:`.
+- **Kỹ năng kỷ luật mã nguồn:** Áp dụng **`ponytail` skill** (level `full`, giấy phép **MIT**, từ cấu hình cục bộ `~/.gemini/config/skills/ponytail/SKILL.md`) xuyên suốt Waves 0–4 để giữ mã nguồn gọn, không phình to (*anti-bloat*) và ghi nhận mọi giới hạn MVP qua từ khóa `// shortcut:`.
 
 ---
 
