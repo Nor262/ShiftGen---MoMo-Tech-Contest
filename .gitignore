@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Next.js
+.next/
+out/
+
+# Environment & Secrets
+.env
+.env.local
+.env.*.local
+
+# Database files
+prisma/dev.db
+prisma/dev.db-journal
+prisma/*.db
+prisma/*.db-journal
+dev.db
+dev.db-journal
+test.db
+test.db-journal
+*.sqlite
+*.sqlite-journal
+
+# Misc
+.DS_Store
+coverage/
+*.tsbuildinfo
+next-env.d.ts

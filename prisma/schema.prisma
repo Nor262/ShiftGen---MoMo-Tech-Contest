@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserConsent {
+  id             String   @id @default(cuid())
+  demoSessionId  String
+  userId         String
+  optIn24hHold   Boolean  @default(false)
+  guardianId     String?
+  consentVersion String
+  consentedAt    DateTime @default(now())
+
+  @@unique([demoSessionId, userId])
+  @@index([demoSessionId])
+}
+
+model ScanSession {
+  scanId                String   @id @default(cuid())
+  demoSessionId         String
+  userId                String
+  inputType             String
+  imageHash             String?
+  riskScore             Int
+  riskLevel             String
+  resultJson            String
+  sanitizedEvidenceJson String
+  piiDiffJson           String
+  immunityHitId         String?
+  modelUsed             String
+  measuredLatencyMs     Int
+  createdAt             DateTime @default(now())
+
+  @@index([demoSessionId, createdAt])
+}
+
+model HeldTransaction {
+  txId             String   @id @default(cuid())
+  demoSessionId    String
+  scanId           String?
+  senderId         String
+  senderLabel      String
+  recipientAccount String
+  recipientBank    String
+  amountVnd        Float
+  status           String
+  neutralMessage   String
+  holdExpiresAt    DateTime
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([demoSessionId, status])
+}
+
+model InvestigationCase {
+  caseId               String   @id @default(cuid())
+  demoSessionId        String
+  txId                 String?
+  scenarioCode         String
+  title                String
+  subtitle             String
+  status               String
+  graphDataJson        String
+  caseContextJson      String
+  sanitizedMinute0Json String?
+  agentDebateJson      String?
+  totalLatencyMs       Int?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([demoSessionId, createdAt])
+}
+
+model ImmunityIndicator {
+  indicatorId         String    @id @default(cuid())
+  demoSessionId       String
+  caseId              String?
+  indicatorType       String
+  indicatorValue      String
+  severity            String
+  status              String
+  evidenceSourcesJson String
+  makerId             String
+  checkerId           String?
+  ttlHours            Int
+  expiresAt           DateTime
+  rollbackReason      String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([demoSessionId, indicatorValue])
+  @@index([demoSessionId, status])
+}
+
+model Appeal {
+  appealId       String   @id @default(cuid())
+  demoSessionId  String
+  indicatorId    String
+  appellantName  String
+  appellantNote  String
+  status         String
+  reviewerId     String?
+  resolutionNote String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([demoSessionId, status])
+}
+
+model AuditLog {
+  logId         String   @id @default(cuid())
+  demoSessionId String
+  actorId       String
+  actorRole     String
+  action        String
+  targetId      String
+  rationale     String
+  metadataJson  String?
+  createdAt     DateTime @default(now())
+
+  @@index([demoSessionId, createdAt])
+}
