@@ -1,4 +1,4 @@
-import { mkdtemp, rm, utimes, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, utimes, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterAll, afterEach, describe, expect, it } from "vitest";
@@ -462,7 +462,26 @@ describe("Wave 1 — DB Rate Limit, Daily LLM Cap & All 7 /api/shield/* Endpoint
     expect(body.code).toBe("LLM_NOT_CONFIGURED");
   });
 
-  it("returns 400 PRESET_IMAGE_NOT_FOUND for missing preset PNG and rejects spoofed multipart uploads", async () => {
+  it("loads real DEMO_PRESET PNG into Vision provider and rejects spoofed multipart uploads", async () => {
+    let capturedImageBase64: string | undefined;
+    let capturedImageMimeType: string | undefined;
+    const baseMock = makeMockProvider(makeSampleScanResult());
+    setLLMProviderForTest({
+      ...baseMock,
+      analyzeImage: (async (
+        input: Parameters<LLMProvider["analyzeImage"]>[0],
+        schema?: z.ZodType<unknown>,
+      ) => {
+        capturedImageBase64 = input.imageBase64;
+        capturedImageMimeType = input.imageMimeType;
+        return schema ? baseMock.analyzeImage(input, schema) : baseMock.analyzeImage(input);
+      }) as LLMProvider["analyzeImage"],
+    });
+
+    const expectedPngBase64 = (
+      await readFile(path.join(process.cwd(), "public", "demo-images", "zalo-fake-police.png"))
+    ).toString("base64");
+
     const presetRes = await postScan(
       new Request(`http://localhost:3000/api/shield/scan?session=${sessionId}`, {
         method: "POST",
@@ -474,8 +493,11 @@ describe("Wave 1 — DB Rate Limit, Daily LLM Cap & All 7 /api/shield/* Endpoint
         }),
       }),
     );
-    expect(presetRes.status).toBe(400);
-    expect((await presetRes.json()).code).toBe("PRESET_IMAGE_NOT_FOUND");
+    expect(presetRes.status).toBe(200);
+    const presetData = ShieldScanResponseSchema.parse(await presetRes.json());
+    expect(presetData.result.status).toBe("ANALYZED");
+    expect(capturedImageMimeType).toBe("image/png");
+    expect(capturedImageBase64).toBe(expectedPngBase64);
 
     const spoofForm = new FormData();
     spoofForm.set("userId", "USER_B2C_HUNG");
