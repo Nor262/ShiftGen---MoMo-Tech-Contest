@@ -15,6 +15,7 @@ import {
   LLMTimeoutError,
 } from "@/lib/llm";
 import {
+  MAX_UPLOAD_BYTES,
   redactScanResult,
   sanitizeInputForLlm,
   UploadValidationError,
@@ -68,6 +69,12 @@ async function parseScanInput(request: Request): Promise<{
     let validatedImage: ValidatedImage | null = null;
 
     if (imageEntry && typeof imageEntry !== "string" && imageEntry.size > 0) {
+      if (imageEntry.size > MAX_UPLOAD_BYTES) {
+        throw new UploadValidationError(
+          "FILE_TOO_LARGE",
+          "Kích thước hình ảnh vượt quá giới hạn tối đa 5 MB.",
+        );
+      }
       const buf = Buffer.from(await imageEntry.arrayBuffer());
       validatedImage = validateImageBuffer(buf, imageEntry.type || undefined);
     }
@@ -343,6 +350,11 @@ export async function POST(request: Request) {
 
     const measuredLatencyMs = Math.max(0, Math.round(performance.now() - startedAt));
 
+    const persistedPiiDiff = {
+      ...piiDiff,
+      before_sample: "[REDACTED_NOT_PERSISTED]",
+    };
+
     const scanRecord = await prisma.scanSession.create({
       data: {
         demoSessionId,
@@ -353,7 +365,7 @@ export async function POST(request: Request) {
         riskLevel: sanitizedResult.risk_level,
         resultJson: JSON.stringify(sanitizedResult),
         sanitizedEvidenceJson: JSON.stringify(sanitizedEvidence),
-        piiDiffJson: JSON.stringify(piiDiff),
+        piiDiffJson: JSON.stringify(persistedPiiDiff),
         immunityHitId: immunityHit?.indicatorId ?? null,
         modelUsed,
         measuredLatencyMs,

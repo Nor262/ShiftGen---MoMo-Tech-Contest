@@ -134,6 +134,10 @@ describe("Wave 1 — Bidirectional PII_Redactor, Prompt Injection Guard & Upload
     expect(redacted).toContain("990123456789");
     expect(redacted).toContain("https://dichvucong-xacminh-hoso.example/capnhat.apk?id=0912345678");
     expect(hits.length).toBeGreaterThanOrEqual(4);
+
+    const intlPhone = redactText("Gọi +84 912.345.678");
+    expect(intlPhone.redacted).toBe(`Gọi ${PHONE_TOKEN}`);
+    expect(intlPhone.hits).toHaveLength(1);
   });
 
   it("wraps untrusted user content and escapes closing tags against prompt injection", () => {
@@ -514,6 +518,72 @@ describe("Wave 1 — DB Rate Limit, Daily LLM Cap & All 7 /api/shield/* Endpoint
     );
     expect(spoofRes.status).toBe(400);
     expect((await spoofRes.json()).code).toBe("INVALID_IMAGE_FORMAT");
+  });
+
+  it("omits raw PII before_sample from persisted ScanSession.piiDiffJson and rejects oversized multipart uploads before buffering", async () => {
+    setLLMProviderForTest(makeMockProvider(makeSampleScanResult()));
+
+    const scanRes = await postScan(
+      new Request(`http://localhost:3000/api/shield/scan?session=${sessionId}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          userId: "USER_B2C_HUNG",
+          inputType: "TEXT_LOOKUP",
+          lookupText: "Bác Hùng CCCD 079062001234 SĐT 0912345678 bị yêu cầu chuyển gấp",
+        }),
+      }),
+    );
+    expect(scanRes.status).toBe(200);
+    const scanData = ShieldScanResponseSchema.parse(await scanRes.json());
+
+    // Ephemeral HTTP response retains live UI diff (before_sample + redacted after_sample)
+    expect(scanData.piiDiff.before_sample).toContain("079062001234");
+    expect(scanData.piiDiff.before_sample).toContain("0912345678");
+    expect(scanData.piiDiff.after_sample).not.toContain("079062001234");
+    expect(scanData.piiDiff.after_sample).not.toContain("0912345678");
+
+    // Persisted DB record never stores raw CCCD/phone in piiDiffJson
+    const saved = await prisma.scanSession.findUnique({
+      where: { scanId: scanData.scanId },
+    });
+    expect(saved).not.toBeNull();
+    expect(saved?.piiDiffJson).not.toContain("079062001234");
+    expect(saved?.piiDiffJson).not.toContain("0912345678");
+    const persistedDiff = JSON.parse(saved!.piiDiffJson) as {
+      before_sample: string;
+      after_sample: string;
+      total_redacted: number;
+    };
+    expect(persistedDiff.before_sample).toBe("[REDACTED_NOT_PERSISTED]");
+    expect(persistedDiff.total_redacted).toBe(scanData.piiDiff.total_redacted);
+
+    // Oversized multipart upload is rejected before arrayBuffer() is called
+    let arrayBufferCalled = false;
+    const oversizedFile = {
+      size: MAX_UPLOAD_BYTES + 1,
+      type: "image/png",
+      arrayBuffer: async () => {
+        arrayBufferCalled = true;
+        return new ArrayBuffer(0);
+      },
+    };
+    const oversizedReq = {
+      url: `http://localhost:3000/api/shield/scan?session=${sessionId}`,
+      headers: new Headers({ "content-type": "multipart/form-data; boundary=test" }),
+      formData: async () => ({
+        get: (key: string) => {
+          if (key === "image") return oversizedFile;
+          if (key === "userId") return "USER_B2C_HUNG";
+          return null;
+        },
+      }),
+    } as unknown as Request;
+
+    const oversizedRes = await postScan(oversizedReq);
+    expect(oversizedRes.status).toBe(400);
+    expect((await oversizedRes.json()).code).toBe("FILE_TOO_LARGE");
+    expect(arrayBufferCalled).toBe(false);
   });
 
   it("completes simulated transfer without 24h hold when optIn24hHold is false", async () => {

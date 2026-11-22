@@ -17,7 +17,7 @@ const URL_REGEX = /https?:\/\/[^\s<>"'`]+/gi;
 const LABELED_CCCD_REGEX =
   /((?:cccd|cmnd|căn\s*cước(?:\s+công\s+dân)?)\s*[:#-]?\s*)(\d{9,12})\b/gi;
 const BARE_CCCD_REGEX = /\b(0\d{11})\b/g;
-const PHONE_REGEX = /(?<!\d)((?:\+?84|0)(?:3|5|7|8|9)(?:[\s.-]?\d){8})\b/g;
+const PHONE_REGEX = /(?<!\d)((?:\+?84|0)[\s.-]?(?:3|5|7|8|9)(?:[\s.-]?\d){8})\b/g;
 const LABELED_PHONE_REGEX =
   /((?:sđt|sdt|số\s+điện\s+thoại|điện\s+thoại|hotline\s+cá\s+nhân)\s*[:#-]?\s*)(\+?\d[\d\s.-]{7,13}\d)\b/gi;
 const LABELED_BALANCE_REGEX =

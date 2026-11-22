@@ -64,7 +64,7 @@ export function B2cLiveProbeCard({
     new Set([
       ...indicators.map((i) => i.indicatorValue),
       "990123456789",
-      "http://dichvucong-kiemdinh.vn/update.apk",
+      "https://dichvucong-xacminh-hoso.example/capnhat.apk",
     ]),
   ).slice(0, 5);
 
