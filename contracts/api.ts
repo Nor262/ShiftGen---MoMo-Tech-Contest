@@ -219,7 +219,7 @@ export const ShieldScanRequestSchema = z
   .object({
     userId: PersonaIdSchema.default("USER_B2C_HUNG"),
     inputType: z.enum(["IMAGE", "TEXT_LOOKUP", "DEMO_PRESET"]),
-    presetCode: z.enum(["CASE-01", "CASE-02"]).optional(),
+    presetCode: z.enum(["CASE-01", "CASE-02", "CASE-03"]).optional(),
     imageBase64: z.string().optional(),
     imageMimeType: z.enum(["image/jpeg", "image/png", "image/webp"]).optional(),
     lookupText: z.string().max(4000).optional(),
@@ -242,6 +242,8 @@ export const ShieldScanResponseSchema = z.object({
   immunityTierMatched: z.enum(["NONE", "TIER_1_PRE_VISION", "TIER_2_POST_VISION"]),
   modelUsed: z.string(),
   measuredLatencyMs: z.number().int().nonnegative(),
+  fallbackMode: z.boolean().optional(),
+  fallbackNoticeVi: z.string().optional(),
 });
 export type ShieldScanResponse = z.infer<typeof ShieldScanResponseSchema>;
 
