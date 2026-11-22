@@ -232,8 +232,12 @@ export async function approveImmunityIndicator(
   const expiresAt = new Date(now.getTime() + ttlHours * 3_600_000);
 
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.immunityIndicator.update({
-      where: { indicatorId: indicator.indicatorId },
+    const claimed = await tx.immunityIndicator.updateMany({
+      where: {
+        indicatorId: indicator.indicatorId,
+        demoSessionId,
+        status: { in: ["PENDING_CHECKER", "SOFT_WARNING"] },
+      },
       data: {
         status: "ACTIVE",
         severity: "HIGH_RISK",
@@ -242,6 +246,17 @@ export async function approveImmunityIndicator(
         expiresAt,
         rollbackReason: null,
       },
+    });
+    if (claimed.count === 0) {
+      throw new ImmunityGovernanceError(
+        409,
+        "INVALID_STATUS_TRANSITION",
+        "Chỉ báo đã được phê duyệt hoặc thay đổi trạng thái bởi thao tác khác.",
+      );
+    }
+
+    const row = await tx.immunityIndicator.findUniqueOrThrow({
+      where: { indicatorId: indicator.indicatorId },
     });
 
     if (indicator.caseId) {

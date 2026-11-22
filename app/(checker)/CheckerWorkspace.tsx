@@ -169,7 +169,13 @@ export function CheckerWorkspace() {
       const appealable = typed.indicators.find(
         (i) => i.status === "ACTIVE" || i.status === "SOFT_WARNING",
       );
-      setAppealIndicatorId((prev) => prev || appealable?.indicatorId || "");
+      setAppealIndicatorId((prev) =>
+        typed.indicators.some(
+          (i) => i.indicatorId === prev && (i.status === "ACTIVE" || i.status === "SOFT_WARNING"),
+        )
+          ? prev
+          : (appealable?.indicatorId ?? ""),
+      );
     } catch {
       setBanner({
         type: "error",
