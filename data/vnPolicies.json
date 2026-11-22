@@ -1,0 +1,98 @@
+[
+  {
+    "chunk_id": "QD2345-01",
+    "document_code": "QĐ 2345/QĐ-NHNN",
+    "title": "Ngưỡng xác thực sinh trắc học >10 triệu/lần và >20 triệu/ngày",
+    "category": "BIOMETRIC_THRESHOLD",
+    "content_vi": "Theo QĐ 2345/QĐ-NHNN (hiệu lực 01/07/2024), giao dịch chuyển tiền có giá trị trên 10 triệu đồng/lần hoặc tổng giá trị giao dịch trong ngày vượt 20 triệu đồng phải thực hiện xác thực sinh trắc học.",
+    "tags": ["qd2345", "sinh_trac_hoc", "10_trieu", "20_trieu", "smurfing"]
+  },
+  {
+    "chunk_id": "QD2345-02",
+    "document_code": "QĐ 2345/QĐ-NHNN",
+    "title": "Nhận diện hành vi chia nhỏ giao dịch (Smurfing) né ngưỡng QĐ 2345",
+    "category": "SMURFING_DETECTION",
+    "content_vi": "Kẻ gian thường ép nạn nhân chia nhỏ khoản tiền lớn thành nhiều lệnh dưới 10 triệu đồng/lần (ví dụ 4 lệnh 9,5 triệu đồng, tổng 38 triệu đồng/ngày) để né ngưỡng xác thực sinh trắc học từng lần theo QĐ 2345/QĐ-NHNN.",
+    "tags": ["qd2345", "smurfing", "chia_nho", "9.5_trieu", "mule"]
+  },
+  {
+    "chunk_id": "LAW91-01",
+    "document_code": "Luật BVDLCN 91/2025/QH15 & NĐ 356/2025",
+    "title": "Nguyên tắc đồng ý tự nguyện (Opt-in), không tích sẵn mặc định",
+    "category": "CONSENT_PRIVACY",
+    "content_vi": "Theo Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và NĐ 356/2025 (hiệu lực 01/01/2026), việc kích hoạt chế độ Bảo vệ 24h phải dựa trên sự đồng ý tự nguyện, rõ mục đích, mặc định ở trạng thái TẮT và cho phép người dùng thu hồi bất kỳ lúc nào.",
+    "tags": ["luat_91", "nd_356", "opt_in", "dong_y", "bao_ve_24h"]
+  },
+  {
+    "chunk_id": "LAW91-02",
+    "document_code": "Luật BVDLCN 91/2025/QH15 & NĐ 356/2025",
+    "title": "Bảo vệ và che mờ dữ liệu cá nhân nhạy cảm (PII)",
+    "category": "PII_PROTECTION",
+    "content_vi": "Theo Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và NĐ 356/2025, các dữ liệu nhạy cảm như số CCCD 12 số, số điện thoại cá nhân, số dư tài khoản và lịch sử chi tiêu thường ngày phải được che mờ qua PII_Redactor và không truyền ảnh gốc sang màn hình Family Co-Sign hoặc B2E War-Room.",
+    "tags": ["luat_91", "nd_356", "pii", "cccd", "sdt", "so_du"]
+  },
+  {
+    "chunk_id": "LAW134-01",
+    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15",
+    "title": "Điều 4 — Lấy con người làm trung tâm và không thay thế thẩm quyền con người",
+    "category": "AI_GOVERNANCE",
+    "content_vi": "Theo Điều 4 Luật Trí tuệ nhân tạo 134/2025/QH15 (hiệu lực 01/03/2026), hệ thống AI phải lấy con người làm trung tâm, bảo đảm minh bạch và không thay thế thẩm quyền quyết định của con người; nghiêm cấm tự động khóa vĩnh viễn tài khoản thiếu phê duyệt của chuyên viên.",
+    "tags": ["luat_134", "dieu_4", "human_centered", "minh_bach", "khong_khoa_tu_dong"]
+  },
+  {
+    "chunk_id": "LAW134-02",
+    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15",
+    "title": "Thông báo giữ chậm 24h trung thực, không mạo danh cơ quan nhà nước",
+    "category": "TRANSPARENCY",
+    "content_vi": "Tuân thủ nguyên tắc minh bạch của Luật Trí tuệ nhân tạo 134/2025/QH15, khi tạm giữ giao dịch rủi ro cao 24h, hệ thống chỉ hiển thị thông báo trung tính đúng bản chất chế độ người dùng đã thiết lập và tuyệt đối không mạo danh NHNN, Công an hay Tòa án.",
+    "tags": ["luat_134", "thong_bao_trung_tinh", "khong_mao_danh", "minh_bach"]
+  },
+  {
+    "chunk_id": "TT77-01",
+    "document_code": "Thông tư 77/2025/TT-NHNN",
+    "title": "Bảo mật ứng dụng di động và phòng chống ứng dụng can thiệp thiết bị",
+    "category": "CYBERSECURITY_MOBILE",
+    "content_vi": "Theo Thông tư 77/2025/TT-NHNN (hiệu lực 01/03/2026), ứng dụng tài chính di động phải tăng cường bảo mật và phòng chống các ứng dụng độc hại can thiệp thiết bị, đặc biệt là thủ đoạn dụ cài tệp .apk ngoài kho chính thức để lạm dụng quyền Accessibility Services.",
+    "tags": ["tt77", "apk", "accessibility", "ma_doc", "an_ninh_mang"]
+  },
+  {
+    "chunk_id": "TT53-01",
+    "document_code": "Thông tư 53/2026/TT-NHNN",
+    "title": "Quản trị rủi ro AI ngân hàng, giải trình hai chiều và kiểm toán bất biến",
+    "category": "AI_RISK_GOVERNANCE",
+    "content_vi": "Theo Thông tư 53/2026/TT-NHNN (hiệu lực 15/11/2026), hệ thống AI trong ngân hàng/tài chính phải bảo đảm khả năng giải trình rõ ràng (bảng tranh biện 2 chiều và trích dẫn chính sách) và lưu vết kiểm toán bất biến trên audit_logs.",
+    "tags": ["tt53", "giai_trinh", "audit_log", "quan_tri_ai"]
+  },
+  {
+    "chunk_id": "TT53-02",
+    "document_code": "Thông tư 53/2026/TT-NHNN",
+    "title": "Khiếu nại quyết định tự động phải do con người trực tiếp xem xét lại",
+    "category": "HUMAN_REVIEW_APPEAL",
+    "content_vi": "Theo Thông tư 53/2026/TT-NHNN, mọi quyết định tự động hoặc cảnh báo cộng đồng bị người dùng khiếu nại phải được đưa vào hàng đợi để chuyên viên con người trực tiếp rà soát lại, áp dụng duyệt 2 cấp Maker–Checker và hỗ trợ thu hồi tức thì (Rollback) nếu có sai sót.",
+    "tags": ["tt53", "khieu_nai", "maker_checker", "rollback", "human_review"]
+  },
+  {
+    "chunk_id": "SIMO-01",
+    "document_code": "Hệ thống SIMO (NHNN)",
+    "title": "Mạng lưới cảnh báo tài khoản nghi vấn liên ngân hàng SIMO",
+    "category": "INTERBANK_INTELLIGENCE",
+    "content_vi": "Hệ thống SIMO của Ngân hàng Nhà nước kết nối gần 100 tổ chức tín dụng với hơn 668.000 tài khoản nghi vấn gian lận, hỗ trợ đối chiếu chéo cảnh báo tài khoản nhận tiền đáng ngờ trước khi giao dịch hoàn tất.",
+    "tags": ["simo", "nhnn", "lien_ngan_hang", "tai_khoan_nghi_van"]
+  },
+  {
+    "chunk_id": "MOMO-INS-01",
+    "document_code": "Bảo hiểm An toàn chuyển tiền MoMo",
+    "title": "Giới hạn mức bảo vệ ≤ 2 triệu đồng và phạm vi loại trừ",
+    "category": "INSURANCE_POLICY",
+    "content_vi": "Gói Bảo hiểm An toàn chuyển tiền MoMo có mức bảo vệ tối đa 2 triệu đồng (≤ 2 triệu đồng) và có các trường hợp loại trừ đối với giao dịch chuyển tiền ngoài phạm vi mua hàng hóa hợp lệ (chẳng hạn nạn nhân tự chuyển tiền cho đối tượng lừa đảo).",
+    "tags": ["bao_hiem", "2_trieu", "loai_tru", "momo", "cskh"]
+  },
+  {
+    "chunk_id": "MOMO-INS-02",
+    "document_code": "Bảo hiểm An toàn chuyển tiền MoMo",
+    "title": "Ý nghĩa phòng ngừa: Tạm giữ 24h trước khi tiền rời ví với khoản tiền lớn",
+    "category": "INSURANCE_ADVISORY",
+    "content_vi": "Do Bảo hiểm An toàn chuyển tiền MoMo chỉ bảo vệ tối đa 2 triệu đồng và loại trừ chuyển tiền ngoài phạm vi mua hàng hóa hợp lệ, việc phát hiện sớm ở Phút 00 và tạm giữ 24h là lớp bảo vệ then chốt giúp giữ an toàn 100% các khoản tiền lớn (như 38 triệu đồng) trước khi tiền bị chuyển đi.",
+    "tags": ["bao_hiem", "2_trieu", "tam_giu_24h", "cskh", "phong_ngua"]
+  }
+]
