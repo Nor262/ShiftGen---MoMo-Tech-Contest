@@ -1,3 +1,5 @@
+import { prisma } from "@/lib/prisma";
+
 export interface RateLimitConfig {
   maxRequests: number;
   windowMs: number;
@@ -88,4 +90,97 @@ export function extractClientIp(request: Request): string {
     return forwarded.split(",")[0]?.trim() || "unknown";
   }
   return request.headers.get("x-real-ip")?.trim() || "127.0.0.1";
+}
+
+export interface DbRateLimitOptions extends Partial<RateLimitConfig> {
+  nowMs?: number;
+}
+
+// shortcut: fixed-window Prisma counter instead of Redis sliding-window sorted set, upgrade to Upstash Redis under multi-region burst load
+export async function checkDbRateLimit(
+  ip: string,
+  sessionId: string,
+  options?: DbRateLimitOptions,
+): Promise<RateLimitResult> {
+  const cfg = { ...getDefaultRateLimitConfig(), ...options };
+  const nowMs = options?.nowMs ?? Date.now();
+
+  if (cfg.bypassInTest !== false && process.env.NODE_ENV === "test") {
+    return {
+      allowed: true,
+      remaining: cfg.maxRequests,
+      limit: cfg.maxRequests,
+      resetAtMs: nowMs + cfg.windowMs,
+      retryAfterSec: 0,
+    };
+  }
+
+  const key = `${ip || "unknown"}:${sessionId || "default"}`;
+
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await prisma.$transaction(async (tx) => {
+        const existing = await tx.rateLimitCounter.findUnique({ where: { key } });
+
+        if (!existing || nowMs - existing.windowStart.getTime() >= cfg.windowMs) {
+          await tx.rateLimitCounter.upsert({
+            where: { key },
+            create: {
+              key,
+              count: 1,
+              windowStart: new Date(nowMs),
+            },
+            update: {
+              count: 1,
+              windowStart: new Date(nowMs),
+            },
+          });
+          return {
+            allowed: true,
+            remaining: Math.max(0, cfg.maxRequests - 1),
+            limit: cfg.maxRequests,
+            resetAtMs: nowMs + cfg.windowMs,
+            retryAfterSec: 0,
+          };
+        }
+
+        const resetAtMs = existing.windowStart.getTime() + cfg.windowMs;
+        if (existing.count >= cfg.maxRequests) {
+          return {
+            allowed: false,
+            remaining: 0,
+            limit: cfg.maxRequests,
+            resetAtMs,
+            retryAfterSec: Math.max(1, Math.ceil((resetAtMs - nowMs) / 1000)),
+          };
+        }
+
+        const updated = await tx.rateLimitCounter.update({
+          where: { key },
+          data: { count: { increment: 1 } },
+        });
+        return {
+          allowed: true,
+          remaining: Math.max(0, cfg.maxRequests - updated.count),
+          limit: cfg.maxRequests,
+          resetAtMs,
+          retryAfterSec: 0,
+        };
+      });
+    } catch (err) {
+      const code = (err as { code?: string })?.code;
+      if (code === "P2002" && attempt === 0) {
+        continue;
+      }
+      throw err;
+    }
+  }
+
+  return {
+    allowed: false,
+    remaining: 0,
+    limit: cfg.maxRequests,
+    resetAtMs: nowMs + cfg.windowMs,
+    retryAfterSec: 1,
+  };
 }
