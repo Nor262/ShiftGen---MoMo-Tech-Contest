@@ -25,8 +25,8 @@ export async function GET(request: Request) {
   } catch (err) {
     console.error("[GET /api/session]", err);
     return NextResponse.json(
-      { error: "Failed to load demo session", code: "SESSION_LOAD_FAILED" },
-      { status: 500 },
+      { error: "Database unavailable for demo session", code: "DB_UNAVAILABLE" },
+      { status: 503 },
     );
   }
 }

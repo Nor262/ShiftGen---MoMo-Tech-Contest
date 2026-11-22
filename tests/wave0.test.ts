@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { createRateLimiter } from "@/lib/rate-limit";
 import {
   ensureSessionSeeded,
+  getSessionId,
   resetDemoSession,
   sanitizeSessionId,
 } from "@/lib/session";
@@ -144,10 +145,15 @@ describe("Wave 0 — Frozen Contracts & Product Guardrails", () => {
 });
 
 describe("Wave 0 — Rate Limiter & Session Slug Sanitization", () => {
-  it("sanitizes session slugs strictly", () => {
+  it("sanitizes session slugs strictly and survives malformed percent-encoded cookies", () => {
     expect(sanitizeSessionId("judge-01")).toBe("judge-01");
     expect(sanitizeSessionId("../etc/passwd")).toBeNull();
     expect(sanitizeSessionId("a".repeat(65))).toBeNull();
+
+    const malformedReq = new Request("http://localhost:3000/api/session", {
+      headers: { cookie: "tl_session=%E0%A4%A" },
+    });
+    expect(getSessionId(malformedReq)).toBe("default");
   });
 
   it("enforces sliding-window boundary per ip + sessionId", () => {
@@ -180,19 +186,41 @@ describe("Wave 0 — Rate Limiter & Session Slug Sanitization", () => {
   });
 });
 
-describe("Wave 0 — Session-Scoped Reset Isolation", () => {
+describe("Wave 0 — Session-Scoped Reset Isolation & Concurrent Seeding", () => {
   const sessionA = `wave0-iso-a-${Date.now()}`;
   const sessionB = `wave0-iso-b-${Date.now()}`;
+  const sessionConcurrent = `wave0-concurrent-${Date.now()}`;
 
   afterAll(async () => {
+    const ids = [sessionA, sessionB, sessionConcurrent];
     await prisma.$transaction([
-      prisma.appeal.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.immunityIndicator.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.investigationCase.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.heldTransaction.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.scanSession.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.userConsent.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
-      prisma.auditLog.deleteMany({ where: { demoSessionId: { in: [sessionA, sessionB] } } }),
+      prisma.appeal.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.immunityIndicator.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.investigationCase.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.heldTransaction.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.scanSession.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.userConsent.deleteMany({ where: { demoSessionId: { in: ids } } }),
+      prisma.auditLog.deleteMany({ where: { demoSessionId: { in: ids } } }),
+    ]);
+  });
+
+  it("handles concurrent cold-session seeding without duplicating CASE-01/02/03", async () => {
+    const counts = await Promise.all([
+      ensureSessionSeeded(sessionConcurrent),
+      ensureSessionSeeded(sessionConcurrent),
+      ensureSessionSeeded(sessionConcurrent),
+    ]);
+    expect(counts).toEqual([3, 3, 3]);
+
+    const cases = await prisma.investigationCase.findMany({
+      where: { demoSessionId: sessionConcurrent },
+      orderBy: { scenarioCode: "asc" },
+    });
+    expect(cases).toHaveLength(3);
+    expect(cases.map((c) => c.caseId)).toEqual([
+      `${sessionConcurrent}::CASE-01`,
+      `${sessionConcurrent}::CASE-02`,
+      `${sessionConcurrent}::CASE-03`,
     ]);
   });
 

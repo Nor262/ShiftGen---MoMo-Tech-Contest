@@ -29,8 +29,8 @@ export async function POST(request: Request) {
   } catch (err) {
     console.error("[POST /api/demo/reset]", err);
     return NextResponse.json(
-      { error: "Failed to reset demo session", code: "DEMO_RESET_FAILED" },
-      { status: 500 },
+      { error: "Database unavailable for demo reset", code: "DB_UNAVAILABLE" },
+      { status: 503 },
     );
   }
 }

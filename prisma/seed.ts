@@ -149,41 +149,53 @@ export async function seedBaselineSession(demoSessionId: string): Promise<number
     return existingCount;
   }
 
-  await prisma.$transaction([
-    prisma.userConsent.upsert({
-      where: {
-        demoSessionId_userId: {
+  try {
+    await prisma.$transaction([
+      prisma.userConsent.upsert({
+        where: {
+          demoSessionId_userId: {
+            demoSessionId,
+            userId: "USER_B2C_HUNG",
+          },
+        },
+        update: {},
+        create: {
           demoSessionId,
           userId: "USER_B2C_HUNG",
-        },
-      },
-      update: {},
-      create: {
-        demoSessionId,
-        userId: "USER_B2C_HUNG",
-        optIn24hHold: false,
-        guardianId: null,
-        consentVersion: "v1.0-law91-2025",
-      },
-    }),
-    ...BASELINE_CASES.map((item) =>
-      prisma.investigationCase.create({
-        data: {
-          demoSessionId,
-          scenarioCode: item.scenarioCode,
-          title: item.title,
-          subtitle: item.subtitle,
-          status: "OPEN",
-          graphDataJson: JSON.stringify(item.graphData),
-          caseContextJson: JSON.stringify(item.caseContext),
-          sanitizedMinute0Json: null,
-          agentDebateJson: null,
+          optIn24hHold: false,
+          guardianId: null,
+          consentVersion: "v1.0-law91-2025",
         },
       }),
-    ),
-  ]);
+      ...BASELINE_CASES.map((item) => {
+        const deterministicId = `${demoSessionId}::${item.scenarioCode}`;
+        return prisma.investigationCase.upsert({
+          where: { caseId: deterministicId },
+          update: {},
+          create: {
+            caseId: deterministicId,
+            demoSessionId,
+            scenarioCode: item.scenarioCode,
+            title: item.title,
+            subtitle: item.subtitle,
+            status: "OPEN",
+            graphDataJson: JSON.stringify(item.graphData),
+            caseContextJson: JSON.stringify(item.caseContext),
+            sanitizedMinute0Json: null,
+            agentDebateJson: null,
+          },
+        });
+      }),
+    ]);
+  } catch (err) {
+    // Concurrent cold-session upsert race on unique key — safe when peer committed the same rows.
+    const code = (err as { code?: string })?.code;
+    if (code !== "P2002") {
+      throw err;
+    }
+  }
 
-  return BASELINE_CASES.length;
+  return prisma.investigationCase.count({ where: { demoSessionId } });
 }
 
 const isDirectExecution =
