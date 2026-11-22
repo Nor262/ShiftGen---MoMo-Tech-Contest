@@ -6,9 +6,20 @@ const require = createRequire(import.meta.url);
 
 function loadPlaywright() {
   const candidates = [
-    "/home/nor/.local/share/mise/installs/playwright/latest/node_modules/playwright",
     "playwright",
-  ];
+    process.env.PLAYWRIGHT_PATH,
+    path.join(
+      process.env.HOME || "",
+      ".local",
+      "share",
+      "mise",
+      "installs",
+      "playwright",
+      "latest",
+      "node_modules",
+      "playwright",
+    ),
+  ].filter(Boolean);
   for (const modPath of candidates) {
     try {
       return require(modPath);
@@ -79,19 +90,19 @@ const fakePoliceHtml = `<!DOCTYPE html>
   }
   .doc-card {
     background: #f8fafc; border: 1.5px solid #94a3b8; border-radius: 8px;
-    padding: 10px; position: relative; font-family: 'Liberation Serif', serif; overflow: hidden;
+    padding: 10px 10px 24px; position: relative; font-family: 'Liberation Serif', serif; overflow: hidden;
   }
   .doc-top { text-align: center; font-size: 10px; font-weight: 700; line-height: 1.3; color: #334155; }
   .doc-title { text-align: center; color: #b91c1c; font-size: 12.5px; font-weight: 800; margin: 6px 0 5px; }
-  .doc-body { font-size: 10.8px; line-height: 1.42; color: #1e293b; padding-right: 10px; }
+  .doc-body { font-size: 10.8px; line-height: 1.42; color: #1e293b; padding-right: 76px; }
   .stamp {
-    position: absolute; right: 8px; bottom: 6px;
-    width: 78px; height: 78px; border-radius: 50%;
+    position: absolute; right: 6px; bottom: 4px;
+    width: 72px; height: 72px; border-radius: 50%;
     border: 2.5px dashed #dc2626; color: #dc2626;
     font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 8.5px; font-weight: 800; line-height: 1.25;
+    font-size: 8px; font-weight: 800; line-height: 1.25;
     display: flex; align-items: center; justify-content: center;
-    text-align: center; transform: rotate(-18deg);
+    text-align: center; transform: rotate(-16deg);
     background: rgba(254, 226, 226, 0.35);
   }
   .highlight-red { color: #b91c1c; font-weight: 700; }
@@ -194,7 +205,7 @@ const shipperApkHtml = `<!DOCTYPE html>
   }
   .link-url {
     font-family: 'Liberation Mono', monospace;
-    font-size: 11px; color: #b91c1c; font-weight: 700; word-break: break-all;
+    font-size: 9.8px; color: #b91c1c; font-weight: 700; white-space: nowrap;
   }
   .steps {
     margin-top: 8px; padding: 9px 11px; border-radius: 8px;
@@ -215,7 +226,7 @@ const shipperApkHtml = `<!DOCTYPE html>
   <div class="banner">MẪU MÔ PHỎNG — Kịch bản kiểm thử mã độc APK / Accessibility</div>
   <div class="chat">
     <div class="msg-in">
-      Chào bạn Minh Anh (SĐT: <strong>0987654321</strong>). Đơn hàng &amp; hồ sơ cư trú của bạn đang bị lỗi đồng bộ. Nếu không xác nhận trong <strong>15 phút</strong>, đơn sẽ bị hủy và tính phí lưu kho 350.000đ/ngày.
+      Chào bạn Minh Anh (SĐT: <strong>0912345678</strong>). Đơn hàng &amp; hồ sơ cư trú của bạn đang bị lỗi đồng bộ. Nếu không xác nhận trong <strong>15 phút</strong>, đơn sẽ bị hủy và tính phí lưu kho 350.000đ/ngày.
       <div class="time">19:10</div>
     </div>
 

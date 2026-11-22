@@ -73,16 +73,56 @@ describe("Wave 1 Assets — Synthetic Scenario & Transaction Fixtures", () => {
       expect(fixture.caseContext.simulationLabel).toBe(DEMO_SIMULATION_LABEL);
       const graph = GraphDataSchema.parse(fixture.graphData);
       expect(graph.nodes.every((n) => n.position !== undefined)).toBe(true);
+
+      const nodeIds = new Set(graph.nodes.map((n) => n.id));
+      for (const edge of graph.edges) {
+        expect(nodeIds.has(edge.source)).toBe(true);
+        expect(nodeIds.has(edge.target)).toBe(true);
+      }
     }
   });
 
-  it("verifies CASE-01 smurfing transactions and CASE-03 clean merchant 35 transactions", () => {
+  it("verifies CASE-01 smurfing/mule transactions and CASE-03 clean merchant 35 transactions", () => {
     const case01 = SCENARIO_FIXTURES.find((s) => s.scenarioCode === "CASE-01")!;
     const hungTxs = case01.caseContext.transactions.filter(
       (t) => t.fromAccount === "ACC_HUNG_SIM",
     );
     expect(hungTxs).toHaveLength(4);
     expect(hungTxs.every((t) => t.amountVnd === 9_500_000)).toBe(true);
+
+    const inboundVictimTxs = case01.caseContext.transactions.filter((t) =>
+      ["ACC_HUNG_SIM", "ACC_VICTIM_B_SIM", "ACC_VICTIM_C_SIM"].includes(
+        t.fromAccount,
+      ),
+    );
+    expect(
+      inboundVictimTxs.every(
+        (t) => t.deviceId !== "DEV_ANDROID_99" && t.ipAddress !== "IP_PROXY_88",
+      ),
+    ).toBe(true);
+
+    const muleOutTxs = case01.caseContext.transactions.filter(
+      (t) => t.toAccount === "ACC_MASTER_OUT",
+    );
+    expect(muleOutTxs.map((t) => t.fromAccount)).toEqual([
+      "ACC_MULE_01",
+      "ACC_MULE_02",
+      "ACC_MULE_03",
+    ]);
+    expect(
+      muleOutTxs.every(
+        (t) => t.deviceId === "DEV_ANDROID_99" && t.ipAddress === "IP_PROXY_88",
+      ),
+    ).toBe(true);
+
+    const sharedIpMules = case01.graphData.edges
+      .filter((e) => e.edge_type === "SHARED_IP" && e.target === "IP_PROXY_88")
+      .map((e) => e.source);
+    expect(sharedIpMules).toEqual([
+      "ACC_MULE_01",
+      "ACC_MULE_02",
+      "ACC_MULE_03",
+    ]);
 
     const case03 = SCENARIO_FIXTURES.find((s) => s.scenarioCode === "CASE-03")!;
     expect(case03.caseContext.transactions).toHaveLength(35);
