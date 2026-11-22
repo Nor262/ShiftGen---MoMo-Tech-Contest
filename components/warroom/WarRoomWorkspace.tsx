@@ -53,6 +53,27 @@ function agentsStateFromDebate(debate: WarRoomDebate): WarRoomAgentsState {
   };
 }
 
+function resetRunningAgentsToIdle(prev: WarRoomAgentsState): WarRoomAgentsState {
+  return {
+    graph_tracer:
+      prev.graph_tracer.phase === "RUNNING"
+        ? { phase: "IDLE", output: null }
+        : prev.graph_tracer,
+    evidence_correlator:
+      prev.evidence_correlator.phase === "RUNNING"
+        ? { phase: "IDLE", output: null }
+        : prev.evidence_correlator,
+    compliance_rag:
+      prev.compliance_rag.phase === "RUNNING"
+        ? { phase: "IDLE", output: null }
+        : prev.compliance_rag,
+    false_positive_defender:
+      prev.false_positive_defender.phase === "RUNNING"
+        ? { phase: "IDLE", output: null }
+        : prev.false_positive_defender,
+  };
+}
+
 export function WarRoomWorkspace() {
   const [cases, setCases] = useState<InvestigationCaseDto[]>([]);
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
@@ -137,20 +158,20 @@ export function WarRoomWorkspace() {
     [cases, selectedCaseId],
   );
 
-  // Sync displayed debate & agent cards when switching between cases
+  // Reset transient investigation state only when switching cases (never on investigatingCaseId -> null)
   useEffect(() => {
-    if (investigatingCaseId) return;
     setInvestigateError(null);
     setSynthesizing(false);
+    setLiveDebate(null);
 
-    if (selectedCase?.agentDebate) {
-      setLiveDebate(selectedCase.agentDebate);
-      setAgentsState(agentsStateFromDebate(selectedCase.agentDebate));
+    const current = cases.find((c) => c.caseId === selectedCaseId);
+    if (current?.agentDebate) {
+      setAgentsState(agentsStateFromDebate(current.agentDebate));
     } else {
-      setLiveDebate(null);
       setAgentsState(createIdleAgentsState());
     }
-  }, [investigatingCaseId, selectedCase]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCaseId]);
 
   // Live running stopwatch while agents execute
   useEffect(() => {
@@ -176,10 +197,10 @@ export function WarRoomWorkspace() {
   }, [activeDebate, agentsState, investigatingCaseId]);
 
   const flaggedNodeIds = useMemo(() => {
-    const gt = activeDebate?.agents.graph_tracer;
+    const gt = activeAgentsState.graph_tracer.output ?? activeDebate?.agents.graph_tracer;
     if (gt && gt.status === "OK") return gt.flagged_node_ids;
     return undefined;
-  }, [activeDebate]);
+  }, [activeAgentsState.graph_tracer.output, activeDebate]);
 
   async function handleInvestigate() {
     if (!selectedCase || investigatingCaseId) return;
@@ -266,6 +287,7 @@ export function WarRoomWorkspace() {
               break;
             case "error":
               setSynthesizing(false);
+              setAgentsState(resetRunningAgentsToIdle);
               setInvestigateError(
                 event.code === "LLM_NOT_CONFIGURED"
                   ? parseWarRoomApiError(503, event)
@@ -285,8 +307,11 @@ export function WarRoomWorkspace() {
             processLine(line);
           }
         }
+        buffer += decoder.decode();
         if (buffer.trim()) {
-          processLine(buffer);
+          for (const line of buffer.split(/\r?\n/)) {
+            processLine(line);
+          }
         }
       } else {
         const rawJson = (await res.json()) as unknown;
@@ -611,6 +636,7 @@ export function WarRoomWorkspace() {
               {/* Interactive Money Flow Graph */}
               <section className="rounded-xl border border-slate-800 bg-slate-900/90 p-5">
                 <MoneyFlowGraph
+                  key={selectedCase.caseId}
                   graphData={selectedCase.graphData}
                   flaggedNodeIds={flaggedNodeIds}
                   dismissedFp={selectedCase.status === "DISMISSED_FP"}
