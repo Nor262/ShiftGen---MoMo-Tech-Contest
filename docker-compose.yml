@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-trustloop}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-trustloop}
+      POSTGRES_DB: ${POSTGRES_DB:-trustloop}
+    ports:
+      - "5432:5432"
+    volumes:
+      - trustloop_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-trustloop} -d ${POSTGRES_DB:-trustloop}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-trustloop}:${POSTGRES_PASSWORD:-trustloop}@postgres:5432/${POSTGRES_DB:-trustloop}?schema=public
+      DIRECT_URL: postgresql://${POSTGRES_USER:-trustloop}:${POSTGRES_PASSWORD:-trustloop}@postgres:5432/${POSTGRES_DB:-trustloop}?schema=public
+      LLM_BACKEND: ${LLM_BACKEND:-gemini}
+      LLM_FALLBACK_BACKEND: ${LLM_FALLBACK_BACKEND:-openai}
+      DAILY_LLM_CALL_LIMIT: ${DAILY_LLM_CALL_LIMIT:-100}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_VISION_MODEL: ${GEMINI_VISION_MODEL:-gemini-2.5-flash}
+      GEMINI_REASONING_MODEL: ${GEMINI_REASONING_MODEL:-gemini-2.5-flash}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.openai.com/v1}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_VISION_MODEL: ${LLM_VISION_MODEL:-gpt-4o-mini}
+      LLM_REASONING_MODEL: ${LLM_REASONING_MODEL:-gpt-4o-mini}
+      AWS_REGION: ${AWS_REGION:-ap-southeast-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+      BEDROCK_REGION: ${BEDROCK_REGION:-ap-southeast-1}
+      BEDROCK_VISION_MODEL: ${BEDROCK_VISION_MODEL:-apac.amazon.nova-pro-v1:0}
+      BEDROCK_REASONING_MODEL: ${BEDROCK_REASONING_MODEL:-apac.anthropic.claude-sonnet-4-20250514-v1:0}
+      BEDROCK_GUARDRAIL_ID: ${BEDROCK_GUARDRAIL_ID:-}
+      BEDROCK_GUARDRAIL_VERSION: ${BEDROCK_GUARDRAIL_VERSION:-}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-30}
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-600000}
+
+volumes:
+  trustloop_pgdata:
