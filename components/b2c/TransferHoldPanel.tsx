@@ -352,9 +352,7 @@ export function TransferHoldPanel({
                   data-testid="neutral-hold-message"
                   className="text-base font-bold leading-relaxed text-slate-900 sm:text-lg"
                 >
-                  {activeHoldRecord.neutralMessage === NEUTRAL_HOLD_MESSAGE
-                    ? NEUTRAL_HOLD_MESSAGE
-                    : activeHoldRecord.neutralMessage}
+                  {activeHoldRecord.neutralMessage || NEUTRAL_HOLD_MESSAGE}
                 </p>
               </div>
             </div>

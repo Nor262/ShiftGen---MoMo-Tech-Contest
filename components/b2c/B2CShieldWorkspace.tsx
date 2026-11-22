@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
@@ -71,7 +71,10 @@ export function B2CShieldWorkspace() {
 
   const [consentDraftChecked, setConsentDraftChecked] = useState(false);
   const [consentSaving, setConsentSaving] = useState(false);
-  const [consentFeedback, setConsentFeedback] = useState<string | null>(null);
+  const [consentFeedback, setConsentFeedback] = useState<{
+    ok: boolean;
+    text: string;
+  } | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -82,8 +85,6 @@ export function B2CShieldWorkspace() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [scanResponse, setScanResponse] = useState<ShieldScanResponse | null>(null);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const activePersona =
     B2C_PERSONAS.find((p) => p.key === activePersonaKey) ?? B2C_PERSONAS[0];
@@ -111,7 +112,6 @@ export function B2CShieldWorkspace() {
 
   useEffect(() => {
     setConsentDraftChecked(savedOptIn);
-    setConsentFeedback(null);
   }, [savedOptIn, activePersona.apiUserId]);
 
   useEffect(() => {
@@ -125,6 +125,7 @@ export function B2CShieldWorkspace() {
   function handleSelectPersona(key: B2CPersonaOption["key"]) {
     setActivePersonaKey(key);
     setScanError(null);
+    setConsentFeedback(null);
     if (key === "NEW_USER" && !lookupInput) {
       setLookupInput("990123456789");
     }
@@ -166,18 +167,22 @@ export function B2CShieldWorkspace() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setConsentFeedback(parseApiErrorMessage(res.status, data));
+        setConsentFeedback({ ok: false, text: parseApiErrorMessage(res.status, data) });
         return false;
       }
       await refreshSession();
-      setConsentFeedback(
-        optInValue
+      setConsentFeedback({
+        ok: true,
+        text: optInValue
           ? "Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Chị Minh (FAMILY_MINH)."
           : "Đã cập nhật: Chế độ Bảo vệ 24h ĐANG TẮT (thu hồi đồng ý thành công).",
-      );
+      });
       return true;
     } catch {
-      setConsentFeedback("Không thể kết nối máy chủ để lưu lựa chọn Bảo vệ 24h.");
+      setConsentFeedback({
+        ok: false,
+        text: "Không thể kết nối máy chủ để lưu lựa chọn Bảo vệ 24h.",
+      });
       return false;
     } finally {
       setConsentSaving(false);
@@ -332,7 +337,7 @@ export function B2CShieldWorkspace() {
                   onClick={() => handleSelectPersona(persona.key)}
                   className={`min-h-[56px] rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 ${
                     selected
-                      ? "border-momo-600 bg-momo-50/90 text-momo-950 shadow-sm"
+                      ? "border-momo-600 bg-momo-50/90 text-momo-900 shadow-sm"
                       : "border-slate-200 bg-white text-slate-800 hover:border-momo-300"
                   }`}
                 >
@@ -425,11 +430,19 @@ export function B2CShieldWorkspace() {
 
         {consentFeedback && (
           <p
-            role="status"
-            className="mt-3 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-medium text-emerald-900"
+            role={consentFeedback.ok ? "status" : "alert"}
+            className={`mt-3 flex items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium ${
+              consentFeedback.ok
+                ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+                : "border-red-300 bg-red-50 text-red-900"
+            }`}
           >
-            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
-            {consentFeedback}
+            {consentFeedback.ok ? (
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
+            ) : (
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-700" aria-hidden="true" />
+            )}
+            {consentFeedback.text}
           </p>
         )}
       </section>
@@ -457,7 +470,7 @@ export function B2CShieldWorkspace() {
         {/* Mandatory Privacy & LLM Data Notice */}
         <div
           role="note"
-          className="rounded-xl border border-momo-200 bg-momo-50/80 p-4 text-sm leading-relaxed text-momo-950"
+          className="rounded-xl border border-momo-200 bg-momo-50/80 p-4 text-sm leading-relaxed text-momo-900"
         >
           {PRIVACY_LLM_NOTICE}
         </div>
@@ -496,7 +509,6 @@ export function B2CShieldWorkspace() {
                 </p>
               </div>
               <input
-                ref={fileInputRef}
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 aria-label="Chọn ảnh chụp màn hình để phân tích"
