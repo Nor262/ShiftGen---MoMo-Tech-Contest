@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "DATABASE_URL=file:./dev.db prisma generate && DATABASE_URL=file:./dev.db vitest run",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:generate:postgres": "prisma generate --schema=prisma/schema.postgres.prisma",

@@ -126,3 +126,18 @@ model AuditLog {
 
   @@index([demoSessionId, createdAt])
 }
+
+model RateLimitCounter {
+  key         String   @id
+  count       Int      @default(0)
+  windowStart DateTime
+  updatedAt   DateTime @updatedAt
+
+  @@index([windowStart])
+}
+
+model DailyLlmUsage {
+  dateKey   String   @id
+  callCount Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

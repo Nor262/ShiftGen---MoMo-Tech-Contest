@@ -7,6 +7,9 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     fileParallelism: false,
     testTimeout: 30000,
+    env: {
+      DATABASE_URL: "file:./dev.db",
+    },
   },
   resolve: {
     alias: {
