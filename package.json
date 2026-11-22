@@ -15,7 +15,7 @@
     "db:push": "prisma db push",
     "db:generate:postgres": "prisma generate --schema=prisma/schema.postgres.prisma",
     "db:push:postgres": "prisma db push --schema=prisma/schema.postgres.prisma",
-    "gen:demo-images": "node scripts/generate-demo-images.mjs"
+    "gen:demo-images": "node demo-assets/render-demo-images.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.780.0",

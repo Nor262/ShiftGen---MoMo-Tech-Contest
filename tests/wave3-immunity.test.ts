@@ -400,7 +400,7 @@ describe("Wave 3 — 4-Layer Community Immunity Governance & Closed-Loop Feedbac
     const staleInd = await seedPendingIndicator({
       demoSessionId: sessionId,
       indicatorType: "URL_DOMAIN",
-      indicatorValue: "http://dichvucong-kiemdinh.vn/update.apk",
+      indicatorValue: "https://dichvucong-xacminh-hoso.example/capnhat.apk",
       status: "SOFT_WARNING",
       severity: "SOFT_WARNING",
       expiresAt: new Date(Date.now() - 60_000),
