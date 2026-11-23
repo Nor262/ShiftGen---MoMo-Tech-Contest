@@ -111,6 +111,14 @@ export function B2CShieldWorkspace() {
     void refreshSession();
   }, [refreshSession]);
 
+  // Guided demo step ④ → ①: "?persona=new" starts as a new user who looks up the same account.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("persona") === "new") {
+      handleSelectPersona("NEW_USER");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount
+  }, []);
+
   useEffect(() => {
     setConsentDraftChecked(savedOptIn);
   }, [savedOptIn, activePersona.apiUserId]);

@@ -3,6 +3,7 @@ import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
+import { DemoStepBar } from "@/components/DemoStepBar";
 import { TechModeToggle } from "@/components/TechModeToggle";
 import { DEMO_SIMULATION_LABEL } from "@/contracts";
 
@@ -68,6 +69,8 @@ export default function RootLayout({
             </nav>
           </div>
         </header>
+
+        <DemoStepBar />
 
         <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
 
