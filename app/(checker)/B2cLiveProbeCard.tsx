@@ -134,7 +134,7 @@ export function B2cLiveProbeCard({
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 id="b2c-probe-heading" className="text-lg font-bold text-slate-900">
-              Kiểm chứng Vòng lặp Khép kín B2C (Live Probe · USER_B2C_NEW)
+              Kiểm chứng Vòng lặp Khép kín B2C <span className="tech-only font-mono text-xs">(Live Probe · USER_B2C_NEW)</span>
             </h2>
             <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
               {DEMO_SIMULATION_LABEL}
@@ -225,7 +225,7 @@ export function B2cLiveProbeCard({
                     />
                     <div>
                       <p className="font-bold">
-                        KHỚP MIỄN DỊCH CỘNG ĐỒNG ({outcome.scan.immunityHit.status}) —{" "}
+                        KHỚP MIỄN DỊCH CỘNG ĐỒNG<span className="tech-only"> ({outcome.scan.immunityHit.status})</span> —{" "}
                         <code className="font-mono">{outcome.scan.immunityHit.indicatorValue}</code>
                       </p>
                       <p className="mt-0.5 text-sm">

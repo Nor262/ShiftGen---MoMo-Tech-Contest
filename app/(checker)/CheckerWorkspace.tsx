@@ -43,21 +43,21 @@ const PERSONAS: readonly RolePersona[] = [
   {
     id: "RISK_CHECKER_TUAN",
     role: "RISK_CHECKER",
-    displayName: "RISK_CHECKER_TUAN — Anh Tuấn",
+    displayName: "Anh Tuấn",
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
     hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn khác loại, khác Maker — thiết kế quản trị riêng), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
   },
   {
     id: "RISK_CHECKER_LAN",
     role: "RISK_CHECKER",
-    displayName: "RISK_CHECKER_LAN — Chị Lan",
+    displayName: "Chị Lan",
     titleVi: "Risk Checker (Người xét khiếu nại độc lập)",
     hintVi: "Xét khiếu nại cho chỉ báo do Checker khác kích hoạt; máy chủ trả 403 nếu người xét trùng người đã duyệt.",
   },
   {
     id: "RISK_MAKER_HUYEN",
     role: "RISK_MAKER",
-    displayName: "RISK_MAKER_HUYEN — Chị Huyền",
+    displayName: "Chị Huyền",
     titleVi: "Risk Maker (Chuyên viên đề xuất)",
     hintVi: "Dùng để kiểm chứng trực tiếp chặn HTTP 403 Maker≠Checker từ máy chủ khi tự bấm phê duyệt.",
   },
@@ -65,38 +65,38 @@ const PERSONAS: readonly RolePersona[] = [
 
 const STATUS_META: Record<ImmunityStatus, { label: string; className: string }> = {
   PENDING_CHECKER: {
-    label: "PENDING_CHECKER · Chờ Checker duyệt",
+    label: "Chờ Checker duyệt",
     className: "border-indigo-300 bg-indigo-50 text-indigo-900",
   },
   SOFT_WARNING: {
-    label: "SOFT_WARNING · Cảnh báo mềm Lớp 1",
+    label: "Cảnh báo mềm (Lớp 1)",
     className: "border-amber-300 bg-amber-50 text-amber-950",
   },
   ACTIVE: {
-    label: "ACTIVE · Miễn dịch Cộng đồng Lớp 2",
+    label: "Kích hoạt (Lớp 2)",
     className: "border-signal-300 bg-signal-50 text-signal-900",
   },
   EXPIRED: {
-    label: "EXPIRED · Hết hạn TTL Lớp 3",
+    label: "Hết hạn (Lớp 3)",
     className: "border-slate-300 bg-slate-100 text-slate-700",
   },
   ROLLED_BACK: {
-    label: "ROLLED_BACK · Đã thu hồi Lớp 4",
+    label: "Thu hồi (Lớp 4)",
     className: "border-emerald-300 bg-emerald-50 text-emerald-900",
   },
 };
 
 const APPEAL_STATUS_META: Record<AppealStatus, { label: string; className: string }> = {
   PENDING_HUMAN_REVIEW: {
-    label: "PENDING_HUMAN_REVIEW · Chờ người thật rà soát",
+    label: "Chờ người thật xem xét",
     className: "border-amber-300 bg-amber-50 text-amber-950",
   },
   UPHELD: {
-    label: "UPHELD · Giữ nguyên cảnh báo",
+    label: "Giữ nguyên cảnh báo",
     className: "border-slate-300 bg-slate-100 text-slate-800",
   },
   OVERTURNED_ROLLBACK: {
-    label: "OVERTURNED_ROLLBACK · Chấp nhận & đã Rollback",
+    label: "Chấp nhận — đã Thu hồi",
     className: "border-emerald-300 bg-emerald-50 text-emerald-900",
   },
 };
@@ -411,7 +411,7 @@ export function CheckerWorkspace() {
             <span className="text-xs font-bold uppercase tracking-wide text-slate-600">
               Chuyển vai trò kiểm chứng phân quyền (Maker ≠ Checker)
             </span>
-            <span className="text-xs font-semibold text-slate-600">
+            <span className="tech-only text-xs font-semibold text-slate-600">
               Vai trò đang gửi lên máy chủ:{" "}
               <code className="rounded bg-white px-1.5 py-0.5 font-mono text-momo-700">
                 {activePersona.id} ({activePersona.role})
@@ -457,7 +457,10 @@ export function CheckerWorkspace() {
                     />
                   )}
                   <div className="space-y-0.5">
-                    <p className="text-sm font-bold">{persona.displayName}</p>
+                    <p className="text-sm font-bold">
+                      {persona.displayName}{" "}
+                      <span className="tech-only font-mono text-xs font-normal">({persona.id})</span>
+                    </p>
                     <p className="text-xs font-semibold opacity-90">{persona.titleVi}</p>
                     <p className="text-xs opacity-80">{persona.hintVi}</p>
                   </div>
@@ -780,7 +783,7 @@ export function CheckerWorkspace() {
                           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                           {busyKey === `approve-${ind.indicatorId}`
                             ? "Đang gửi phê duyệt..."
-                            : `Phê duyệt Phát hành (Lớp 2) với vai ${activePersona.id}`}
+                            : `Phê duyệt Kích hoạt (Lớp 2) — ${activePersona.displayName}`}
                         </button>
                       </div>
                     )}
@@ -888,7 +891,7 @@ export function CheckerWorkspace() {
                 >
                   {appealableIndicators.map((i) => (
                     <option key={i.indicatorId} value={i.indicatorId}>
-                      {i.indicatorValue} ({i.status})
+                      {i.indicatorValue}<span className="tech-only"> ({i.status})</span>
                     </option>
                   ))}
                 </select>
@@ -960,7 +963,7 @@ export function CheckerWorkspace() {
                         </span>
                         {linked && (
                           <span className="rounded border border-slate-200 bg-white px-2 py-0.5 font-mono text-xs font-semibold text-slate-800">
-                            Chỉ báo: {linked.indicatorValue} ({linked.status})
+                            Chỉ báo: {linked.indicatorValue}<span className="tech-only"> ({linked.status})</span>
                           </span>
                         )}
                       </div>
@@ -1043,7 +1046,7 @@ export function CheckerWorkspace() {
           <History className="h-5 w-5 text-momo-600" aria-hidden="true" />
           <div>
             <h2 id="audit-heading" className="text-lg font-bold text-slate-900">
-              Nhật ký Kiểm toán Bất biến (<code>audit_logs</code> · {registry.auditLogs.length} bản ghi)
+              Nhật ký Kiểm toán Bất biến (<code className="tech-only">audit_logs · </code>{registry.auditLogs.length} bản ghi)
             </h2>
             <p className="text-sm text-slate-600">
               Chỉ ghi thêm (append-only) theo trình tự thời gian, phục vụ truy vết toàn bộ vòng đời

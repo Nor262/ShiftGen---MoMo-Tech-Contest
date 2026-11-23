@@ -1,3 +1,5 @@
+import { loadScanReplay } from "@/lib/replay";
+import { replayModelLabel } from "@/lib/replay-label";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
@@ -190,12 +192,24 @@ export async function POST(request: Request) {
       ? sanitizeInputForLlm(req.lookupText, preserveAccounts)
       : null;
 
+    // A demo preset with a recorded REAL run is replayed (labelled) instead of rule-only fallback,
+    // which cannot read the preset image.
+    const presetReplay =
+      req.inputType === "DEMO_PRESET" && req.presetCode ? loadScanReplay(req.presetCode) : null;
+    const replayOutcome = () =>
+      presetReplay && {
+        rawResult: presetReplay.result,
+        modelUsed: replayModelLabel(presetReplay.modelUsed),
+        fallbackMode: true,
+        fallbackNoticeVi: presetReplay.noticeVi,
+      };
+
     const makeFallbackOutcome = (): {
       rawResult: ScanResult;
       modelUsed: string;
       fallbackMode: boolean;
       fallbackNoticeVi: string;
-    } => ({
+    } => replayOutcome() ?? ({
       rawResult: buildFallbackRuleScanResult(
         {
           lookupText: req.lookupText,
@@ -264,20 +278,27 @@ export async function POST(request: Request) {
           }
           const userPrompt = promptParts.join("\n");
 
-          const llmRes = activeImage
-            ? await provider.analyzeImage({
-                systemPrompt,
-                userPrompt,
-                imageBase64: activeImage.base64,
-                imageMimeType: activeImage.mimeType,
-              })
-            : await provider.generateJSON(ScanResultSchema, {
-                systemPrompt,
-                userPrompt,
-              });
-
-          rawResult = llmRes.data;
-          modelUsed = llmRes.modelUsed;
+          try {
+            const llmRes = activeImage
+              ? await provider.analyzeImage({
+                  systemPrompt,
+                  userPrompt,
+                  imageBase64: activeImage.base64,
+                  imageMimeType: activeImage.mimeType,
+                })
+              : await provider.generateJSON(ScanResultSchema, {
+                  systemPrompt,
+                  userPrompt,
+                });
+            rawResult = llmRes.data;
+            modelUsed = llmRes.modelUsed;
+          } catch (llmErr) {
+            // Runtime LLM failure on a demo preset: show the recorded REAL run, always labelled as a
+            // replay. Never invented; missing credentials never reach this point (503 above).
+            const replay = replayOutcome();
+            if (!replay) throw llmErr;
+            ({ rawResult, modelUsed, fallbackMode, fallbackNoticeVi } = replay);
+          }
         }
       }
     }

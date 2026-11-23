@@ -141,7 +141,10 @@ export function WarRoomWorkspace() {
       setCases(loadedCases);
       setSelectedCaseId((prev) => {
         if (prev && loadedCases.some((c) => c.caseId === prev)) return prev;
-        return loadedCases[0]?.caseId ?? null;
+        const escalated = loadedCases
+          .filter((c) => typeof c.caseContext.escalatedAt === "string")
+          .sort((a, b) => String(b.caseContext.escalatedAt).localeCompare(String(a.caseContext.escalatedAt)));
+        return (escalated[0] ?? loadedCases[0])?.caseId ?? null;
       });
     } catch {
       setLoadError("Không thể tải hàng đợi hồ sơ FinCrime War-Room.");
@@ -346,9 +349,9 @@ export function WarRoomWorkspace() {
               {DEMO_SIMULATION_LABEL}
             </span>
             <span className="rounded-full border border-momo-400/50 bg-momo-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-momo-200">
-              RISK_MAKER · Chị Huyền
+              Chị Huyền · Chuyên viên Risk<span className="tech-only"> (RISK_MAKER)</span>
             </span>
-            <span className="rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[11px] text-slate-300">
+            <span className="tech-only rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[11px] text-slate-300">
               Session: {sessionId}
             </span>
           </div>
@@ -680,7 +683,7 @@ export function WarRoomWorkspace() {
         >
           <span className="flex items-center gap-2 text-sm font-bold text-white">
             <History className="h-4 w-4 text-momo-400" aria-hidden="true" />
-            <span>Nhật ký Kiểm toán Phiên (audit_logs · {auditLogs.length} bản ghi)</span>
+            <span>Nhật ký Kiểm toán Phiên (<span className="tech-only">audit_logs · </span>{auditLogs.length} bản ghi)</span>
           </span>
           {auditExpanded ? (
             <ChevronUp className="h-4 w-4 text-slate-400" aria-hidden="true" />
