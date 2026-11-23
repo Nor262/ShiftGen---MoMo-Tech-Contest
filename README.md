@@ -131,12 +131,10 @@ Kết quả quét toàn bộ kho mã nguồn bằng lệnh `git grep -nE '(#|//|
 
 > **Cam kết trung thực:** Không công bố các chỉ số chưa đo đạc (`"99%"`, `"<1s"`, `"<15s"`). Chi tiết đầy đủ xem tại [docs/MEASURED_LATENCIES.md](./docs/MEASURED_LATENCIES.md).
 
-### Số đo Thuần thuật toán Cục bộ (Đo bằng `performance.now()`, trung bình 100 vòng lặp)
-| Thành phần | Độ trễ đo được |
-| :--- | :---: |
-| `redactText()` — Ẩn PII & bọc thẻ chống prompt injection (`lib/pii/redactor.ts`) | **`0.027 ms`** |
-| `retrievePolicyChunks()` — Truy xuất BM25 trên 12 chunk `vnPolicies.json` (`lib/agents/retriever.ts`) | **`0.123 ms`** |
-| `analyzeCaseGraph()` — Phân tích đồ thị Chia nhỏ giao dịch & Ví trung gian (`lib/graph/analyzer.ts`) | **`0.409 ms`** |
+### Số đo thật trên bản deploy (10 lượt mỗi luồng, đo 24/11/2026 giờ Việt Nam)
+| Luồng | `model_used` | min / median / max |
+| :--- | :--- | :--- |
+| Lượt quét ảnh CASE-01 | `gemma-4-31B-it` | 3387 ms / 3516 ms / 3689 ms |
+| War-Room 4 agent CASE-01 | `Qwen3.8-27B` | 6261 ms / 7357 ms / 8551 ms |
 
-### Số đo Live LLM (`Gemini API` / `AWS Bedrock`)
-- **Trạng thái môi trường build hiện tại:** `GEMINI_API_KEY` chưa được cấu hình (`UNSET`), nên các ô đo thời gian gọi LLM mạng ngoài (`Vision Scanner` và `4+1 War-Room Agents`) được giữ ở trạng thái **`[Chờ đo thực tế khi cấu hình GEMINI_API_KEY]`** trong [docs/MEASURED_LATENCIES.md](./docs/MEASURED_LATENCIES.md) để điền đúng số đo `measured_latency_ms` & `model_used` trước khi xuất PDF Slide 9.
+Đo bằng `node scripts/measure-latency.mjs`; từng lượt, cách loại lượt phát lại và cách đo lại ở [docs/MEASURED_LATENCIES.md](./docs/MEASURED_LATENCIES.md). Đây là số đo, không phải cam kết.
