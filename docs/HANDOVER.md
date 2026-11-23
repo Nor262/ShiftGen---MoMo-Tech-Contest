@@ -36,12 +36,23 @@
 
 ## 3. Hạ tầng & Biến Môi trường (Không lưu Secret trong Git)
 
-- **Vercel Project (hiện tại; sẽ giữ làm dự phòng):** `momo-trustloop` (team `nor262s-projects`, region `sin1`, domain `https://momo-trustloop.vercel.app`).
-- **AWS Sandbox (Kế hoạch, bắt buộc cho cuộc thi):** `LLM_BACKEND=bedrock`, Docker trên EC2/Amplify `ap-southeast-1`.
+- **Vercel Project (bản demo chính):** `momo-trustloop` (team `nor262s-projects`, region `sin1`, domain `https://momo-trustloop.vercel.app`). Repo đã nối Vercel GitHub integration: mỗi PR có bản Preview, merge vào `main` tự deploy Production. Build chạy `scripts/build-vercel.mjs` (tự chọn schema Postgres khi `DATABASE_URL` là Postgres).
+- **AWS (không bắt buộc, theo email BTC):** Bedrock đã có adapter, chờ BTC cấp quyền model (#17).
 - **Database Production:** Supabase PostgreSQL miễn phí (`ap-southeast-1`, pooler `:6543` cho `DATABASE_URL`, direct `:5432` cho `DIRECT_URL`).
-- **Biến môi trường cần thiết** (xem mẫu tại `.env.example`, tuyệt đối không commit `.env`):
-  - `DATABASE_URL`, `DIRECT_URL`
-  - `LLM_BACKEND=gemini` (mặc định) và `GEMINI_API_KEY` (hoặc cấu hình `bedrock` / `openai` qua `LLM_FALLBACK_BACKEND`)
+- **Biến môi trường trên Vercel** (Settings → Environment Variables, cho Production và Preview; mẫu và giải thích ở `.env.example`; tuyệt đối không commit `.env`):
+
+  | Biến | Giá trị | Ghi chú |
+  |---|---|---|
+  | `DATABASE_URL`, `DIRECT_URL` | chuỗi Supabase (pooler `:6543` / direct `:5432`) | secret |
+  | `LLM_BACKEND` | `openai` | FPT AI Factory qua adapter OpenAI-compatible |
+  | `LLM_BASE_URL` | `https://token-api.fpt.ai/v1` | |
+  | `LLM_API_KEY` | khóa FPT | secret; **không** đặt `OPENAI_API_KEY` (nếu có, nó được ưu tiên hơn) |
+  | `LLM_VISION_MODEL` / `LLM_REASONING_MODEL` | `gemma-4-31B-it` / `Qwen3.8-27B` | đã chạy thật 23/11 |
+  | `LLM_FALLBACK_BACKEND` + `GEMINI_API_KEY` | `gemini` + khóa | tùy chọn; secret |
+  | `LLM_TIMEOUT_MS`, `WARROOM_AGENT_TIMEOUT_MS` | `25000` | lượt chính + lượt dự phòng phải lọt `maxDuration` (quét 60s, War-Room 120s) |
+  | `DAILY_LLM_CALL_LIMIT` | `100` | hết hạn mức thì CASE-01 phát lại bản ghi thật |
+
+  Không đặt trên Vercel: `AWS_*` (khóa tạm hết hạn, backend không dùng), `VERCEL_*` (chỉ dùng cho CLI). Đổi biến xong phải **Redeploy** rồi kiểm tra `GET /api/health` báo `"configured": true`.
 
 ---
 
@@ -51,9 +62,9 @@
 
 1. **Đẩy mã nguồn lên GitHub:**
    - Đăng nhập GitHub CLI (`gh auth login`) hoặc thêm remote repo (`git remote add origin <url>`), sau đó `git push -u origin main`.
-2. **Chuyển sang AWS Sandbox:**
-   - Build Docker, chạy trên EC2/Amplify `ap-southeast-1` với `LLM_BACKEND=bedrock`; vẫn deploy nhánh `main` mới nhất lên Vercel `momo-trustloop` làm dự phòng.
+2. **Bedrock (khi BTC cấp quyền, #17):**
+   - Đổi `LLM_BACKEND=bedrock` trên Vercel kèm khóa AWS; giữ FPT làm `LLM_FALLBACK_BACKEND`.
 3. **Đo độ trễ Live LLM cho Slide 9:**
-   - Trên bản AWS (Bedrock), chạy 10 lượt thật và cập nhật `measured_latency_ms` & `model_used` vào `docs/MEASURED_LATENCIES.md`.
+   - Trên bản Vercel, chạy 10 lượt thật (loại các lượt có model chứa "(phát lại") và cập nhật `measured_latency_ms` & `model_used` vào `docs/MEASURED_LATENCIES.md`.
 4. **Giữ Supabase Free không tự tạm dừng:**
    - Đặt lịch ping `GET https://momo-trustloop.vercel.app/api/health` mỗi **1–2 ngày** cho tới hết **11/12/2026**.
