@@ -5,6 +5,7 @@ import { DEMO_SIMULATION_LABEL } from "@/contracts";
 import { Backstage, PhoneFrame } from "@/components/story/BeatViews";
 import { SummaryCard } from "@/components/story/SummaryCard";
 import { CAST } from "@/lib/cast";
+import { newSessionSlug } from "@/lib/demo-session";
 import { CHECKER_DRAFT_VI, MAKER_DRAFT_VI, runBeat, storyContext } from "@/lib/story/actions";
 import {
   beatById,
@@ -60,7 +61,12 @@ export function Stage({ session }: { session: string }) {
     inFlight.current = true;
     dispatch({ type: "beatStarted" });
     try {
-      const result = await runBeat(current.id, { ...storyContext(state.results), makerRationale, checkerRationale });
+      const result = await runBeat(current.id, {
+        ...storyContext(state.results),
+        session,
+        makerRationale,
+        checkerRationale,
+      });
       dispatch({ type: "beatSucceeded", result });
     } catch (err) {
       dispatch({ type: "beatFailed", message: err instanceof Error ? err.message : "Không thể hoàn tất bước này." });
@@ -141,7 +147,10 @@ export function Stage({ session }: { session: string }) {
         <div className="fixed inset-x-0 bottom-0 z-10 flex flex-col items-stretch gap-1 border-t border-slate-200 bg-white px-4 py-2 lg:static lg:items-end lg:border-0 lg:p-0">
           {state.error && (
             <p role="alert" className="max-w-md text-base text-red-700">
-              {state.error}
+              {state.error}{" "}
+              <a href={`/story?session=${newSessionSlug()}`} className="font-semibold underline">
+                Chạy lại từ đầu
+              </a>
             </p>
           )}
           {rationaleBeat && (
@@ -166,7 +175,10 @@ export function Stage({ session }: { session: string }) {
           {current && onCurrent ? (
             <button
               type="button"
-              onClick={play}
+              onClick={(e) => {
+                if (e.detail > 1) return; // 2nd click of a double click on "Tiếp" lands here
+                void play();
+              }}
               aria-disabled={state.running || rationaleMissing}
               className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue aria-disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
             >

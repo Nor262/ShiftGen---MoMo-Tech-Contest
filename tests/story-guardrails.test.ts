@@ -83,5 +83,11 @@ describe("story stage guardrails", () => {
 
   it("guards against double clicks firing two API calls", () => {
     expect(all()).toMatch(/useRef/);
+    // a double click on "Tiếp →" must not also run the next beat on the same spot
+    expect(all()).toMatch(/detail > 1/);
+  });
+
+  it("offers a way out when a beat fails for good", () => {
+    expect(readFileSync("components/story/Stage.tsx", "utf8")).toMatch(/state\.error[\s\S]{0,400}Chạy lại từ đầu/);
   });
 });

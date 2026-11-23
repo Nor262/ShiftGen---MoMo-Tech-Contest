@@ -192,3 +192,33 @@ describe("4.1 reports the held transfer's real status after approval", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 });
+
+describe("final review: the story stays on its own session", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("sends ?session= on every call, so another tab's cookie cannot hijack the story", async () => {
+    const fetchSpy = vi.fn(async (_url: string) => new Response(JSON.stringify({ error: "x" }), { status: 500 }));
+    vi.stubGlobal("fetch", fetchSpy);
+    await runBeat("1.1", { session: "demo-abc" }).catch(() => {});
+    expect(String(fetchSpy.mock.calls[0][0])).toContain("session=demo-abc");
+  });
+
+  it("4.1 still succeeds when the follow-up holds read fails (approval already went through)", async () => {
+    const indicator = {
+      indicatorId: "i1", demoSessionId: "d", caseId: "c", indicatorType: "BANK_ACCOUNT",
+      indicatorValue: "990123456789", severity: "HIGH_RISK", status: "ACTIVE", evidenceSources: ["A_1", "B_1"],
+      makerId: "RISK_MAKER_HUYEN", checkerId: "RISK_CHECKER_TUAN", ttlHours: 720,
+      expiresAt: "2026-12-24T00:00:00.000Z", rollbackReason: null,
+      createdAt: "2026-11-24T00:00:00.000Z", updatedAt: "2026-11-24T00:00:00.000Z",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url.includes("/approve")) return new Response(JSON.stringify({ indicator }), { status: 200 });
+        throw new TypeError("Failed to fetch");
+      }),
+    );
+    const out = (await runBeat("4.1", { session: "s", indicatorId: "i1", txId: "t1" })) as { txStatus?: string };
+    expect(out.txStatus).toBeUndefined();
+  });
+});
