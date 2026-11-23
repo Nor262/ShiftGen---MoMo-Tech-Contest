@@ -46,7 +46,7 @@ export const dynamic = "force-dynamic";
 
 const PRESET_IMAGE_FILES: Record<"CASE-01" | "CASE-02" | "CASE-03", string> = {
   "CASE-01": "zalo-fake-police.png",
-  "CASE-02": "shipper-apk.png",
+  "CASE-02": "vneid-apk.png",
   "CASE-03": "livestream-merchant.png",
 };
 

@@ -424,9 +424,9 @@ export const SCENARIO_FIXTURES: ScenarioFixture[] = [
   },
   {
     scenarioCode: "CASE-02",
-    title: `[${DEMO_SIMULATION_LABEL}] Minh Anh (21t) — Link .APK giả Shipper/Dịch vụ công`,
-    subtitle: `${DEMO_SIMULATION_LABEL} — Dụ cài .apk ngoài CH Play & bật Accessibility Services`,
-    demoImagePath: "/demo-images/shipper-apk.png",
+    title: `[${DEMO_SIMULATION_LABEL}] Minh Anh (21t) — App VNeID giả dụ cài .APK điều khiển từ xa`,
+    subtitle: `${DEMO_SIMULATION_LABEL} — Tin nhắn "cập nhật định danh điện tử" dụ cài .apk ngoài kho chính thức & bật Accessibility Services`,
+    demoImagePath: "/demo-images/vneid-apk.png",
     graphData: GraphDataSchema.parse({
       nodes: [
         {
@@ -446,7 +446,7 @@ export const SCENARIO_FIXTURES: ScenarioFixture[] = [
           id: "DOMAIN_FAKE_APK",
           type: "SCAMMER",
           label: "dichvucong-xacminh-hoso.example",
-          subtitle: "/capnhat.apk • Tên miền giả mạo",
+          subtitle: "/capnhat.apk • Tên miền giả mạo (mạo danh app định danh điện tử)",
           risk_score: 93,
           flagged: true,
           position: { x: 340, y: 180 },

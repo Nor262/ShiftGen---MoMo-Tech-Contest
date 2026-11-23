@@ -52,7 +52,8 @@ Priority order:
 5. **Law-derived features** (roadmap in `docs/PRODUCT_IDEA.md` §10).
 6. **Pitch** (10-page PDF).
 
-Also planned: `CANCELLED_BY_B2E` on Kết luận rủi ro cao; 3-working-day B2E decision deadline for escalated holds; evidence sources typed as `TYPE:detail` and counted by distinct type; `/checker` raw-count block (`MẪU MÔ PHỎNG`, no percentages); CASE-02 reworked as a fake VNeID remote-access APK (text only, `.example` domain).
+Also planned: `CANCELLED_BY_B2E` on Kết luận rủi ro cao; 3-working-day B2E decision deadline for escalated holds; evidence sources typed as `TYPE:detail` and counted by distinct type; `/checker` raw-count block (`MẪU MÔ PHỎNG`, no percentages).
+Done: CASE-02 reworked as a fake VNeID remote-access APK (text only, `.example` domain) — #1.
 
 ## 4. Directory Ownership
 See [contracts/OWNERSHIP.md](./contracts/OWNERSHIP.md) for the locked per-agent directory ownership table. All agents run at ponytail level `full`.

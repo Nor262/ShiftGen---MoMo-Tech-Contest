@@ -161,7 +161,7 @@ const fakePoliceHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 
-const shipperApkHtml = `<!DOCTYPE html>
+const vneidApkHtml = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
@@ -219,19 +219,19 @@ const shipperApkHtml = `<!DOCTYPE html>
   <div class="header">
     <div class="avatar">SIM</div>
     <div>
-      <div class="h-title">Shipper Giao Hàng / Dịch vụ công (MẪU MÔ PHỎNG)</div>
-      <div class="h-sub">SĐT giả lập: 0987654321 • Nhắn tin Zalo mô phỏng</div>
+      <div class="h-title">"Hỗ trợ cập nhật định danh" (MẪU MÔ PHỎNG)</div>
+      <div class="h-sub">SĐT giả lập: 0123456788 • Nhắn tin Zalo mô phỏng</div>
     </div>
   </div>
   <div class="banner">MẪU MÔ PHỎNG — Kịch bản kiểm thử mã độc APK / Accessibility</div>
   <div class="chat">
     <div class="msg-in">
-      Chào bạn Minh Anh (SĐT: <strong>0912345678</strong>). Đơn hàng &amp; hồ sơ cư trú của bạn đang bị lỗi đồng bộ. Nếu không xác nhận trong <strong>15 phút</strong>, đơn sẽ bị hủy và tính phí lưu kho 350.000đ/ngày.
+      Chào bạn Minh Anh (SĐT: <strong>0123456789</strong>). Tài khoản định danh điện tử VNeID của bạn sắp bị <strong>khóa</strong> do chưa cập nhật phiên bản mới. Nếu không cập nhật trong <strong>15 phút</strong>, bạn sẽ không thể giao dịch ngân hàng.
       <div class="time">19:10</div>
     </div>
 
     <div class="msg-in">
-      Vui lòng tải ứng dụng xác nhận ngoài CH Play theo đường dẫn dưới đây:
+      Bản cập nhật VNeID chưa có trên CH Play, vui lòng tải trực tiếp theo đường dẫn dưới đây:
       <div class="link-card">
         <div style="font-weight:700;color:#991b1b;font-size:11.5px;margin-bottom:4px;">Liên kết tải tệp Android (.APK):</div>
         <div class="link-url">https://dichvucong-xacminh-hoso.example/capnhat.apk</div>
@@ -369,9 +369,12 @@ async function main() {
 
   const targets = [
     { file: "zalo-fake-police.png", html: fakePoliceHtml },
-    { file: "shipper-apk.png", html: shipperApkHtml },
+    { file: "vneid-apk.png", html: vneidApkHtml },
     { file: "livestream-merchant.png", html: livestreamMerchantHtml },
   ];
+
+  const only = process.argv.slice(2);
+  const selected = only.length ? targets.filter((t) => only.includes(t.file)) : targets;
 
   try {
     const context = await browser.newContext({
@@ -380,7 +383,7 @@ async function main() {
     });
     const page = await context.newPage();
 
-    for (const target of targets) {
+    for (const target of selected) {
       await page.setContent(target.html, { waitUntil: "load" });
       await page.screenshot({
         path: path.join(outDir, target.file),
@@ -391,7 +394,7 @@ async function main() {
     await browser.close();
   }
 
-  console.log("Generated 3 demo PNGs in", outDir);
+  console.log(`Generated ${selected.length} demo PNG(s) in`, outDir);
 }
 
 main().catch((err) => {

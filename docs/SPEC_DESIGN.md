@@ -70,7 +70,7 @@ momo_contest/
 ├── public/
 │   └── demo-images/
 │       ├── zalo-fake-police.png   # CASE-01 Bác Hùng (có PII giả lập + dấu đỏ ghép lệch)
-│       └── shipper-apk.png        # CASE-02 Minh Anh (tin nhắn dụ tải .apk + bật Accessibility)
+│       └── vneid-apk.png          # CASE-02 Minh Anh (tin nhắn dụ cài app VNeID giả .apk + bật Accessibility)
 ├── docs/
 │   ├── PRODUCT_IDEA.md
 │   ├── SPEC_REQUIREMENTS.md
@@ -181,6 +181,6 @@ Mọi lời gọi LLM đều parse qua **Zod v3** (`src/core/agents/schemas.ts`)
 ## 6. Dữ liệu Mô phỏng Gốc (`seedScenarios.ts`) & Checklist `README.md`
 
 * **`CASE-01` (Bác Hùng):** Ảnh chat Zalo giả `"Cán bộ Điều tra — Phòng Hình sự"` + lệnh bắt giả dấu đỏ ghép lệch + TK đích `990123456789` + 4 lệnh `9.500.000đ` lọt dưới ngưỡng xác thực sinh trắc học 10 triệu + cụm ví mule `ACC_MULE_01/02/03` chung thiết bị `DEV_ANDROID_99` + cờ SIMO mô phỏng.
-* **`CASE-02` (Minh Anh):** Ảnh Zalo giả shipper/dịch vụ công gửi link `https://dichvucong-xacminh-hoso.example/capnhat.apk` + hướng dẫn bật quyền `Accessibility Services`. *Kế hoạch làm lại:* tin nhắn hướng dẫn cài **ứng dụng VNeID giả** có quyền điều khiển từ xa — chỉ dạng văn bản, tên miền hư cấu `.example`, gắn `MẪU MÔ PHỎNG`, lời khuyên chỉ cài ứng dụng từ kho chính thức.
+* **`CASE-02` (Minh Anh):** Ảnh tin nhắn dụ cài **bản cập nhật VNeID giả** qua link `https://dichvucong-xacminh-hoso.example/capnhat.apk` + hướng dẫn bật quyền `Accessibility Services` — chỉ dạng văn bản, tên miền hư cấu `.example`, gắn `MẪU MÔ PHỎNG`; lời khuyên chỉ cài VNeID từ kho ứng dụng chính thức (`lib/safety-guidance.ts`, hiển thị trong cảnh báo An toàn Thiết bị).
 * **`CASE-03` (Chị Hoa — Tiểu thương Livestream):** Shop Gia Dụng Hoa Mai hoạt động 14 tháng, 35 giao dịch nhỏ (`150k–450k`) trong khung `20:00–21:00` (gom thành 5 cụm đại diện + badge trên đồ thị), thiết bị chính chủ cố định, `sanitizedMinute0Json = null`, `0` khiếu nại.
 * **`README.md` bắt buộc đủ 5 mục:** Hướng dẫn chạy & Live URL, Công nghệ & Mô hình AI, Khai báo 100% Dữ liệu tổng hợp + Nguồn tham khảo công khai, Danh sách Thư viện Mã nguồn mở & License, Tuyên bố Trách nhiệm & Ranh giới Thật/Mô phỏng.

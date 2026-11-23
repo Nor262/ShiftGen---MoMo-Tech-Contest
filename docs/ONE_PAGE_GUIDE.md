@@ -23,7 +23,7 @@
    - Tra cứu lại TK `990123456789` → nhận ngay **Cảnh báo từ Mạng lưới Miễn dịch MoMo TrustLoop** (nội dung "rủi ro cao"; chỉ hiện vì nhập trùng đúng số, không có danh sách công khai).
 
 ### Phút 1:20 – 2:10 | `CASE-02` Minh Anh — An ninh mạng (`.APK`) & Lớp 1 (Chặn `400` khi `<2` nguồn)
-1. Chọn vai **`Minh Anh (21t)`** + ảnh mẫu **`CASE-02: Shipper/APK`** → Quét → thấy cờ `APK_ACCESSIBILITY_BAIT` & lời khuyên chỉ cài ứng dụng từ kho chính thức. *(Kế hoạch: CASE-02 được làm lại thành tin nhắn cài VNeID giả có quyền điều khiển từ xa, tên miền hư cấu `.example`.)*
+1. Chọn vai **`Minh Anh (21t)`** + ảnh mẫu **`CASE-02: App VNeID giả`** (tin nhắn dụ cài bản cập nhật VNeID giả có quyền điều khiển từ xa, tên miền hư cấu `.example`) → Quét → thấy cờ `APK_ACCESSIBILITY_BAIT` & lời khuyên chỉ cài VNeID từ kho ứng dụng chính thức.
 2. Bấm **Báo cáo link/APK độc hại sang War-Room** → sang War-Room chạy 4 Agent.
 3. Vì mới có **1 nguồn** bằng chứng, nếu Maker cố đẩy thẳng lên `ACTIVE` hệ thống chặn **`HTTP 400`** → chỉ được phát hành **`SOFT_WARNING` (72h)** (Lớp 1).
 

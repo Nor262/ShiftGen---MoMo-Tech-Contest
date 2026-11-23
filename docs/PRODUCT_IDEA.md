@@ -49,7 +49,7 @@ TrustLoop **không làm lại** những gì NHNN và MoMo đã vận hành. Ngu�
 | MoMo phát hiện **~29.000 giao dịch bất thường/ngày**, cảnh báo **>10.000 người dùng/ngày**, **99,5%** người nhận cảnh báo "dừng lại suy nghĩ"; ước bảo vệ **>15.000 tỷ đồng/năm** (MoMo tự ước tính) | Thông cáo báo chí MoMo, 14/05/2026 | Điểm xuất phát mạnh của MoMo ở Phút 89 — tránh trùng lặp. |
 | **SIMO (NHNN):** đến 28/9/2026 **>5,6 triệu lượt** cảnh báo, **>1,9 triệu lượt** dừng/hủy giao dịch (**>6.300 tỷ đồng**); 147 đơn vị kết nối; ~596.000 bản ghi tài khoản/ví nghi ngờ năm 2025. "Dừng/hủy" ≠ "đã chặn lừa đảo thật". | CafeF trích họp báo NHNN, 07/10/2026; Tuổi Trẻ, 30/12/2025 | Cảnh báo + ma sát trước khi tiền đi có tác dụng; TrustLoop là lớp bổ sung. |
 | **Mạo danh công an** là thủ đoạn phổ biến **#1** năm 2025; chỉ **32,12%** nạn nhân trình báo; **12,03%** "chấp nhận mất" | Khảo sát NCA (n = 60.300), VietNamNet, 07/01/2026 | Lý do chọn ca chính **Bác Hùng bị giả công an**. |
-| Thủ đoạn **VNeID giả** chứa mã độc đọc OTP, điều khiển app ngân hàng; nhắm người lớn tuổi | VietnamPlus trích Bộ Công an, 2025 | Căn cứ cho **CASE-02** (bản làm lại — xem mục 6). |
+| Thủ đoạn **VNeID giả** chứa mã độc đọc OTP, điều khiển app ngân hàng; nhắm người lớn tuổi | VietnamPlus trích Bộ Công an, 2025 | Căn cứ cho **CASE-02** (xem mục 6). |
 | **88,98%** nạn nhân báo/hỏi người thân **sau** khi bị lừa; **không tìm thấy** nghiên cứu định lượng chứng minh người liên hệ tin cậy làm giảm thiệt hại | Tuổi Trẻ trích NCA, 16/12/2024; FINRA 2025 | Người giám hộ là **giả thuyết** cần đo, không phải hiệu quả đã chứng minh. |
 | FATF: thanh toán tức thời cho phép tiền lừa đảo rời tài khoản **trong khoảng 2 phút** | FATF, 2026 | Lý do cần ma sát *trước* Phút 90+. |
 
@@ -135,7 +135,7 @@ Bốn lớp dưới đây là **thiết kế quản trị của TrustLoop**, kh�
 | Mã | Nhân vật & Bối cảnh | Luồng chạy trên Live Demo | Kết quả chứng minh với BGK |
 | :--- | :--- | :--- | :--- |
 | **CASE-01** *(Ca chính)* | **Bác Hùng (62 tuổi)** — bị giả Công an qua Zalo gửi ảnh *"Lệnh bắt tạm giam"* giả, ép giữ bí mật với con và chia 38 triệu thành **4 lệnh 9,5 triệu** để lọt dưới ngưỡng xác thực sinh trắc học. | B2C quét ảnh Zalo → Tạm giữ (Bảo vệ 24h) → Chị Minh (Người giám hộ) Chuyển cấp → War-Room chạy 4 Agent phát hiện cụm Ví trung gian dùng chung máy Android → **Maker → Checker** Kích hoạt Chỉ báo (TTL 720h) → người dùng mới nhập trúng số TK thấy cảnh báo rủi ro cao. | Trọn vòng lặp 4 nhịp + Maker–Checker + đo độ trễ thực tế. |
-| **CASE-02** *(An ninh mạng)* | **Hiện tại:** Minh Anh (21 tuổi) nhận tin nhắn giả shipper/dịch vụ công kèm link `.apk` yêu cầu bật `Accessibility Services`. **Kế hoạch làm lại:** tin nhắn hướng dẫn cài **ứng dụng VNeID giả** có quyền điều khiển từ xa — chỉ dạng văn bản, tên miền hư cấu `.example`, gắn `MẪU MÔ PHỎNG`, lời khuyên chỉ cài ứng dụng từ kho chính thức. | B2C quét ảnh → phát hiện dấu hiệu dụ cài APK → cảnh báo bảo vệ thiết bị + Báo cáo An ninh mạng sang B2E → 1 nguồn nên chỉ được Cảnh báo mềm (`400` nếu ép `ACTIVE`). | Độ phủ **An ninh mạng** bên cạnh lừa đảo chuyển tiền. |
+| **CASE-02** *(An ninh mạng)* | Minh Anh (21 tuổi) nhận tin nhắn hướng dẫn cài **bản cập nhật VNeID giả** (`.apk`) có quyền điều khiển từ xa và yêu cầu bật `Accessibility Services` — chỉ dạng văn bản, tên miền hư cấu `.example`, gắn `MẪU MÔ PHỎNG`, lời khuyên chỉ cài VNeID từ kho ứng dụng chính thức. | B2C quét ảnh → phát hiện dấu hiệu dụ cài APK → cảnh báo bảo vệ thiết bị + Báo cáo An ninh mạng sang B2E → 1 nguồn nên chỉ được Cảnh báo mềm (`400` nếu ép `ACTIVE`). | Độ phủ **An ninh mạng** bên cạnh lừa đảo chuyển tiền. |
 | **CASE-03** *(Chống chặn oan)* | **Chị Hoa (tiểu thương livestream)** — bị luật cứng gắn cờ vì nhận 35 giao dịch nhỏ trong 1 giờ tối. | War-Room → 4 Agent → **`False-Positive Defender`** chỉ ra 14 tháng bán hàng sạch, thiết bị chính chủ, không có Bằng chứng Phút 00 → khuyến nghị **Minh oan**. | AI không chỉ biết chặn mà bảo vệ tiểu thương hợp pháp. |
 
 ---
@@ -196,7 +196,7 @@ Chi tiết từng điều khoản và mức độ tin cậy ([VB] đã đọc ng
 6. **Pitch** (10 trang PDF, nộp trước 03/12/2026).
 
 ### Kế hoạch (đã chốt, chưa xây)
-`CANCELLED_BY_B2E` khi Kết luận rủi ro cao · Yêu cầu xét lại tạm giữ · hạn 03 ngày làm việc cho Vụ đã Chuyển cấp · Nguồn bằng chứng ghi theo `LOẠI:chi tiết` và đếm theo loại · khối số đếm thô trên `/checker` · CASE-02 làm lại thành VNeID giả · làm sạch `data/vnPolicies.json` · chuyển sang AWS.
+`CANCELLED_BY_B2E` khi Kết luận rủi ro cao · Yêu cầu xét lại tạm giữ · hạn 03 ngày làm việc cho Vụ đã Chuyển cấp · Nguồn bằng chứng ghi theo `LOẠI:chi tiết` và đếm theo loại · khối số đếm thô trên `/checker` · làm sạch `data/vnPolicies.json` · chuyển sang AWS.
 
 ### Tính năng xuất phát từ luật (chưa xây)
 * **Hướng dẫn trình báo đúng luật:** Công an cấp xã/Đồn Công an có trách nhiệm tiếp nhận tố giác và không được từ chối; người tố giác được thông báo kết quả (BLTTHS Điều 145, 146.3, 147 [VB]). Không in số hotline chưa xác minh.
