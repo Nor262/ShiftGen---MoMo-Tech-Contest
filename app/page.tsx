@@ -9,13 +9,14 @@ import { DEMO_SIMULATION_LABEL, type HealthResponse, type SessionResponse } from
 /** "Hôm nay": what happens without TrustLoop (illustration, CASE-01 amounts, neutral tone). */
 const TODAY = [
   { at: "Phút 00", label: "Nhận tin nhắn Zalo tự xưng công an, dọa bắt giam." },
+  { at: "00–88", label: "Điểm mù: mọi chuyện diễn ra ngoài ứng dụng ví, không ai thấy." },
   { at: "Phút 89", label: "Hoảng sợ, chuyển 4 lần × 9.500.000đ." },
   { at: "Phút 90+", label: "Tiền đã sang ví trung gian và bị tẩu tán." },
 ] as const;
 
 /** "Có TrustLoop" is DESIGN.md's Minute Timeline: the same minutes, a different ending. */
 const WITH_TRUSTLOOP = [
-  { at: "Phút 00", label: "Quét tin nhắn: AI chỉ ra dấu hiệu giả danh và thao túng." },
+  { at: "Phút 00", label: "Quét tin nhắn: AI chỉ ra dấu hiệu giả danh và thao túng.", marker: true },
   { at: "Phút 89", label: "Lệnh đầu tiên bị tạm giữ theo chế độ Bảo vệ 24h Bác đã bật; người giám hộ được báo.", hold: true },
   { at: "Phút 90+", label: "Đội Risk điều tra, hai người duyệt độc lập, tài khoản nhận bị cảnh báo." },
 ] as const;
@@ -66,7 +67,7 @@ export default function HomePage() {
       <section className="space-y-4">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Chặn lừa đảo từ Phút 00 — trước khi tiền rời ví</h1>
         <p className="max-w-3xl text-lg text-slate-700">
-          Cùng một cuộc gọi lừa đảo, hai kết cục. TrustLoop chen vào đúng những phút ứng dụng ví hôm nay chưa thấy.
+          Cùng một vụ lừa đảo, hai kết cục. TrustLoop chen vào đúng những phút ứng dụng ví hôm nay chưa thấy.
         </p>
       </section>
 
@@ -77,7 +78,7 @@ export default function HomePage() {
             <h2 id="lane-today" className="text-xl font-semibold text-slate-700">
               Hôm nay (không có TrustLoop)
             </h2>
-            <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-0.5 text-base font-semibold text-amber-900">
+            <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-sm font-semibold text-amber-900">
               {DEMO_SIMULATION_LABEL}
             </span>
           </div>
@@ -99,7 +100,7 @@ export default function HomePage() {
             <h2 id="lane-trustloop" className="text-xl font-semibold text-momo-primary">
               Có TrustLoop
             </h2>
-            <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-0.5 text-base font-semibold text-amber-900">
+            <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-sm font-semibold text-amber-900">
               {DEMO_SIMULATION_LABEL}
             </span>
           </div>
@@ -110,7 +111,12 @@ export default function HomePage() {
                 className={"hold" in t ? "flex gap-3 rounded-lg border-l-4 border-signal-700 bg-signal-50 p-2" : "flex gap-3"}
               >
                 <span className="w-20 shrink-0 font-mono text-base font-semibold text-momo-primary">{t.at}</span>
-                <span className="text-base text-slate-800">{t.label}</span>
+                <span className="text-base text-slate-800">
+                  {t.label}
+                  {"marker" in t && (
+                    <span className="mt-1 block text-base font-semibold text-shift-blue">TrustLoop can thiệp tại đây</span>
+                  )}
+                </span>
               </li>
             ))}
           </ol>
