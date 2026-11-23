@@ -7,6 +7,7 @@ import {
   PolicyChunkSchema,
 } from "@/contracts";
 import { SCENARIO_FIXTURES } from "@/data/scenarios";
+import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import vnPolicies from "@/data/vnPolicies.json";
 
 
@@ -142,7 +143,8 @@ describe("Wave 1 Assets — Synthetic Scenario & Transaction Fixtures", () => {
     const domains = Array.from(text.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)).map((m) => m[1]);
     expect(domains.length).toBeGreaterThan(0);
     for (const d of domains) expect(d).toMatch(/\.example$/);
-    // Safety guidance points users to official app stores only.
-    expect(case02.caseContext.safetyGuidanceVi).toMatch(/kho ứng dụng chính thức/);
+    // Safety guidance shown on every APK lure points to official app stores and names VNeID.
+    expect(OFFICIAL_APP_STORE_GUIDANCE_VI).toMatch(/VNeID/);
+    expect(OFFICIAL_APP_STORE_GUIDANCE_VI).toMatch(/kho ứng dụng chính thức \(CH Play, App Store\)/);
   });
 });

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import { useEffect, useState } from "react";
 import {
   AlertOctagon,
@@ -396,10 +397,11 @@ export function ScanResultPanel({
                     Cảnh báo An toàn Thiết bị Android — Nguy cơ Mã độc .APK
                   </h4>
                   <p className="text-base leading-relaxed">
-                    <strong>Tuyệt đối KHÔNG tải file .apk ngoài Google Play</strong> và{" "}
+                    <strong>Tuyệt đối KHÔNG tải file .apk gửi qua tin nhắn</strong> và{" "}
                     <strong>KHÔNG bật quyền Trợ năng (Accessibility Services)</strong> theo hướng
                     dẫn qua tin nhắn để tránh bị chiếm quyền điều khiển điện thoại và đọc mã OTP.
                   </p>
+                  <p className="text-base font-semibold leading-relaxed">{OFFICIAL_APP_STORE_GUIDANCE_VI}</p>
                 </div>
               </div>
             </div>

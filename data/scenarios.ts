@@ -26,7 +26,6 @@ export interface ScenarioFixture {
     targetAccount?: string;
     targetBank?: string;
     suspiciousUrl?: string;
-    safetyGuidanceVi?: string;
     simoFlagSimulated: boolean;
     cleanHistoryMonths: number;
     complaintsCount: number;
@@ -517,8 +516,6 @@ export const SCENARIO_FIXTURES: ScenarioFixture[] = [
       cleanHistoryMonths: 0,
       complaintsCount: 1,
       independentSources: ["MINUTE0_B2C_APK_SCREENSHOT"],
-      safetyGuidanceVi:
-        "VNeID và mọi ứng dụng của cơ quan nhà nước chỉ được tải từ kho ứng dụng chính thức (CH Play, App Store). Không bao giờ cài tệp .apk nhận qua tin nhắn và không bật quyền Trợ năng (Accessibility) theo yêu cầu của người lạ.",
       behavioralNoteVi:
         "Mô thức hành vi tương đồng mã độc RedHook/RatHat lạm dụng quyền Accessibility Services trên Android để đọc màn hình và chiếm quyền điều khiển; hiện mới có 1 nguồn bằng chứng độc lập nên chỉ đủ điều kiện SOFT_WARNING (72h).",
       transactions: [],

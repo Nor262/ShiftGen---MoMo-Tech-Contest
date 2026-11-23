@@ -220,13 +220,13 @@ const vneidApkHtml = `<!DOCTYPE html>
     <div class="avatar">SIM</div>
     <div>
       <div class="h-title">"Hỗ trợ cập nhật định danh" (MẪU MÔ PHỎNG)</div>
-      <div class="h-sub">SĐT giả lập: 0987654321 • Nhắn tin Zalo mô phỏng</div>
+      <div class="h-sub">SĐT giả lập: 0123456788 • Nhắn tin Zalo mô phỏng</div>
     </div>
   </div>
   <div class="banner">MẪU MÔ PHỎNG — Kịch bản kiểm thử mã độc APK / Accessibility</div>
   <div class="chat">
     <div class="msg-in">
-      Chào bạn Minh Anh (SĐT: <strong>0912345678</strong>). Tài khoản định danh điện tử VNeID của bạn sắp bị <strong>khóa</strong> do chưa cập nhật phiên bản mới. Nếu không cập nhật trong <strong>15 phút</strong>, bạn sẽ không thể giao dịch ngân hàng.
+      Chào bạn Minh Anh (SĐT: <strong>0123456789</strong>). Tài khoản định danh điện tử VNeID của bạn sắp bị <strong>khóa</strong> do chưa cập nhật phiên bản mới. Nếu không cập nhật trong <strong>15 phút</strong>, bạn sẽ không thể giao dịch ngân hàng.
       <div class="time">19:10</div>
     </div>
 

@@ -131,7 +131,7 @@ function makeQaLlmProvider(options?: {
         risk_score: 94,
         risk_level: "CRITICAL",
         scam_category: "APK_MALWARE_BAIT",
-        visual_tampering_flags: ["Tin nhắn giả mạo shipper/dịch vụ công đính kèm file .apk"],
+        visual_tampering_flags: ["Tin nhắn dụ cài bản cập nhật VNeID giả đính kèm file .apk"],
         psych_manipulation_cues: [
           {
             type: "APK_PHISHING_BAIT",
@@ -1457,7 +1457,7 @@ describe("Wave 4 QA — 5. Friendly Error Handling & Resilience", () => {
         makeRequest("/api/shield/scan", sessionId, {
           body: {
             inputType: "TEXT_LOOKUP",
-            lookupText: "Tin nhắn giả shipper cài .apk tại https://dichvucong-xacminh-hoso.example/capnhat.apk",
+            lookupText: "Tin nhắn dụ cài bản cập nhật VNeID giả tại https://dichvucong-xacminh-hoso.example/capnhat.apk",
           },
         }),
       );
