@@ -13,7 +13,7 @@ function mimeToBedrockFormat(mime?: string): ImageFormat {
 }
 
 export function createBedrockAdapter(): LLMRawAdapter {
-  const region = process.env.BEDROCK_REGION ?? "ap-southeast-1";
+  const region = process.env.BEDROCK_REGION ?? "ap-southeast-2";
   const visionModel = process.env.BEDROCK_VISION_MODEL ?? "apac.amazon.nova-pro-v1:0";
   const reasoningModel =
     process.env.BEDROCK_REASONING_MODEL ?? "apac.anthropic.claude-sonnet-4-20250514-v1:0";
@@ -30,8 +30,12 @@ export function createBedrockAdapter(): LLMRawAdapter {
     backend: "bedrock",
     visionModel,
     reasoningModel,
-    isConfigured: () =>
-      Boolean(process.env.AWS_ACCESS_KEY_ID?.trim() && process.env.AWS_SECRET_ACCESS_KEY?.trim()),
+    isConfigured: () => {
+      const keyId = process.env.AWS_ACCESS_KEY_ID?.trim();
+      if (!keyId || !process.env.AWS_SECRET_ACCESS_KEY?.trim()) return false;
+      // Temporary (STS / Sandbox) keys start with "ASIA" and are unusable without their session token.
+      return !keyId.startsWith("ASIA") || Boolean(process.env.AWS_SESSION_TOKEN?.trim());
+    },
     async callRaw(params: RawCallParams): Promise<string> {
       const content: ContentBlock[] = [];
       if (params.imageBase64) {

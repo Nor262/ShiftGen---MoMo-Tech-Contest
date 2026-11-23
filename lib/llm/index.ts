@@ -1,4 +1,4 @@
-import { LlmBackendSchema, type LlmBackend } from "@/contracts";
+import { LlmBackendSchema, type LlmBackend, type LlmStatus } from "@/contracts";
 import { createBedrockAdapter } from "./bedrock";
 import { createGeminiAdapter } from "./gemini";
 import { createOpenAIAdapter } from "./openai";
@@ -31,23 +31,39 @@ function buildAdapter(backend: LlmBackend): LLMRawAdapter {
   }
 }
 
+function resolveFallbackAdapter(primaryBackend: LlmBackend): LLMRawAdapter | null {
+  const parsed = LlmBackendSchema.safeParse(process.env.LLM_FALLBACK_BACKEND?.trim().toLowerCase());
+  return parsed.success && parsed.data !== primaryBackend ? buildAdapter(parsed.data) : null;
+}
+
+function resolvePrimaryBackend(): LlmBackend {
+  const parsed = LlmBackendSchema.safeParse((process.env.LLM_BACKEND ?? "gemini").trim().toLowerCase());
+  return parsed.success ? parsed.data : "gemini";
+}
+
+/**
+ * What /api/health reports — read from the adapter that will actually serve calls: the primary when
+ * configured, otherwise a configured fallback (same order as createResilientProvider).
+ */
+export function getPrimaryLlmStatus(): LlmStatus {
+  const primary = buildAdapter(resolvePrimaryBackend());
+  const fallback = resolveFallbackAdapter(primary.backend);
+  const adapter = !primary.isConfigured() && fallback?.isConfigured() ? fallback : primary;
+  return {
+    backend: adapter.backend,
+    configured: adapter.isConfigured(),
+    vision_model: adapter.visionModel,
+    reasoning_model: adapter.reasoningModel,
+  };
+}
+
 export function getLLMProvider(): LLMProvider {
   if (testProviderOverride) {
     return testProviderOverride;
   }
 
-  const parsedPrimary = LlmBackendSchema.safeParse(
-    (process.env.LLM_BACKEND ?? "gemini").trim().toLowerCase(),
-  );
-  const primaryBackend: LlmBackend = parsedPrimary.success ? parsedPrimary.data : "gemini";
+  const primaryBackend = resolvePrimaryBackend();
   const primary = buildAdapter(primaryBackend);
 
-  const fallbackRaw = process.env.LLM_FALLBACK_BACKEND?.trim().toLowerCase();
-  const parsedFallback = fallbackRaw ? LlmBackendSchema.safeParse(fallbackRaw) : null;
-  const fallback =
-    parsedFallback?.success && parsedFallback.data !== primaryBackend
-      ? buildAdapter(parsedFallback.data)
-      : null;
-
-  return createResilientProvider(primary, fallback);
+  return createResilientProvider(primary, resolveFallbackAdapter(primaryBackend));
 }
