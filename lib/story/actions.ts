@@ -6,6 +6,7 @@ import {
   ConsentResponseSchema,
   FamilyEscalateResponseSchema,
   HeldTxStatusSchema,
+  type HeldTxStatus,
   InvestigateCaseResponseSchema,
   ShieldScanResponseSchema,
   TransferResponseSchema,
@@ -90,6 +91,8 @@ export const buildNewUserProbe = (): ShieldScanRequest => ({
 
 /** Ids and inputs gathered from earlier beats' results. */
 export interface StoryContext {
+  /** The page's own demo session; sent on every call so another tab's cookie cannot redirect it. */
+  session?: string;
   scanId?: string;
   txId?: string;
   caseId?: string;
@@ -120,6 +123,10 @@ export function storyContext(results: Results): StoryContext {
 /** Governance (Layer 2) needs ≥2 evidence sources of different TYPES (prefix before "_"). */
 function sourceTypes(sources: string[]): number {
   return new Set(sources.map((s) => s.split("_")[0])).size;
+}
+
+function withSession(url: string, session: string | undefined): string {
+  return session ? `${url}${url.includes("?") ? "&" : "?"}session=${encodeURIComponent(session)}` : url;
 }
 
 async function call<S extends z.ZodTypeAny>(
@@ -160,12 +167,12 @@ function need<T>(value: T | undefined, what: string): T {
 export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
   switch (id) {
     case "1.1":
-      return call("/api/shield/consent", buildConsent(), ConsentResponseSchema);
+      return call(withSession("/api/shield/consent", ctx.session), buildConsent(), ConsentResponseSchema);
     case "1.2":
-      return call("/api/shield/scan", buildScan(), ShieldScanResponseSchema);
+      return call(withSession("/api/shield/scan", ctx.session), buildScan(), ShieldScanResponseSchema);
     case "2.1":
       return call(
-        "/api/shield/transfer",
+        withSession("/api/shield/transfer", ctx.session),
         buildTransfer(need(ctx.scanId, "lượt quét")),
         TransferResponseSchema,
         (json) =>
@@ -175,13 +182,16 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
       );
     case "2.2":
       return call(
-        `/api/shield/family/escalate/${encodeURIComponent(need(ctx.txId, "giao dịch"))}`,
+        withSession(`/api/shield/family/escalate/${encodeURIComponent(need(ctx.txId, "giao dịch"))}`, ctx.session),
         buildEscalate(),
         FamilyEscalateResponseSchema,
       );
     case "3.1":
       return call(
-        `/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/investigate`,
+        withSession(
+          `/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/investigate`,
+          ctx.session,
+        ),
         buildInvestigate(),
         InvestigateCaseResponseSchema,
       );
@@ -192,7 +202,7 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
           "War-Room chưa tìm đủ bằng chứng từ 2 loại nguồn độc lập, nên chưa thể đề xuất kích hoạt chỉ báo (quy tắc quản trị).",
         );
       return call(
-        `/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/decision`,
+        withSession(`/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/decision`, ctx.session),
         buildMakerDecision(debate, reason(ctx.makerRationale ?? MAKER_DRAFT_VI)),
         CaseDecisionResponseSchema,
       );
@@ -200,20 +210,29 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
     case "4.1": {
       const body = buildApprove(reason(ctx.checkerRationale ?? CHECKER_DRAFT_VI));
       const approved = await call(
-        `/api/immunity/${encodeURIComponent(need(ctx.indicatorId, "chỉ báo"))}/approve`,
+        withSession(`/api/immunity/${encodeURIComponent(need(ctx.indicatorId, "chỉ báo"))}/approve`, ctx.session),
         body,
         ApproveImmunityResponseSchema,
       );
       // approval cancels the held transfer only if it is still on hold; read it back instead of assuming
-      const res = await fetch("/api/shield/family/holds", { cache: "no-store" });
-      const json = (await res.json().catch(() => ({}))) as { holds?: { txId?: string; status?: unknown }[] };
-      const status = HeldTxStatusSchema.safeParse(json.holds?.find((h) => h.txId === ctx.txId)?.status);
-      const txStatus = status.success ? status.data : undefined;
+      // the approval already happened: a failed read must not fail (and re-run) the beat
+      let txStatus: HeldTxStatus | undefined;
+      try {
+        const res = await fetch(withSession("/api/shield/family/holds", ctx.session), { cache: "no-store" });
+        const json = (await res.json()) as { holds?: { txId?: string; status?: unknown }[] };
+        const status = HeldTxStatusSchema.safeParse(json.holds?.find((h) => h.txId === ctx.txId)?.status);
+        txStatus = status.success ? status.data : undefined;
+      } catch {
+        txStatus = undefined;
+      }
       return { ...approved, txStatus };
     }
     case "4.2":
-      return call("/api/shield/scan", buildNewUserProbe(), ShieldScanResponseSchema, (json) =>
-        json.immunityHit ? null : "Người dùng mới không thấy cảnh báo: chỉ báo chưa có hiệu lực.",
+      return call(
+        withSession("/api/shield/scan", ctx.session),
+        buildNewUserProbe(),
+        ShieldScanResponseSchema,
+        (json) => (json.immunityHit ? null : "Người dùng mới không thấy cảnh báo: chỉ báo chưa có hiệu lực."),
       );
   }
 }
