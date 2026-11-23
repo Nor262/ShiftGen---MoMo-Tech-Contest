@@ -35,20 +35,28 @@ export function Stage({ session }: { session: string }) {
   const current = state.current === "done" ? null : beatById(state.current);
   const narrating = beatById(state.shown);
   const onCurrent = current?.id === state.shown;
-  const rationaleBeat = onCurrent && (current?.id === "3.2" || current?.id === "4.1") ? current.id : null;
+  const rationaleBeat = onCurrent && current?.needsRationale ? current.id : null;
+  const rationaleText = rationaleBeat === "3.2" ? makerRationale : checkerRationale;
+  const rationaleMissing = rationaleBeat !== null && rationaleText.trim().length < 3;
+  const rationaleRef = useRef<HTMLTextAreaElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
 
   const firstRender = useRef(true);
+  // one focus rule: a reason to write → the textarea; otherwise → the chapter heading
   useEffect(() => {
     if (firstRender.current) {
       firstRender.current = false; // don't steal focus from the header nav on load
       return;
     }
-    headingRef.current?.focus();
-  }, [state.viewing]);
+    (rationaleRef.current ?? headingRef.current)?.focus();
+  }, [state.shown]);
+  useEffect(() => {
+    if (showSummary) summaryRef.current?.querySelector<HTMLElement>("#summary-title")?.focus();
+  }, [showSummary]);
   const nextLocked = STORY_BEATS.filter((b) => b.id.endsWith(".1")).find((b) => isBeatLocked(state, b.id));
 
   async function play() {
-    if (!current || inFlight.current) return;
+    if (!current || inFlight.current || rationaleMissing) return;
     inFlight.current = true;
     dispatch({ type: "beatStarted" });
     try {
@@ -87,7 +95,9 @@ export function Stage({ session }: { session: string }) {
       </p>
 
       {showSummary ? (
-        <SummaryCard state={state} />
+        <div ref={summaryRef}>
+          <SummaryCard state={state} />
+        </div>
       ) : (
         <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start">
           <PhoneFrame state={state} />
@@ -141,9 +151,11 @@ export function Stage({ session }: { session: string }) {
               </label>
               <textarea
                 id="story-rationale"
-                autoFocus
+                ref={rationaleRef}
+                required
+                aria-invalid={rationaleMissing}
                 rows={2}
-                value={rationaleBeat === "3.2" ? makerRationale : checkerRationale}
+                value={rationaleText}
                 onChange={(e) =>
                   rationaleBeat === "3.2" ? setMakerRationale(e.target.value) : setCheckerRationale(e.target.value)
                 }
@@ -155,7 +167,7 @@ export function Stage({ session }: { session: string }) {
             <button
               type="button"
               onClick={play}
-              aria-disabled={state.running}
+              aria-disabled={state.running || rationaleMissing}
               className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue aria-disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
             >
               {state.running

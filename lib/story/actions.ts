@@ -5,6 +5,7 @@ import {
   CaseDecisionResponseSchema,
   ConsentResponseSchema,
   FamilyEscalateResponseSchema,
+  HeldTxStatusSchema,
   InvestigateCaseResponseSchema,
   ShieldScanResponseSchema,
   TransferResponseSchema,
@@ -144,6 +145,12 @@ async function call<S extends z.ZodTypeAny>(
   return parsed.data;
 }
 
+/** Server requires ≥3 characters; say so in Vietnamese before calling it. */
+function reason(text: string): string {
+  if (text.trim().length < 3) throw new Error("Hãy viết lý do (ít nhất 3 ký tự) trước khi gửi.");
+  return text.trim();
+}
+
 function need<T>(value: T | undefined, what: string): T {
   if (value === undefined) throw new Error(`Thiếu ${what} từ bước trước.`);
   return value;
@@ -186,16 +193,24 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
         );
       return call(
         `/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/decision`,
-        buildMakerDecision(debate, ctx.makerRationale ?? MAKER_DRAFT_VI),
+        buildMakerDecision(debate, reason(ctx.makerRationale ?? MAKER_DRAFT_VI)),
         CaseDecisionResponseSchema,
       );
     }
-    case "4.1":
-      return call(
+    case "4.1": {
+      const body = buildApprove(reason(ctx.checkerRationale ?? CHECKER_DRAFT_VI));
+      const approved = await call(
         `/api/immunity/${encodeURIComponent(need(ctx.indicatorId, "chỉ báo"))}/approve`,
-        buildApprove(ctx.checkerRationale ?? CHECKER_DRAFT_VI),
+        body,
         ApproveImmunityResponseSchema,
       );
+      // approval cancels the held transfer only if it is still on hold; read it back instead of assuming
+      const res = await fetch("/api/shield/family/holds", { cache: "no-store" });
+      const json = (await res.json().catch(() => ({}))) as { holds?: { txId?: string; status?: unknown }[] };
+      const status = HeldTxStatusSchema.safeParse(json.holds?.find((h) => h.txId === ctx.txId)?.status);
+      const txStatus = status.success ? status.data : undefined;
+      return { ...approved, txStatus };
+    }
     case "4.2":
       return call("/api/shield/scan", buildNewUserProbe(), ShieldScanResponseSchema, (json) =>
         json.immunityHit ? null : "Người dùng mới không thấy cảnh báo: chỉ báo chưa có hiệu lực.",
