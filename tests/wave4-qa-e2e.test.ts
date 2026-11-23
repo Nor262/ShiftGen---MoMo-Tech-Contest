@@ -1103,7 +1103,7 @@ describe("Wave 4 QA — 3. Full E2E Closed-Loop Acceptance Matrix (E2E-01, E2E-0
     const sessionId = createSessionId("w4-e2e02");
     setLLMProviderForTest(makeQaLlmProvider({ mode: "CASE-02" }));
 
-    // 1. Scan CASE-02 real PNG (public/demo-images/shipper-apk.png)
+    // 1. Scan CASE-02 real PNG (public/demo-images/vneid-apk.png)
     const scanRes = await postScan(
       makeRequest("/api/shield/scan", sessionId, {
         body: { userId: "USER_B2C_NEW", inputType: "DEMO_PRESET", presetCode: "CASE-02" },

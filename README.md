@@ -65,7 +65,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 ## 3. Khai báo Dữ liệu, Xóa ảnh tải lên & Điều khoản API
 
 ### Dữ liệu Tổng hợp 100% & Tài liệu Công khai
-- Toàn bộ hồ sơ `CASE-01` (Bác Hùng), `CASE-02` (Minh Anh), `CASE-03` (Chị Hoa) và 3 ảnh mẫu trong `public/demo-images/` (`zalo-fake-police.png`, `shipper-apk.png`, `livestream-merchant.png`) đều là **`MẪU MÔ PHỎNG`** tổng hợp 100% — **không** chứa CCCD thật, số điện thoại thật hay tài khoản ngân hàng thật.
+- Toàn bộ hồ sơ `CASE-01` (Bác Hùng), `CASE-02` (Minh Anh), `CASE-03` (Chị Hoa) và 3 ảnh mẫu trong `public/demo-images/` (`zalo-fake-police.png`, `vneid-apk.png`, `livestream-merchant.png`) đều là **`MẪU MÔ PHỎNG`** tổng hợp 100% — **không** chứa CCCD thật, số điện thoại thật hay tài khoản ngân hàng thật.
 - Kho tri thức `data/vnPolicies.json` (12 chunk) tổng hợp từ văn bản pháp lý công khai và điều khoản sản phẩm. **Đã biết sai lệch:** một số chunk còn dẫn QĐ 2345/QĐ-NHNN (đã bị bãi bỏ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025) và gán cho TT 53/2026 nội dung chưa xác minh. *Kế hoạch:* làm sạch kho để chỉ còn tóm tắt văn bản pháp luật theo [RESEARCH_LEGAL.md](./docs/RESEARCH_LEGAL.md).
 
 ### Chính sách Xử lý & Xóa Ảnh Tải lên

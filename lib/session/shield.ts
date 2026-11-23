@@ -470,7 +470,7 @@ export function buildFallbackRuleScanResult(
     psychCues.push({
       type: "APK_PHISHING_BAIT",
       quote_vi: "Dụ cài ứng dụng .apk ngoài kho chính thức.",
-      explanation_vi: "Ứng dụng ngoài CH Play có thể đánh cắp OTP và kiểm soát thiết bị.",
+      explanation_vi: "Ứng dụng ngoài CH Play có thể đánh cắp OTP và kiểm soát thiết bị. VNeID và ứng dụng của cơ quan nhà nước chỉ tải từ kho ứng dụng chính thức (CH Play, App Store).",
     });
   }
 

@@ -35,7 +35,7 @@ export const B2C_PERSONAS: readonly B2CPersonaOption[] = [
     shortLabel: "Minh Anh (21t)",
     badgeLabel: "CASE-02",
     senderLabel: "Minh Anh (21 tuổi — Mô phỏng)",
-    description: "Tình huống an ninh mạng: tin nhắn giả shipper/dịch vụ công chứa link .apk.",
+    description: "Tình huống an ninh mạng: tin nhắn dụ cài app VNeID giả qua link .apk.",
   },
   {
     key: "NEW_USER",
@@ -63,8 +63,8 @@ export const DEMO_PRESETS: readonly DemoPresetOption[] = [
   },
   {
     code: "CASE-02",
-    label: "CASE-02: Shipper/APK — Minh Anh",
-    imagePath: "/demo-images/shipper-apk.png",
+    label: "CASE-02: App VNeID giả — Minh Anh",
+    imagePath: "/demo-images/vneid-apk.png",
     hint: "Link .apk & hướng dẫn bật Accessibility Services",
   },
   {

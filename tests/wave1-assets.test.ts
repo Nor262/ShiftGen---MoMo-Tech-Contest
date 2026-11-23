@@ -13,7 +13,7 @@ import vnPolicies from "@/data/vnPolicies.json";
 describe("Wave 1 Assets — Demo PNGs", () => {
   const expectedImages = [
     "zalo-fake-police.png",
-    "shipper-apk.png",
+    "vneid-apk.png",
     "livestream-merchant.png",
   ];
 
@@ -129,5 +129,20 @@ describe("Wave 1 Assets — Synthetic Scenario & Transaction Fixtures", () => {
     expect(
       new Set(case03.caseContext.transactions.map((t) => t.deviceId)).size,
     ).toBe(35);
+  });
+
+  it("CASE-02 depicts a fake VNeID update APK within legal guardrails (Q28)", () => {
+    const case02 = SCENARIO_FIXTURES.find((s) => s.scenarioCode === "CASE-02")!;
+    const text = JSON.stringify(case02);
+
+    expect(case02.title).toContain(DEMO_SIMULATION_LABEL);
+    expect(case02.title).toMatch(/VNeID giả/);
+    expect(case02.demoImagePath).toBe("/demo-images/vneid-apk.png");
+    // Every domain in the scenario is fictional (.example), never a real one.
+    const domains = Array.from(text.matchAll(/https?:\/\/([a-z0-9.-]+)/gi)).map((m) => m[1]);
+    expect(domains.length).toBeGreaterThan(0);
+    for (const d of domains) expect(d).toMatch(/\.example$/);
+    // Safety guidance points users to official app stores only.
+    expect(case02.caseContext.safetyGuidanceVi).toMatch(/kho ứng dụng chính thức/);
   });
 });
