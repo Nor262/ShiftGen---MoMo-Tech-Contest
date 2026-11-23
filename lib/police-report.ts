@@ -19,7 +19,7 @@ export const POLICE_GUIDE = {
     "Bạn có quyền được thông báo kết quả giải quyết.",
   ],
   secondScamWarning:
-    "Cẩn thận lừa đảo lần hai: không ai được thu phí để \"giúp lấy lại tiền\". Người tự xưng công an, luật sư hay ngân hàng hứa lấy lại tiền qua điện thoại là dấu hiệu lừa đảo.",
+    "Cẩn thận lừa đảo lần hai: đừng trả phí cho người gọi điện hay nhắn tin hứa \"giúp lấy lại tiền\". Người tự xưng công an, luật sư hay ngân hàng làm việc này qua điện thoại là dấu hiệu lừa đảo.",
 } as const;
 
 export function shouldOfferPoliceGuide(input: { riskLevel?: RiskLevel; txStatus?: HeldTxStatus }): boolean {
@@ -39,6 +39,11 @@ const TX_STATUS_VI: Partial<Record<HeldTxStatus, string>> = {
 };
 
 const mask = (account: string) => `•••• ${account.replace(/\D/g, "").slice(-4)}`;
+// Any run of 9+ digits (account, phone, ID) is masked to its last 4, even where redactText keeps it on purpose.
+const maskLongNumbers = (text: string) =>
+  text.replace(/\d[\d .-]{7,}\d/g, (m) => (m.replace(/\D/g, "").length >= 9 ? mask(m) : m));
+// Links keep origin + path only: query strings and fragments are where phone/ID numbers hide.
+const stripQuery = (url: string) => url.replace(/[?#].*$/, "");
 
 /** Plain-text evidence pack: analysis only (no image, no raw message), PII-redacted, labelled. */
 export function buildEvidencePack(input: {
@@ -52,7 +57,7 @@ export function buildEvidencePack(input: {
   const lines = [
     `GÓI BẰNG CHỨNG — ${DEMO_SIMULATION_LABEL}`,
     `Kết quả do AI tạo (model ${input.modelUsed}); cần người thật kiểm tra lại.`,
-    `Thời điểm phân tích: ${input.scannedAt}`,
+    `Thời điểm tạo gói: ${input.scannedAt}`,
     "",
     `Mức rủi ro: ${RISK_LEVEL_META[result.risk_level].labelVi} (${result.risk_score}/100)`,
     `Loại lừa đảo nghi ngờ: ${SCAM_CATEGORY_VI[result.scam_category]}`,
@@ -64,10 +69,11 @@ export function buildEvidencePack(input: {
     ...result.psych_manipulation_cues.map((c) => `- ${c.explanation_vi} (trích: "${c.quote_vi}")`),
     ...(result.visual_tampering_flags.length ? ["", "Dấu hiệu giả mạo trên ảnh:"] : []),
     ...result.visual_tampering_flags.map((f) => `- ${f}`),
-    ...(e.urls.length ? ["", "Đường link trong tin nhắn:", ...e.urls.map((u) => `- ${u}`)] : []),
+    ...(e.urls.length ? ["", "Đường link trong tin nhắn (đã bỏ phần tham số):", ...e.urls.map((u) => `- ${stripQuery(u)}`)] : []),
     "",
     "Gói này không chứa ảnh gốc hay số giấy tờ, số điện thoại của bạn.",
   ].filter((l): l is string => l !== null);
   // defence in depth: whatever slipped into the AI text is redacted before it leaves the device
-  return redactText(lines.join("\n")).redacted;
+  // shortcut: the scammer's account is masked too (privacy first); add an opt-in full number for police when asked
+  return maskLongNumbers(redactText(lines.join("\n")).redacted);
 }

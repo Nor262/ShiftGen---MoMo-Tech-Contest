@@ -52,7 +52,7 @@ export function SummaryCard({ state }: { state: StoryState }) {
       <TimingList title="Phát lại bản ghi thật (không đo lần này)" rows={replayed} />
       {kept && (
         <details className="mt-4">
-          <summary className="cursor-pointer text-base font-semibold text-shift-blue">
+          <summary className="flex min-h-[48px] cursor-pointer items-center text-lg font-semibold text-shift-blue">
             {CAST.USER_B2C_HUNG.name} muốn trình báo công an?
           </summary>
           <div className="mt-3">

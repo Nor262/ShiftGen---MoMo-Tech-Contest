@@ -150,6 +150,8 @@ export function TransferHoldPanel({
   }
 
   const [cancelledByUser, setCancelledByUser] = useState(false);
+  // a new scan is a new situation: the guide belongs to the transfer that was just cancelled
+  useEffect(() => setCancelledByUser(false), [latestScan]);
 
   async function handleCancelHold(txId: string) {
     setCancellingTxId(txId);

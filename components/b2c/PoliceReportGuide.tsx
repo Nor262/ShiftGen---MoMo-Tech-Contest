@@ -29,8 +29,10 @@ export function PoliceReportGuide({
     const a = document.createElement("a");
     a.href = url;
     a.download = "goi-bang-chung-trustloop.txt";
+    document.body.appendChild(a); // older Firefox needs it in the DOM
     a.click();
-    URL.revokeObjectURL(url);
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000); // revoking at once can cancel the download in Safari
   }
 
   return (

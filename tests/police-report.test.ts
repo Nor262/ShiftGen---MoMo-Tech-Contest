@@ -39,6 +39,30 @@ describe("evidence pack", () => {
   });
 });
 
+describe("evidence pack: PII the redactor alone would keep", () => {
+  const leaky = {
+    ...scan.result,
+    psych_manipulation_cues: [
+      { type: "URGENCY_PRESSURE" as const, quote_vi: "Chuyển ngay vào STK 990123456789 trước 15h", explanation_vi: "Thúc ép thời gian." },
+    ],
+    extracted_entities: { ...scan.result.extracted_entities, urls: ["https://lua-dao.example/xac-minh?sdt=0912345678&cccd=001064012345"] },
+  };
+  const pack = buildEvidencePack({ result: leaky, modelUsed: "m", scannedAt: "2026-11-24T02:00:00.000Z" });
+
+  it("masks account numbers quoted from the message", () => {
+    expect(pack).not.toContain("990123456789");
+  });
+
+  it("drops query strings from links (phone/ID numbers hide there)", () => {
+    expect(pack).not.toMatch(/0912345678|001064012345/);
+    expect(pack).toContain("https://lua-dao.example/xac-minh");
+  });
+
+  it("calls the timestamp what it is: when the pack was made", () => {
+    expect(pack).toMatch(/Thời điểm tạo gói/);
+  });
+});
+
 describe("police guide copy", () => {
   const text = [POLICE_GUIDE.title, ...POLICE_GUIDE.steps, ...POLICE_GUIDE.rights, POLICE_GUIDE.secondScamWarning].join("\n");
 
@@ -53,8 +77,9 @@ describe("police guide copy", () => {
     expect(text).not.toMatch(/\d{3}[ .-]?\d{3,4}[ .-]?\d{3,4}/);
   });
 
-  it("warns about the 'get your money back' second scam", () => {
+  it("warns about the 'get your money back' second scam without overstating the law", () => {
     expect(POLICE_GUIDE.secondScamWarning).toMatch(/lấy lại tiền/);
+    expect(POLICE_GUIDE.secondScamWarning).not.toMatch(/không ai được thu phí/);
   });
 });
 
