@@ -93,9 +93,9 @@ export const RISK_LEVEL_META: Record<
   },
   HIGH: {
     labelVi: "CAO",
-    badgeClass: "border-orange-300 bg-orange-50 text-orange-900",
-    barClass: "bg-orange-600",
-    borderClass: "border-orange-200",
+    badgeClass: "border-red-200 bg-red-50 text-red-800",
+    barClass: "bg-red-500",
+    borderClass: "border-red-200",
   },
   CRITICAL: {
     labelVi: "NGHIÊM TRỌNG",

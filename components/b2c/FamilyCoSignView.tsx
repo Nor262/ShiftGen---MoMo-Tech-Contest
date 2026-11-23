@@ -117,14 +117,14 @@ export function FamilyCoSignView() {
               type="button"
               onClick={() => void loadHolds()}
               disabled={loading}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
               Làm mới
             </button>
             <Link
               href="/shield"
-              className="inline-flex min-h-[44px] items-center rounded-xl border border-momo-200 bg-momo-50 px-4 py-2 text-sm font-semibold text-momo-800 hover:bg-momo-100"
+              className="inline-flex min-h-[48px] items-center rounded-xl border border-momo-200 bg-momo-50 px-4 py-2 text-sm font-semibold text-momo-800 hover:bg-momo-100"
             >
               ← Về B2C Phút 00
             </Link>
@@ -208,7 +208,7 @@ export function FamilyCoSignView() {
           <div>
             <Link
               href="/shield"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-momo-700"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-momo-700"
             >
               Đi tới B2C Phút 00
               <ArrowRight className="h-4 w-4" aria-hidden="true" />

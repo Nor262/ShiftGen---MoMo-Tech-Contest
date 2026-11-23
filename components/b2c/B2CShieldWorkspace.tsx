@@ -314,7 +314,7 @@ export function B2CShieldWorkspace() {
             </span>
             <Link
               href="/family"
-              className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-700 hover:bg-momo-50 hover:text-momo-700"
+              className="inline-flex min-h-[48px] items-center rounded-lg border border-slate-200 bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-momo-50 hover:text-momo-700"
             >
               Mở màn hình Người giám hộ →
             </Link>
@@ -534,7 +534,7 @@ export function B2CShieldWorkspace() {
                     type="button"
                     disabled={scanning}
                     onClick={() => void handleUploadScan()}
-                    className="mt-1 min-h-[44px] rounded-xl bg-momo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+                    className="mt-1 min-h-[48px] rounded-xl bg-momo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
                   >
                     {scanning ? "Đang phân tích Phút 00..." : "Quét ảnh vừa tải lên"}
                   </button>
@@ -600,12 +600,12 @@ export function B2CShieldWorkspace() {
                   onChange={(e) => setLookupInput(e.target.value)}
                   placeholder="Nhập STK (vd: 990123456789) hoặc URL .apk..."
                   aria-label="Số tài khoản hoặc đường dẫn cần tra cứu"
-                  className="min-h-[44px] flex-1 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+                  className="min-h-[48px] flex-1 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
                 />
                 <button
                   type="submit"
                   disabled={scanning}
-                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
                 >
                   <Search className="h-4 w-4" aria-hidden="true" />
                   {scanning ? "Đang tra..." : "Kiểm tra ngay"}

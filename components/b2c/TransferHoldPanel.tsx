@@ -498,7 +498,7 @@ export function TransferHoldPanel({
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href="/family"
-                        className="rounded-lg border border-momo-200 bg-white px-3 py-1.5 text-xs font-semibold text-momo-700 hover:bg-momo-50"
+                        className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-200 bg-white px-4 py-2 text-sm font-semibold text-momo-700 hover:bg-momo-50"
                       >
                         Xem màn hình Người giám hộ
                       </Link>

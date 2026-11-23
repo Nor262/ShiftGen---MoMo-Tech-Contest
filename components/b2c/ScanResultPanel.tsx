@@ -243,7 +243,7 @@ export function ScanResultPanel({
             <button
               type="button"
               onClick={() => setAppealOpen((prev) => !prev)}
-              className="min-h-[44px] rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="min-h-[48px] rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               {appealOpen ? "Ẩn biểu mẫu khiếu nại" : "Gửi khiếu nại xem xét lại (TT 53/2026)"}
             </button>
@@ -306,7 +306,7 @@ export function ScanResultPanel({
               <button
                 type="submit"
                 disabled={appealSubmitting}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
               >
                 <Send className="h-4 w-4" aria-hidden="true" />
                 {appealSubmitting ? "Đang gửi khiếu nại..." : "Gửi đơn khiếu nại cho Người thật"}
@@ -426,7 +426,7 @@ export function ScanResultPanel({
                 type="button"
                 onClick={() => void handleReportCyber()}
                 disabled={cyberReporting || Boolean(cyberReportedCaseId)}
-                className="min-h-[48px] rounded-xl bg-red-700 px-5 py-2.5 text-base font-bold text-white transition hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 disabled:opacity-60"
+                className="min-h-[48px] rounded-lg bg-momo-600 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 {cyberReporting
                   ? "Đang gửi War-Room..."
