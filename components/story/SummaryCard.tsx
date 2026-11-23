@@ -6,6 +6,7 @@ import { CAST } from "@/lib/cast";
 import { newSessionSlug } from "@/lib/demo-session";
 import { isReplayModel, isReplayNotice } from "@/lib/replay-label";
 import { duration, vnd } from "@/lib/story/format";
+import { PoliceReportGuide } from "@/components/b2c/PoliceReportGuide";
 import { STORY_AMOUNT_VND } from "@/lib/story/actions";
 import type { StoryState } from "@/lib/story/machine";
 
@@ -49,6 +50,16 @@ export function SummaryCard({ state }: { state: StoryState }) {
       </p>
       <TimingList title="Thời gian đo trong lần chạy này" rows={measured} />
       <TimingList title="Phát lại bản ghi thật (không đo lần này)" rows={replayed} />
+      {kept && (
+        <details className="mt-4">
+          <summary className="cursor-pointer text-base font-semibold text-shift-blue">
+            {CAST.USER_B2C_HUNG.name} muốn trình báo công an?
+          </summary>
+          <div className="mt-3">
+            <PoliceReportGuide scan={scan ?? null} txStatus="CANCELLED_BY_B2E" />
+          </div>
+        </details>
+      )}
       <Link
         href={`/story?session=${newSessionSlug()}`}
         className="mt-4 inline-flex min-h-[48px] items-center rounded-lg border border-momo-primary px-4 text-base font-semibold text-momo-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"

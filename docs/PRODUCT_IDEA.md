@@ -199,7 +199,7 @@ Chi tiết từng điều khoản và mức độ tin cậy ([VB] đã đọc ng
 `CANCELLED_BY_B2E` khi Kết luận rủi ro cao · Yêu cầu xét lại tạm giữ · hạn 03 ngày làm việc cho Vụ đã Chuyển cấp · Nguồn bằng chứng ghi theo `LOẠI:chi tiết` và đếm theo loại · khối số đếm thô trên `/checker` · làm sạch `data/vnPolicies.json` · chuyển sang AWS.
 
 ### Tính năng xuất phát từ luật (chưa xây)
-* **Hướng dẫn trình báo đúng luật:** Công an cấp xã/Đồn Công an có trách nhiệm tiếp nhận tố giác và không được từ chối; người tố giác được thông báo kết quả (BLTTHS Điều 145, 146.3, 147 [VB]). Không in số hotline chưa xác minh.
+* **Hướng dẫn trình báo đúng luật — Đã làm (#8):** Công an cấp xã/Đồn Công an có trách nhiệm tiếp nhận tố giác và không được từ chối; người tố giác được thông báo kết quả, mốc 20 ngày (BLTTHS Điều 144.4, 145, 146.3, 147 [VB]). Hiện sau Lượt quét rủi ro cao/nghiêm trọng, sau khi người dùng tự hủy giao dịch và ở thẻ tổng kết `/story`; kèm cảnh báo "lừa đảo lần hai" và gói bằng chứng tạo ngay trên máy (chỉ phân tích, đã Ẩn PII, nhãn MẪU MÔ PHỎNG và nhãn AI). Không in số hotline chưa xác minh.
 * **Bàn giao báo cáo giao dịch đáng ngờ** kèm đồng hồ hạn chót (Luật PCRT Điều 26, 37 [VB]) và cờ cấm tiết lộ (Điều 40.2).
 * **Đồng bộ SIMO hằng tháng** trước ngày 10 (TT 40 Điều 30.2 [VB]).
 * **Trung tâm quyền dữ liệu** cho người dùng (Luật 91 Điều 4.1, 9.4, 10, 14 [VB]).
