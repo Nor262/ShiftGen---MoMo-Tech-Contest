@@ -2,11 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tokens: see DESIGN.md. */
 :root {
-  --momo-primary: #a50064;
-  --momo-accent: #d82d8b;
+  --color-navy: #111a4a;
+  --color-blue: #0b57d0;
+  --color-signal: #c2410c;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-slate-50 text-slate-700 antialiased;
 }
+
+/* Vietnamese stacked diacritics clip below 1.2 (DESIGN.md). */
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  color: var(--color-navy);
+}
+
+/*
+ * B2C screens: body text 18px for elderly users (DESIGN.md type scale).
+ * shortcut: bumps Tailwind's fixed rem sizes inside .b2c-large; replace with per-component sizes when B2C components are redesigned.
+ */
+.b2c-large :where(.text-xs) { font-size: 0.875rem; line-height: 1.4; }
+.b2c-large :where(.text-sm) { font-size: 1rem; line-height: 1.55; }
+.b2c-large :where(.text-base) { font-size: 1.125rem; line-height: 1.55; }
+.b2c-large { font-size: 1.125rem; }

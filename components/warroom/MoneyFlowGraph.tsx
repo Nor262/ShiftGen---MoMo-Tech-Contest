@@ -373,7 +373,7 @@ export function MoneyFlowGraph({
                   Thuộc tính & Metadata
                 </p>
                 {Object.keys(selectedNode.metadata).length === 0 ? (
-                  <p className="text-xs text-slate-500">Không có metadata bổ sung.</p>
+                  <p className="text-xs text-slate-400">Không có metadata bổ sung.</p>
                 ) : (
                   <dl className="space-y-1.5 text-xs">
                     {Object.entries(selectedNode.metadata).map(([key, value]) => (

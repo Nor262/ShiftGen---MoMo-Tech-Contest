@@ -444,14 +444,14 @@ export function CheckerWorkspace() {
                   {isChecker ? (
                     <UserCheck
                       className={`mt-0.5 h-5 w-5 shrink-0 ${
-                        selected ? "text-emerald-700" : "text-slate-400"
+                        selected ? "text-emerald-700" : "text-slate-500"
                       }`}
                       aria-hidden="true"
                     />
                   ) : (
                     <UserX
                       className={`mt-0.5 h-5 w-5 shrink-0 ${
-                        selected ? "text-amber-700" : "text-slate-400"
+                        selected ? "text-amber-700" : "text-slate-500"
                       }`}
                       aria-hidden="true"
                     />

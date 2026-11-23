@@ -450,7 +450,7 @@ export function DebateAndDecisionPanel({
                 value={indicatorValue}
                 onChange={(e) => setIndicatorValue(e.target.value)}
                 placeholder="VD: 990123456789 hoặc dichvucong-xacminh-hoso.example/capnhat.apk"
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 placeholder:text-slate-400 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
               />
             </div>
 
@@ -502,7 +502,7 @@ export function DebateAndDecisionPanel({
                 value={rationale}
                 onChange={(e) => setRationale(e.target.value)}
                 placeholder="Ghi rõ căn cứ kỹ thuật, chính sách áp dụng và kết luận rà soát của chuyên viên..."
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-400 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
               />
             </div>
 
