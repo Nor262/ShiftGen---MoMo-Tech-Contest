@@ -54,6 +54,29 @@ describe("story stage guardrails", () => {
     expect(all()).toMatch(/lockedReason\}<\/p>|\{nextLocked\.lockedReason\}/);
   });
 
+  it("ends with a summary card of measured times only, and a fresh rerun", () => {
+    const card = readFileSync("components/story/SummaryCard.tsx", "utf8");
+    expect(card).toContain("DEMO_SIMULATION_LABEL");
+    expect(card).toContain("Chạy lại từ đầu");
+    expect(card).toContain("newSessionSlug");
+    expect(card).not.toMatch(/\d+\s*%|<\s*\d+\s*(s|giây)|99/);
+    // a replayed step must never be presented as measured in this run
+    expect(card).toContain("isReplayModel");
+    expect(card).toContain("isReplayNotice");
+  });
+
+  it("asks Maker and Checker for their own written reason, with a real label", () => {
+    const src = all();
+    expect(src).toMatch(/<label[^>]*htmlFor="story-rationale"/);
+    expect(src).toContain("MAKER_DRAFT_VI");
+    expect(src).toContain("CHECKER_DRAFT_VI");
+    expect(src).toMatch(/makerRationale|checkerRationale/);
+  });
+
+  it("marks War-Room replays as replays", () => {
+    expect(all()).toContain("isReplayModel");
+  });
+
   it("keeps story state in memory only (refresh starts a fresh session)", () => {
     expect(all()).not.toMatch(/localStorage|sessionStorage/);
   });

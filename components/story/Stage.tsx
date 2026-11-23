@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { DEMO_SIMULATION_LABEL } from "@/contracts";
 import { Backstage, PhoneFrame } from "@/components/story/BeatViews";
+import { SummaryCard } from "@/components/story/SummaryCard";
 import { CAST } from "@/lib/cast";
-import { runBeat, storyContext } from "@/lib/story/actions";
+import { CHECKER_DRAFT_VI, MAKER_DRAFT_VI, runBeat, storyContext } from "@/lib/story/actions";
 import {
   beatById,
   initialStoryState,
@@ -26,10 +27,15 @@ export function Stage({ session }: { session: string }) {
   const [state, dispatch] = useReducer(storyReducer, undefined, initialStoryState);
   const inFlight = useRef(false); // reducer ignores a 2nd start only after re-render; this blocks same-tick double clicks
   const headingRef = useRef<HTMLHeadingElement>(null);
+  // Maker and Checker each write their own reason (prefilled draft, presenter adds words)
+  const [makerRationale, setMakerRationale] = useState(MAKER_DRAFT_VI);
+  const [checkerRationale, setCheckerRationale] = useState(CHECKER_DRAFT_VI);
+  const [showSummary, setShowSummary] = useState(false);
 
   const current = state.current === "done" ? null : beatById(state.current);
   const narrating = beatById(state.shown);
   const onCurrent = current?.id === state.shown;
+  const rationaleBeat = onCurrent && (current?.id === "3.2" || current?.id === "4.1") ? current.id : null;
 
   const firstRender = useRef(true);
   useEffect(() => {
@@ -46,7 +52,7 @@ export function Stage({ session }: { session: string }) {
     inFlight.current = true;
     dispatch({ type: "beatStarted" });
     try {
-      const result = await runBeat(current.id, storyContext(state.results));
+      const result = await runBeat(current.id, { ...storyContext(state.results), makerRationale, checkerRationale });
       dispatch({ type: "beatSucceeded", result });
     } catch (err) {
       dispatch({ type: "beatFailed", message: err instanceof Error ? err.message : "Không thể hoàn tất bước này." });
@@ -80,13 +86,17 @@ export function Stage({ session }: { session: string }) {
         </strong>
       </p>
 
-      <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start">
-        <PhoneFrame state={state} />
-        <span aria-hidden="true" className="hidden self-center text-3xl text-shift-blue lg:block">
-          →
-        </span>
-        <Backstage state={state} />
-      </div>
+      {showSummary ? (
+        <SummaryCard state={state} />
+      ) : (
+        <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start">
+          <PhoneFrame state={state} />
+          <span aria-hidden="true" className="hidden self-center text-3xl text-shift-blue lg:block">
+            →
+          </span>
+          <Backstage state={state} />
+        </div>
+      )}
 
       <div className="mt-auto flex flex-col gap-3 border-t border-slate-200 bg-white/95 py-3 lg:sticky lg:bottom-0 lg:flex-row lg:items-center">
         <nav aria-label="Các chương" className="flex-1">
@@ -124,6 +134,23 @@ export function Stage({ session }: { session: string }) {
               {state.error}
             </p>
           )}
+          {rationaleBeat && (
+            <div className="flex w-full flex-col gap-1 lg:w-[28rem]">
+              <label htmlFor="story-rationale" className="text-base font-semibold text-slate-800">
+                Lý do của {CAST[current!.actor].name} (bắt buộc)
+              </label>
+              <textarea
+                id="story-rationale"
+                autoFocus
+                rows={2}
+                value={rationaleBeat === "3.2" ? makerRationale : checkerRationale}
+                onChange={(e) =>
+                  rationaleBeat === "3.2" ? setMakerRationale(e.target.value) : setCheckerRationale(e.target.value)
+                }
+                className="rounded-lg border border-slate-300 p-2 text-base text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue"
+              />
+            </div>
+          )}
           {current && onCurrent ? (
             <button
               type="button"
@@ -131,7 +158,11 @@ export function Stage({ session }: { session: string }) {
               aria-disabled={state.running}
               className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue aria-disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
             >
-              {state.running ? "Đang chạy…" : state.error ? `Thử lại: ${current.buttonLabel}` : `${current.buttonLabel} →`}
+              {state.running
+                ? "Đang chạy…"
+                : state.error
+                  ? `Thử lại: ${current.buttonLabel}`
+                  : `${current.buttonLabel} →`}
             </button>
           ) : current ? (
             <button
@@ -142,7 +173,13 @@ export function Stage({ session }: { session: string }) {
               {state.done.includes(state.shown) ? "Tiếp →" : "Về bước đang diễn ra →"}
             </button>
           ) : (
-            <p className="text-lg font-semibold text-emerald-800">Câu chuyện đã xong.</p>
+            <button
+              type="button"
+              onClick={() => setShowSummary((v) => !v)}
+              className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
+            >
+              {showSummary ? "← Xem lại chương 4" : "Xem tổng kết →"}
+            </button>
           )}
         </div>
       </div>
