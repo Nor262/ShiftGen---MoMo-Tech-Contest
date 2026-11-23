@@ -64,7 +64,7 @@
    - Đăng nhập GitHub CLI (`gh auth login`) hoặc thêm remote repo (`git remote add origin <url>`), sau đó `git push -u origin main`.
 2. **Bedrock (khi BTC cấp quyền, #17):**
    - Đổi `LLM_BACKEND=bedrock` trên Vercel kèm khóa AWS; giữ FPT làm `LLM_FALLBACK_BACKEND`.
-3. **Đo độ trễ Live LLM cho Slide 9:**
-   - Trên bản Vercel, chạy 10 lượt thật (loại các lượt có model chứa "(phát lại") và cập nhật `measured_latency_ms` & `model_used` vào `docs/MEASURED_LATENCIES.md`.
+3. **Đo lại độ trễ trước khi xuất Slide 9 (đã đo lần đầu 24/11, #4):**
+   - `node scripts/measure-latency.mjs https://momo-trustloop.vercel.app 10 > .superpowers/latency.json`, rồi cập nhật `docs/MEASURED_LATENCIES.md`.
 4. **Giữ Supabase Free không tự tạm dừng:**
    - Đặt lịch ping `GET https://momo-trustloop.vercel.app/api/health` mỗi **1–2 ngày** cho tới hết **11/12/2026**.

@@ -21,6 +21,11 @@ describe("summarize", () => {
     expect(s.failed).toBe(1);
   });
 
+  it("never records a missing server timing as 0 ms", () => {
+    const s = summarize([live(4000), { ms: undefined as unknown as number, model: "gemma-4-31B-it", ok: true }]);
+    expect(s).toMatchObject({ runs: 1, min: 4000, failed: 1 });
+  });
+
   it("returns nulls instead of inventing numbers when nothing was measured", () => {
     expect(summarize([])).toMatchObject({ runs: 0, min: null, median: null, max: null });
   });
