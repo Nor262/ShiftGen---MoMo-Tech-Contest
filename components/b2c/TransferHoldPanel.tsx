@@ -370,7 +370,7 @@ export function TransferHoldPanel({
         <div
           role="region"
           aria-label="Biên nhận Tạm giữ Bảo mật 24h"
-          className="space-y-4 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-5 text-slate-900"
+          className="space-y-4 rounded-lg border-l-4 border-signal-700 bg-signal-50 p-5 text-slate-900"
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-3">

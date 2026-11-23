@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { CAST, castName } from "@/lib/cast";
 import {
   AlertOctagon,
   CheckCircle2,
@@ -43,23 +44,23 @@ const PERSONAS: readonly RolePersona[] = [
   {
     id: "RISK_CHECKER_TUAN",
     role: "RISK_CHECKER",
-    displayName: "Anh Tuấn",
+    displayName: CAST.RISK_CHECKER_TUAN.name,
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
     hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn khác loại, khác Maker — thiết kế quản trị riêng), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
   },
   {
     id: "RISK_CHECKER_LAN",
     role: "RISK_CHECKER",
-    displayName: "Chị Lan",
+    displayName: CAST.RISK_CHECKER_LAN.name,
     titleVi: "Risk Checker (Người xét khiếu nại độc lập)",
     hintVi: "Xét khiếu nại cho chỉ báo do Checker khác kích hoạt; máy chủ trả 403 nếu người xét trùng người đã duyệt.",
   },
   {
     id: "RISK_MAKER_HUYEN",
     role: "RISK_MAKER",
-    displayName: "Chị Huyền",
+    displayName: CAST.RISK_MAKER_HUYEN.name,
     titleVi: "Risk Maker (Chuyên viên đề xuất)",
-    hintVi: "Dùng để kiểm chứng trực tiếp chặn HTTP 403 Maker≠Checker từ máy chủ khi tự bấm phê duyệt.",
+    hintVi: "Dùng để thử: người đã đề xuất tự bấm duyệt thì hệ thống từ chối (Maker ≠ Checker).",
   },
 ] as const;
 
@@ -339,7 +340,7 @@ export function CheckerWorkspace() {
         ? "Đã chấp nhận khiếu nại & Rollback tức thì"
         : "Đã giữ nguyên cảnh báo (UPHELD)",
       resolution === "OVERTURNED_ROLLBACK"
-        ? "Khiếu nại được chấp nhận (OVERTURNED_ROLLBACK) và chỉ báo liên quan đã chuyển sang ROLLED_BACK."
+        ? "Khiếu nại được chấp nhận và chỉ báo liên quan đã được thu hồi."
         : "Khiếu nại đã được kết luận giữ nguyên cảnh báo và lưu Nhật ký Kiểm toán.",
     );
   }
@@ -687,12 +688,18 @@ export function CheckerWorkspace() {
                   <dl className="mt-3 grid gap-3 rounded-xl border border-slate-200 bg-white p-3.5 text-xs sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                       <dt className="font-semibold text-slate-500">Maker đề xuất</dt>
-                      <dd className="mt-0.5 font-mono font-bold text-slate-900">{ind.makerId}</dd>
+                      <dd className="mt-0.5 font-bold text-slate-900">
+                        {castName(ind.makerId)}
+                        <span className="tech-only font-mono font-normal"> · {ind.makerId}</span>
+                      </dd>
                     </div>
                     <div>
                       <dt className="font-semibold text-slate-500">Checker phê duyệt</dt>
-                      <dd className="mt-0.5 font-mono font-bold text-slate-900">
-                        {ind.checkerId ?? "Chưa phê duyệt"}
+                      <dd className="mt-0.5 font-bold text-slate-900">
+                        {ind.checkerId ? castName(ind.checkerId) : "Chưa phê duyệt"}
+                        {ind.checkerId && (
+                          <span className="tech-only font-mono font-normal"> · {ind.checkerId}</span>
+                        )}
                       </dd>
                     </div>
                     <div>
@@ -709,14 +716,14 @@ export function CheckerWorkspace() {
                         {ind.evidenceSources.map((src) => (
                           <span
                             key={src}
-                            className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-800"
+                            className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800"
                           >
                             {src}
                           </span>
                         ))}
                         {!hasEnoughSources && (
-                          <span className="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-900">
-                            &lt; 2 nguồn (Chặn Lớp 2 — HTTP 400)
+                          <span className="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-900">
+                            Chưa đủ 2 nguồn khác loại nên chưa thể kích hoạt
                           </span>
                         )}
                       </dd>
@@ -857,8 +864,8 @@ export function CheckerWorkspace() {
             </h2>
             <p className="text-sm text-slate-600">
               Bảo đảm quyền khiếu nại để con người rà soát lại quyết định tự động theo Thông tư
-              53/2026/TT-NHNN. Khi chấp nhận khiếu nại (<code>OVERTURNED_ROLLBACK</code>), hệ thống
-              tự động thu hồi chỉ báo ngay lập tức.
+              53/2026/TT-NHNN. Khi chấp nhận khiếu nại, hệ thống tự động thu
+              hồi chỉ báo ngay lập tức.
             </p>
           </div>
 
@@ -926,7 +933,7 @@ export function CheckerWorkspace() {
               disabled={busyKey === "submit-appeal"}
               className="inline-flex min-h-[42px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
             >
-              Gửi khiếu nại (POST /api/immunity/[id]/appeal)
+              Gửi khiếu nại
             </button>
           </form>
         )}
@@ -1025,7 +1032,7 @@ export function CheckerWorkspace() {
                           className="inline-flex min-h-[42px] items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60"
                         >
                           <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                          Chấp nhận khiếu nại &amp; Rollback tức thì (OVERTURNED_ROLLBACK)
+                          Chấp nhận khiếu nại &amp; thu hồi chỉ báo ngay
                         </button>
                       </div>
                     </div>
@@ -1097,11 +1104,11 @@ export function CheckerWorkspace() {
                         <span className="block font-mono font-bold text-slate-900">
                           {log.actorId}
                         </span>
-                        <span className="text-[11px] text-slate-500">{log.actorRole}</span>
+                        <span className="text-xs text-slate-500">{log.actorRole}</span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-2.5">
                         <span
-                          className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-bold ${badgeClass}`}
+                          className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold ${badgeClass}`}
                         >
                           {log.action}
                         </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CAST } from "@/lib/cast";
 import { addWorkingDays, ESCALATION_DECISION_WORKING_DAYS } from "@/lib/working-days";
 import {
   AlertCircle,
@@ -345,13 +346,13 @@ export function WarRoomWorkspace() {
       <header className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-800 pb-4">
         <div className="space-y-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-2.5 py-0.5 text-[11px] font-bold text-amber-200">
+            <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-2.5 py-0.5 text-xs font-bold text-amber-200">
               {DEMO_SIMULATION_LABEL}
             </span>
-            <span className="rounded-full border border-momo-400/50 bg-momo-500/20 px-2.5 py-0.5 text-[11px] font-semibold text-momo-200">
-              Chị Huyền · Chuyên viên Risk<span className="tech-only"> (RISK_MAKER)</span>
+            <span className="rounded-full border border-momo-400/50 bg-momo-500/20 px-2.5 py-0.5 text-xs font-semibold text-momo-200">
+              {CAST.RISK_MAKER_HUYEN.name} · {CAST.RISK_MAKER_HUYEN.role}<span className="tech-only"> (RISK_MAKER)</span>
             </span>
-            <span className="tech-only rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-[11px] text-slate-300">
+            <span className="tech-only rounded-md border border-slate-700 bg-slate-900 px-2 py-0.5 font-mono text-xs text-slate-300">
               Session: {sessionId}
             </span>
           </div>
@@ -448,7 +449,7 @@ export function WarRoomWorkspace() {
                           {item.scenarioCode}
                         </span>
                         <span
-                          className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${statusMeta.badgeClass}`}
+                          className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${statusMeta.badgeClass}`}
                         >
                           {statusMeta.labelVi}
                         </span>
@@ -460,13 +461,13 @@ export function WarRoomWorkspace() {
 
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
                         {item.sanitizedMinute0 && (
-                          <span className="inline-flex items-center gap-1 rounded border border-sky-500/40 bg-sky-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-sky-200">
+                          <span className="inline-flex items-center gap-1 rounded border border-sky-500/40 bg-sky-500/15 px-1.5 py-0.5 text-xs font-semibold text-sky-200">
                             <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                             Có Phút 00 (Đã ẩn PII)
                           </span>
                         )}
                         {item.agentDebate && (
-                          <span className="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-slate-300">
+                          <span className="rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 font-mono text-xs text-slate-300">
                             {Math.round(item.agentDebate.total_latency_ms)} ms
                           </span>
                         )}
@@ -492,7 +493,7 @@ export function WarRoomWorkspace() {
                         {selectedCase.scenarioCode}
                       </span>
                       <span
-                        className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+                        className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
                           CASE_STATUS_META[selectedCase.status].badgeClass
                         }`}
                       >
@@ -534,7 +535,7 @@ export function WarRoomWorkspace() {
                             <Clock className="h-3.5 w-3.5" aria-hidden="true" />
                             Tổng thời gian thực: {Math.round(activeDebate.total_latency_ms)} ms
                           </span>
-                          <span className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-[11px] text-slate-300">
+                          <span className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-xs text-slate-300">
                             Model: {activeDebate.model_used}
                           </span>
                         </>
@@ -566,7 +567,7 @@ export function WarRoomWorkspace() {
                         <FileText className="h-4 w-4" aria-hidden="true" />
                         Bằng chứng Phút 00 đã lọc PII (Sanitized Evidence)
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-200">
                         <ShieldOff className="h-3 w-3" aria-hidden="true" />
                         contains_raw_image: {String(selectedCase.sanitizedMinute0.contains_raw_image)} (Không chuyển ảnh gốc)
                       </span>
@@ -576,7 +577,7 @@ export function WarRoomWorkspace() {
                       {selectedCase.sanitizedMinute0.summary_vi}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 text-[11px]">
+                    <div className="flex flex-wrap gap-2 text-xs">
                       <span className="rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-slate-200">
                         Phân loại:{" "}
                         <strong>
@@ -611,7 +612,7 @@ export function WarRoomWorkspace() {
                         {selectedCase.sanitizedMinute0.psych_cue_types.map((cue) => (
                           <span
                             key={cue}
-                            className="rounded border border-momo-500/40 bg-momo-500/15 px-2 py-0.5 text-[11px] text-momo-200"
+                            className="rounded border border-momo-500/40 bg-momo-500/15 px-2 py-0.5 text-xs text-momo-200"
                           >
                             Tâm lý: {PSYCH_CUE_VI[cue]}
                           </span>
@@ -619,7 +620,7 @@ export function WarRoomWorkspace() {
                         {selectedCase.sanitizedMinute0.cyber_threat_types.map((threat) => (
                           <span
                             key={threat}
-                            className="rounded border border-red-500/40 bg-red-500/15 px-2 py-0.5 text-[11px] text-red-200"
+                            className="rounded border border-red-500/40 bg-red-500/15 px-2 py-0.5 text-xs text-red-200"
                           >
                             Cyber: {CYBER_THREAT_VI[threat]}
                           </span>
@@ -628,7 +629,7 @@ export function WarRoomWorkspace() {
                     )}
 
                     {selectedCase.sanitizedMinute0.sanitized_excerpt && (
-                      <pre className="whitespace-pre-wrap rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 font-mono text-[11px] text-slate-300">
+                      <pre className="whitespace-pre-wrap rounded-lg border border-slate-800 bg-slate-900/90 p-2.5 font-mono text-xs text-slate-300">
                         {selectedCase.sanitizedMinute0.sanitized_excerpt}
                       </pre>
                     )}
@@ -702,7 +703,7 @@ export function WarRoomWorkspace() {
               <div className="max-h-72 overflow-x-auto overflow-y-auto">
                 <table className="w-full border-collapse text-left text-xs">
                   <thead>
-                    <tr className="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400">
+                    <tr className="border-b border-slate-800 text-xs uppercase tracking-wider text-slate-400">
                       <th className="py-2 pr-3">Thời gian</th>
                       <th className="py-2 pr-3">Hành động</th>
                       <th className="py-2 pr-3">Chủ thể</th>
@@ -713,18 +714,18 @@ export function WarRoomWorkspace() {
                   <tbody className="divide-y divide-slate-800/80 text-slate-200">
                     {auditLogs.map((log) => (
                       <tr key={log.logId} className="hover:bg-slate-950/60">
-                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-[11px] text-slate-400">
+                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-xs text-slate-400">
                           {formatDateTimeVi(log.createdAt)}
                         </td>
                         <td className="whitespace-nowrap py-2 pr-3">
-                          <code className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 font-mono text-[11px] text-momo-300">
+                          <code className="rounded border border-slate-700 bg-slate-950 px-1.5 py-0.5 font-mono text-xs text-momo-300">
                             {log.action}
                           </code>
                         </td>
-                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-[11px]">
+                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-xs">
                           {log.actorId}
                         </td>
-                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-[11px] text-slate-300">
+                        <td className="whitespace-nowrap py-2 pr-3 font-mono text-xs text-slate-300">
                           {log.targetId}
                         </td>
                         <td className="py-2 text-slate-200">{log.rationale}</td>

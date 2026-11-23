@@ -4,6 +4,7 @@ import Link from "next/link";
 import { isReplayNotice } from "@/lib/replay-label";
 import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import { useEffect, useState } from "react";
+import { modelDisplayName } from "@/lib/cast";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -242,8 +243,8 @@ export function ScanResultPanel({
 
             <span className="rounded-full border border-current/30 bg-white/80 px-3 py-1 text-xs font-bold">
               {scan.immunityTierMatched === "TIER_1_PRE_VISION"
-                ? "Khớp Tầng 1 (Trước Vision)"
-                : "Khớp Tầng 2 (Sau trích xuất)"}
+                ? "Khớp danh sách cảnh báo — chưa cần AI đọc ảnh"
+                : "Khớp danh sách cảnh báo sau khi AI đọc ảnh"}
             </span>
           </div>
 
@@ -400,7 +401,7 @@ export function ScanResultPanel({
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 font-medium">
               <Cpu className="h-3.5 w-3.5 text-momo-600" aria-hidden="true" />
-              Model: <strong className="font-mono text-slate-900">{scan.modelUsed}</strong>
+              Model: <strong className="font-mono text-slate-900">{modelDisplayName(scan.modelUsed)}</strong>
             </span>
           </div>
         </div>

@@ -66,36 +66,36 @@ function AgentHeader({
         </span>
         <div>
           <h3 className="text-sm font-bold text-white">{title}</h3>
-          <p className="text-[11px] text-slate-400">{subtitle}</p>
+          <p className="text-xs text-slate-400">{subtitle}</p>
         </div>
       </div>
 
       <div className="flex flex-col items-end gap-1">
         {phase === "RUNNING" && (
-          <span className="inline-flex animate-pulse items-center gap-1 rounded-full border border-momo-400/50 bg-momo-500/20 px-2 py-0.5 text-[11px] font-semibold text-momo-200">
+          <span className="inline-flex animate-pulse items-center gap-1 rounded-full border border-momo-400/50 bg-momo-500/20 px-2 py-0.5 text-xs font-semibold text-momo-200">
             <Activity className="h-3 w-3" aria-hidden="true" />
             Đang chạy...
           </span>
         )}
         {phase === "IDLE" && (
-          <span className="rounded-full border border-slate-700 bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-400">
+          <span className="rounded-full border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-medium text-slate-400">
             Chờ kích hoạt
           </span>
         )}
         {phase === "DONE" && status === "OK" && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/50 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-200">
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/50 bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-200">
             <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
             OK
           </span>
         )}
         {phase === "DONE" && status === "AGENT_DEGRADED" && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-500/20 px-2 py-0.5 text-[11px] font-semibold text-amber-200">
+          <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/50 bg-amber-500/20 px-2 py-0.5 text-xs font-semibold text-amber-200">
             <AlertTriangle className="h-3 w-3" aria-hidden="true" />
             AGENT_DEGRADED
           </span>
         )}
         {typeof latencyMs === "number" && (
-          <span className="inline-flex items-center gap-1 font-mono text-[11px] text-slate-300">
+          <span className="inline-flex items-center gap-1 font-mono text-xs text-slate-300">
             <Clock className="h-3 w-3 text-slate-400" aria-hidden="true" />
             {Math.round(latencyMs)} ms
           </span>
@@ -120,7 +120,7 @@ function DegradedNotice({
       <p className="font-semibold text-amber-200">Chưa có kết quả (AGENT_DEGRADED)</p>
       <p className="mt-1 text-amber-100/90">
         {errorMessage ||
-          "Agent này tạm thời gián đoạn; các Agent còn lại vẫn hoàn tất độc lập (FR-05.3)."}
+          "Agent này tạm thời gián đoạn; các Agent còn lại vẫn hoàn tất độc lập."}
       </p>
     </div>
   );
@@ -156,7 +156,7 @@ function PolicyChunkChip({ chunk }: { chunk: PolicyChunk }) {
         className="flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-xs font-medium text-sky-200 transition hover:bg-slate-800/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-400"
       >
         <span className="truncate">
-          <code className="mr-1.5 rounded bg-sky-500/20 px-1.5 py-0.5 font-mono text-[10px] text-sky-200">
+          <code className="mr-1.5 rounded bg-sky-500/20 px-1.5 py-0.5 font-mono text-xs text-sky-200">
             {chunk.chunk_id}
           </code>
           <span>{chunk.document_code}</span>
@@ -229,14 +229,14 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
 
             {gt.output.flagged_node_ids.length > 0 && (
               <div>
-                <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Nút bị đánh dấu
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {gt.output.flagged_node_ids.map((nodeId) => (
                     <code
                       key={nodeId}
-                      className="rounded border border-red-500/40 bg-red-500/15 px-2 py-0.5 font-mono text-[11px] text-red-200"
+                      className="rounded border border-red-500/40 bg-red-500/15 px-2 py-0.5 font-mono text-xs text-red-200"
                     >
                       {nodeId}
                     </code>
@@ -312,7 +312,7 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
                 {ec.output.independent_sources.map((src) => (
                   <code
                     key={src}
-                    className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 font-mono text-[11px] text-slate-200"
+                    className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 font-mono text-xs text-slate-200"
                   >
                     {src}
                   </code>
@@ -348,7 +348,7 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
           <div className="space-y-3 text-xs">
             {cr.output.cited_chunks.length > 0 && (
               <div className="space-y-1.5">
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Điều khoản trích dẫn (Nhấp để xem nguyên văn)
                 </p>
                 <div className="space-y-1.5">
@@ -419,14 +419,14 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
               </div>
               <div className="pt-1">
                 <span
-                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold ${
+                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-semibold ${
                     fpd.output.recommend_dismiss
                       ? "border-emerald-400/60 bg-emerald-500/20 text-emerald-200"
                       : "border-slate-700 bg-slate-800 text-slate-300"
                   }`}
                 >
                   {fpd.output.recommend_dismiss
-                    ? "Đề xuất: Minh oan (Dismiss FP)"
+                    ? "Đề xuất: Minh oan (đóng cảnh báo giả)"
                     : "Không đủ cơ sở đóng cảnh báo giả"}
                 </span>
               </div>
@@ -434,7 +434,7 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
 
             {fpd.output.benign_signals.length > 0 && (
               <div>
-                <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-300">
+                <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-emerald-300">
                   Tín hiệu hành vi lành mạnh
                 </p>
                 <div className="flex flex-wrap gap-1.5">

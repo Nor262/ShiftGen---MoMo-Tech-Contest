@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { modelDisplayName } from "@/lib/cast";
 import {
   AlertTriangle,
   Clock,
@@ -118,7 +119,7 @@ export function B2cLiveProbeCard({
         query: raw,
         httpStatus: 0,
         errorCode: "NETWORK_ERROR",
-        errorMessage: "Không thể kết nối tới POST /api/shield/scan.",
+        errorMessage: "Không thể kết nối tới dịch vụ quét.",
       });
     } finally {
       setLoading(false);
@@ -141,8 +142,7 @@ export function B2cLiveProbeCard({
             </span>
           </div>
           <p className="text-sm text-slate-600">
-            Gửi trực tiếp <code>POST /api/shield/scan</code> (<code>TEXT_LOOKUP</code>) với vai trò
-            người dùng mới để kiểm chứng cảnh báo Miễn dịch xuất hiện sau <strong>Phê duyệt</strong>{" "}
+            Tra cứu với vai trò người dùng mới để kiểm chứng cảnh báo Miễn dịch xuất hiện sau <strong>Phê duyệt</strong>{" "}
             và biến mất ngay sau <strong>Rollback</strong> hoặc <strong>Giả lập hết hạn TTL</strong>.
           </p>
         </div>
@@ -180,7 +180,7 @@ export function B2cLiveProbeCard({
           className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
         >
           <Search className="h-4 w-4" aria-hidden="true" />
-          {loading ? "Đang tra cứu B2C..." : "Kiểm chứng ngay (POST /api/shield/scan)"}
+          {loading ? "Đang tra cứu B2C..." : "Kiểm chứng ngay"}
         </button>
       </form>
 
@@ -247,7 +247,7 @@ export function B2cLiveProbeCard({
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-lg border border-current/20 bg-white/80 px-2.5 py-1 font-mono font-semibold">
                       <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
-                      {outcome.scan.modelUsed}
+                      {modelDisplayName(outcome.scan.modelUsed)}
                     </span>
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export function B2cLiveProbeCard({
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2.5 py-1 font-mono font-semibold text-emerald-900">
                       <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
-                      {outcome.scan.modelUsed}
+                      {modelDisplayName(outcome.scan.modelUsed)}
                     </span>
                   </div>
                 </div>
