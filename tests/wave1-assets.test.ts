@@ -9,15 +9,6 @@ import {
 import { SCENARIO_FIXTURES } from "@/data/scenarios";
 import vnPolicies from "@/data/vnPolicies.json";
 
-const ALLOWED_DOCUMENT_CODES = new Set([
-  "QĐ 2345/QĐ-NHNN",
-  "Luật BVDLCN 91/2025/QH15 & NĐ 356/2025",
-  "Luật Trí tuệ nhân tạo 134/2025/QH15",
-  "Thông tư 77/2025/TT-NHNN",
-  "Thông tư 53/2026/TT-NHNN",
-  "Hệ thống SIMO (NHNN)",
-  "Bảo hiểm An toàn chuyển tiền MoMo",
-]);
 
 describe("Wave 1 Assets — Demo PNGs", () => {
   const expectedImages = [
@@ -55,7 +46,14 @@ describe("Wave 1 Assets — Grounded Policy Knowledge Base", () => {
       const parsed = PolicyChunkSchema.parse(raw);
       expect(seenIds.has(parsed.chunk_id)).toBe(false);
       seenIds.add(parsed.chunk_id);
-      expect(ALLOWED_DOCUMENT_CODES.has(parsed.document_code)).toBe(true);
+      // Q22: law summaries only — no product self-promotion, no repealed QĐ 2345 cited as current.
+      expect(parsed.content_vi).not.toMatch(/MoMo TrustLoop/);
+      if (/2345/.test(parsed.content_vi + parsed.document_code)) {
+        expect(parsed.content_vi).toMatch(/bãi bỏ/);
+        expect(parsed.document_code).not.toMatch(/2345/);
+      }
+      // Every chunk states its verification level.
+      expect(parsed.content_vi).toMatch(/\[(Đã đọc|Nguồn thứ cấp|Chưa có nguồn)/);
     }
   });
 });

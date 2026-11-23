@@ -12,7 +12,7 @@
 | :--- | :--- | :--- | :--- |
 | **Ẩn PII & Bọc thẻ chống Prompt Injection** | `redactText()` — `lib/pii/redactor.ts` | **`0.027 ms`** | Ẩn CCCD 12 số, SĐT, số dư ví, bọc `<untrusted_user_content>` |
 | **Truy xuất Chính sách Pháp lý (BM25 RAG)** | `retrievePolicyChunks()` — `lib/agents/retriever.ts` | **`0.123 ms`** | Chỉ mục BM25 trên 12 chunk `data/vnPolicies.json` |
-| **Phân tích Đồ thị QĐ 2345 & Cụm Mule** | `analyzeCaseGraph()` — `lib/graph/analyzer.ts` | **`0.409 ms`** | Phát hiện chia nhỏ 4×9,5M (UTC+7) & thiết bị dùng chung |
+| **Phân tích Đồ thị Chia nhỏ giao dịch & Ví trung gian** | `analyzeCaseGraph()` — `lib/graph/analyzer.ts` | **`0.409 ms`** | Phát hiện chia nhỏ 4×9,5M dưới ngưỡng xác thực sinh trắc học (UTC+7) & thiết bị dùng chung |
 
 ---
 

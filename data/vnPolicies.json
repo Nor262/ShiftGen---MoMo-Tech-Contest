@@ -1,98 +1,106 @@
 [
   {
-    "chunk_id": "QD2345-01",
-    "document_code": "QĐ 2345/QĐ-NHNN",
-    "title": "Ngưỡng xác thực sinh trắc học >10 triệu/lần và >20 triệu/ngày",
+    "chunk_id": "AUTH-THRESHOLD-01",
+    "document_code": "TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN)",
+    "title": "Ngưỡng xác thực sinh trắc học cho giao dịch trực tuyến của cá nhân: trên 10 triệu/lần hoặc trên 20 triệu/ngày",
     "category": "BIOMETRIC_THRESHOLD",
-    "content_vi": "Theo QĐ 2345/QĐ-NHNN (hiệu lực 01/07/2024), giao dịch chuyển tiền có giá trị trên 10 triệu đồng/lần hoặc tổng giá trị giao dịch trong ngày vượt 20 triệu đồng phải thực hiện xác thực sinh trắc học.",
-    "tags": ["qd2345", "sinh_trac_hoc", "10_trieu", "20_trieu", "smurfing"]
+    "content_vi": "Giao dịch chuyển tiền trực tuyến của khách hàng cá nhân trên 10 triệu đồng/lần hoặc khi tổng giá trị trong ngày vượt 20 triệu đồng phải xác thực bằng sinh trắc học. Ngưỡng này hiện thuộc TT 50/2024/TT-NHNN (hiệu lực 01/01/2025, sửa bởi TT 77/2025/TT-NHNN). QĐ 2345/QĐ-NHNN trước đây quy định ngưỡng này đã bị bãi bỏ toàn bộ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025. [Nguồn thứ cấp — chưa xác minh điều khoản/phụ lục của TT 50]",
+    "tags": ["sinh_trac_hoc", "nguong", "10_trieu", "20_trieu", "tt50", "tt77", "xac_thuc", "chia_nho", "smurfing"]
   },
   {
-    "chunk_id": "QD2345-02",
-    "document_code": "QĐ 2345/QĐ-NHNN",
-    "title": "Nhận diện hành vi chia nhỏ giao dịch (Smurfing) né ngưỡng QĐ 2345",
+    "chunk_id": "PCRT29-01",
+    "document_code": "Luật Phòng, chống rửa tiền 14/2022/QH15 (VBHN 159/2026) — Điều 29",
+    "title": "Dấu hiệu giao dịch đáng ngờ trong lĩnh vực trung gian thanh toán: chia nhỏ giao dịch, ví trung gian, dùng chung thiết bị",
     "category": "SMURFING_DETECTION",
-    "content_vi": "Kẻ gian thường ép nạn nhân chia nhỏ khoản tiền lớn thành nhiều lệnh dưới 10 triệu đồng/lần (ví dụ 4 lệnh 9,5 triệu đồng, tổng 38 triệu đồng/ngày) để né ngưỡng xác thực sinh trắc học từng lần theo QĐ 2345/QĐ-NHNN.",
-    "tags": ["qd2345", "smurfing", "chia_nho", "9.5_trieu", "mule"]
+    "content_vi": "Điều 29 liệt kê dấu hiệu đáng ngờ trong trung gian thanh toán, gồm: tiền vào rồi rút ra nhanh, doanh số lớn nhưng số dư gần bằng 0 (khoản 1); chuyển tiền thường xuyên giá trị nhỏ từ nhiều ví về một ví hoặc nhiều giao dịch mỗi giao dịch gần mức phải báo cáo, tức chia nhỏ giao dịch (khoản 3); liên tục đổi thiết bị đăng nhập hoặc IP (khoản 8); thường xuyên dùng một thiết bị hoặc một IP để giao dịch trên nhiều ví không cùng chủ (khoản 9). [Đã đọc văn bản hợp nhất]",
+    "tags": ["chia_nho", "smurfing", "mule", "vi_trung_gian", "thiet_bi", "ip", "dang_ngo", "pcrt", "dieu_29", "rua_tien"]
+  },
+  {
+    "chunk_id": "TT40-PL01",
+    "document_code": "TT 40/2024/TT-NHNN (sửa bởi TT 41/2025, TT 22/2026) — Điều 28.1.b, Phụ lục 01",
+    "title": "Bộ tiêu chí nhận diện ví điện tử có dấu hiệu nghi ngờ gian lận, lừa đảo",
+    "category": "SMURFING_DETECTION",
+    "content_vi": "Tổ chức cung ứng ví điện tử phải có bộ tiêu chí nhận diện ví có dấu hiệu nghi ngờ gian lận, lừa đảo và thường xuyên cập nhật (Điều 28.1.b). Phụ lục 01 liệt kê lý do nghi ngờ, trong đó lý do số 3 là ví nhận tiền từ nhiều nguồn rồi chuyển đi ngay, lý do số 8 là một định danh thiết bị được dùng giao dịch cho nhiều hơn một ví. [Đã đọc văn bản hợp nhất]",
+    "tags": ["tt40", "phu_luc_01", "tieu_chi", "nghi_ngo", "gian_lan", "thiet_bi", "mule", "chia_nho", "vi_dien_tu"]
+  },
+  {
+    "chunk_id": "TT40-HOLD-01",
+    "document_code": "TT 40/2024/TT-NHNN — Điều 19.1.l, Điều 28.1.c.(iii)",
+    "title": "Từ chối hoặc tạm dừng giao dịch ví theo thỏa thuận và quy định nội bộ quản lý rủi ro",
+    "category": "TRANSACTION_HOLD",
+    "content_vi": "Thỏa thuận mở và sử dụng ví phải có biện pháp quản lý rủi ro, bao gồm từ chối thực hiện hoặc tạm dừng giao dịch trên ví (Điều 19.1.l). Quy định nội bộ quản lý rủi ro phải xác định các trường hợp áp dụng từ chối hoặc tạm dừng giao dịch chuyển tiền bằng phương tiện điện tử (Điều 28.1.c.(iii)). Chỉ chủ ví, người được ủy quyền hoặc người đại diện được sử dụng biện pháp bảo đảm của ví (Điều 28.1.a.(iv)). Trích Nợ ví liên quan gian lận cần kết luận của cơ quan có thẩm quyền (Điều 19.1.e.(iii)). [Đã đọc văn bản hợp nhất]",
+    "tags": ["tam_giu", "tam_dung", "tu_choi", "giao_dich", "thoa_thuan", "tt40", "huy", "giam_ho", "uy_quyen"]
+  },
+  {
+    "chunk_id": "PCRT-STR-01",
+    "document_code": "Luật Phòng, chống rửa tiền 14/2022/QH15 — Điều 26, 37, 38, 40, 44",
+    "title": "Báo cáo giao dịch đáng ngờ, trì hoãn giao dịch, lưu trữ hồ sơ và cấm tiết lộ",
+    "category": "AML_REPORTING",
+    "content_vi": "Phải báo cáo giao dịch đáng ngờ khi có cơ sở hợp lý để nghi ngờ (Điều 26), trong 03 ngày làm việc kể từ khi phát sinh hoặc 01 ngày làm việc kể từ khi phát hiện, và trong 24 giờ nếu có dấu hiệu liên quan tội phạm (Điều 37). Hồ sơ và kết quả phân tích phải lưu 05 năm (Điều 38.2). Cấm tiết lộ việc đã báo cáo giao dịch đáng ngờ (Điều 40.2). Trì hoãn giao dịch bắt buộc trong các trường hợp Điều 44 không quá 03 ngày làm việc và phải báo cáo ngay. [Đã đọc văn bản hợp nhất]",
+    "tags": ["bao_cao", "dang_ngo", "str", "tri_hoan", "3_ngay", "luu_tru", "5_nam", "cam_tiet_lo", "pcrt", "rua_tien"]
   },
   {
     "chunk_id": "LAW91-01",
-    "document_code": "Luật BVDLCN 91/2025/QH15 & NĐ 356/2025",
-    "title": "Nguyên tắc đồng ý tự nguyện (Opt-in), không tích sẵn mặc định",
+    "document_code": "Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 — Điều 9, 10, 15",
+    "title": "Sự đồng ý theo từng mục đích, không mặc định, rút lại được",
     "category": "CONSENT_PRIVACY",
-    "content_vi": "Theo Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và NĐ 356/2025 (hiệu lực 01/01/2026), việc xử lý dữ liệu phải dựa trên sự đồng ý tự nguyện, rõ mục đích và không tích sẵn mặc định; trong MoMo TrustLoop, yêu cầu này được hiện thực hóa bằng chế độ Bảo vệ 24h mặc định ở trạng thái TẮT và cho phép người dùng thu hồi bất kỳ lúc nào.",
-    "tags": ["luat_91", "nd_356", "opt_in", "dong_y", "bao_ve_24h"]
+    "content_vi": "Sự đồng ý phải tự nguyện, cho từng mục đích, không kèm điều kiện phải đồng ý mục đích khác; im lặng hoặc không phản hồi không phải là đồng ý; phải ở dạng kiểm chứng được (Điều 9). Chủ thể có quyền rút lại sự đồng ý (Điều 10). Chỉ cung cấp dữ liệu cá nhân cho người khác khi chủ thể đồng ý (Điều 15.2.b). [Đã đọc văn bản]",
+    "tags": ["dong_y", "opt_in", "muc_dich", "rut_lai", "luat91", "bvdlcn", "nguoi_giam_ho", "chia_se"]
   },
   {
     "chunk_id": "LAW91-02",
-    "document_code": "Luật BVDLCN 91/2025/QH15 & NĐ 356/2025",
-    "title": "Bảo vệ và che mờ dữ liệu cá nhân nhạy cảm (PII)",
+    "document_code": "Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 — Điều 2, 16, 19, 20",
+    "title": "Xử lý dữ liệu cá nhân không cần đồng ý để phòng, chống vi phạm; chuyển dữ liệu xuyên biên giới",
     "category": "PII_PROTECTION",
-    "content_vi": "Theo Luật Bảo vệ dữ liệu cá nhân 91/2025/QH15 và NĐ 356/2025, dữ liệu cá nhân nhạy cảm cần được bảo vệ và giảm thiểu chia sẻ; trong MoMo TrustLoop, số CCCD 12 số, số điện thoại cá nhân, số dư tài khoản và lịch sử chi tiêu thường ngày được che mờ qua lớp PII_Redactor và không truyền ảnh gốc sang màn hình Family Co-Sign hoặc B2E War-Room.",
-    "tags": ["luat_91", "nd_356", "pii", "cccd", "sdt", "so_du"]
+    "content_vi": "Số tài khoản, số điện thoại, mã thiết bị giúp xác định một cá nhân là dữ liệu cá nhân (Điều 2.1). Được xử lý không cần đồng ý để bảo vệ quyền, lợi ích hợp pháp trước hành vi xâm phạm hoặc để phòng, chống tội phạm và vi phạm pháp luật (Điều 19.1.a, b), kèm cơ chế giám sát và tiếp nhận phản ánh (Điều 19.2); công khai chỉ trong phạm vi phù hợp mục đích (Điều 16). Dùng nền tảng ngoài lãnh thổ để xử lý dữ liệu thu thập tại Việt Nam là chuyển dữ liệu xuyên biên giới, phải lập hồ sơ đánh giá tác động trong 60 ngày (Điều 20). [Đã đọc văn bản]",
+    "tags": ["pii", "du_lieu_ca_nhan", "nhay_cam", "an_pii", "luat91", "xuyen_bien_gioi", "cong_khai", "phan_anh", "khieu_nai"]
   },
   {
     "chunk_id": "LAW134-01",
-    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15",
-    "title": "Điều 4 — Lấy con người làm trung tâm và không thay thế thẩm quyền con người",
+    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15 — Điều 4",
+    "title": "Con người kiểm soát và can thiệp được vào quyết định của hệ thống AI",
     "category": "AI_GOVERNANCE",
-    "content_vi": "Theo Điều 4 Luật Trí tuệ nhân tạo 134/2025/QH15 (hiệu lực 01/03/2026), hệ thống AI phải lấy con người làm trung tâm, bảo đảm minh bạch và không thay thế thẩm quyền quyết định của con người; trong MoMo TrustLoop, hệ thống nghiêm cấm tự động khóa vĩnh viễn tài khoản thiếu phê duyệt của chuyên viên.",
-    "tags": ["luat_134", "dieu_4", "human_centered", "minh_bach", "khong_khoa_tu_dong"]
+    "content_vi": "Hệ thống AI phục vụ con người, không thay thế thẩm quyền và trách nhiệm của con người; phải bảo đảm khả năng kiểm soát và can thiệp của con người đối với quyết định của AI (Điều 4.2). [Đã đọc văn bản]",
+    "tags": ["luat134", "ai", "con_nguoi", "human_review", "can_thiep", "kiem_soat", "khong_khoa_tu_dong", "dieu_4"]
   },
   {
     "chunk_id": "LAW134-02",
-    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15",
-    "title": "Thông báo giữ chậm 24h trung thực, không mạo danh cơ quan nhà nước",
+    "document_code": "Luật Trí tuệ nhân tạo 134/2025/QH15 — Điều 11",
+    "title": "Người dùng phải nhận biết được mình đang tương tác với AI",
     "category": "TRANSPARENCY",
-    "content_vi": "Tuân thủ nguyên tắc minh bạch của Luật Trí tuệ nhân tạo 134/2025/QH15, khi tạm giữ giao dịch rủi ro cao 24h, MoMo TrustLoop chỉ hiển thị thông báo trung tính đúng bản chất chế độ người dùng đã thiết lập và tuyệt đối không mạo danh NHNN, Công an hay Tòa án.",
-    "tags": ["luat_134", "thong_bao_trung_tinh", "khong_mao_danh", "minh_bach"]
+    "content_vi": "Nhà cung cấp phải bảo đảm hệ thống AI tương tác trực tiếp với con người được thiết kế để người dùng nhận biết họ đang tương tác với hệ thống AI (Điều 11.1). [Đã đọc văn bản]",
+    "tags": ["luat134", "minh_bach", "nhan_biet", "ai", "gan_nhan", "dieu_11"]
   },
   {
     "chunk_id": "TT77-01",
-    "document_code": "Thông tư 77/2025/TT-NHNN",
-    "title": "Bảo mật ứng dụng di động và phòng chống ứng dụng can thiệp thiết bị",
+    "document_code": "Thông tư 77/2025/TT-NHNN (sửa TT 50/2024)",
+    "title": "An toàn ứng dụng thanh toán di động: chặn thiết bị can thiệp và ứng dụng bị chỉnh sửa",
     "category": "CYBERSECURITY_MOBILE",
-    "content_vi": "Theo Thông tư 77/2025/TT-NHNN (hiệu lực 01/03/2026), ứng dụng tài chính di động phải tăng cường bảo mật và phòng chống các ứng dụng độc hại can thiệp thiết bị, đặc biệt là thủ đoạn dụ cài tệp .apk ngoài kho chính thức để lạm dụng quyền Accessibility Services.",
-    "tags": ["tt77", "apk", "accessibility", "ma_doc", "an_ninh_mang"]
+    "content_vi": "Hiệu lực 01/3/2026, áp dụng cả tổ chức trung gian thanh toán: ứng dụng thanh toán phải phát hiện và ngăn chạy trên thiết bị đã bị can thiệp (root, jailbreak, giả lập) hoặc ứng dụng bị chỉnh sửa, đóng gói lại. Mã độc giả mạo ứng dụng (tệp .apk ngoài kho chính thức) lạm dụng quyền Accessibility Services trên thiết bị chưa root vẫn là rủi ro cần cảnh báo người dùng. [Nguồn thứ cấp — thông cáo NHNN, chưa xác minh điều khoản]",
+    "tags": ["tt77", "apk", "accessibility", "ma_doc", "root", "jailbreak", "ung_dung", "an_ninh_mang", "vneid_gia"]
   },
   {
     "chunk_id": "TT53-01",
     "document_code": "Thông tư 53/2026/TT-NHNN",
-    "title": "Quản trị rủi ro AI ngân hàng, giải trình hai chiều và kiểm toán bất biến",
-    "category": "AI_RISK_GOVERNANCE",
-    "content_vi": "Theo Thông tư 53/2026/TT-NHNN (hiệu lực 15/11/2026), hoạt động quản trị rủi ro AI trong ngân hàng đòi hỏi khả năng giải trình và lưu vết kiểm toán; trong MoMo TrustLoop, yêu cầu này được hiện thực hóa bằng bảng tranh biện 2 chiều, trích dẫn chính sách và nhật ký kiểm toán bất biến trên audit_logs.",
-    "tags": ["tt53", "giai_trinh", "audit_log", "quan_tri_ai"]
-  },
-  {
-    "chunk_id": "TT53-02",
-    "document_code": "Thông tư 53/2026/TT-NHNN",
     "title": "Khiếu nại quyết định tự động phải do con người trực tiếp xem xét lại",
     "category": "HUMAN_REVIEW_APPEAL",
-    "content_vi": "Theo Thông tư 53/2026/TT-NHNN, quyết định tự động bị khiếu nại phải do con người trực tiếp xem xét lại; trong MoMo TrustLoop, mọi khiếu nại được đưa vào hàng đợi để chuyên viên người thật rà soát, kết hợp quy trình duyệt 2 cấp Maker–Checker và nút thu hồi tức thì (Rollback).",
-    "tags": ["tt53", "khieu_nai", "maker_checker", "rollback", "human_review"]
+    "content_vi": "Ký 30/9/2026, hiệu lực 15/11/2026, về an toàn và quản lý rủi ro hệ thống AI trong ngành ngân hàng. Khi khách hàng khiếu nại một quyết định tự động, con người phải trực tiếp xem xét lại và kết quả xem xét là căn cứ cuối cùng. Thông tư không quy định Maker–Checker, thời hạn hiệu lực cảnh báo hay danh sách cảnh báo cộng đồng. [Nguồn thứ cấp — báo chí, chưa xác minh điều khoản]",
+    "tags": ["tt53", "khieu_nai", "human_review", "xem_xet_lai", "quyet_dinh_tu_dong", "ai", "nguoi_that"]
   },
   {
     "chunk_id": "SIMO-01",
-    "document_code": "Hệ thống SIMO (NHNN)",
-    "title": "Mạng lưới cảnh báo tài khoản nghi vấn liên ngân hàng SIMO",
+    "document_code": "TT 40/2024/TT-NHNN — Điều 28.1.d, 30.2 (Hệ thống SIMO của NHNN)",
+    "title": "Đối chiếu SIMO và gửi thông tin ví nghi ngờ gian lận hằng tháng",
     "category": "INTERBANK_INTELLIGENCE",
-    "content_vi": "Hệ thống SIMO của Ngân hàng Nhà nước kết nối gần 100 tổ chức tín dụng với hơn 668.000 tài khoản nghi vấn gian lận, hỗ trợ đối chiếu chéo cảnh báo tài khoản nhận tiền đáng ngờ trước khi giao dịch hoàn tất.",
-    "tags": ["simo", "nhnn", "lien_ngan_hang", "tai_khoan_nghi_van"]
+    "content_vi": "Ví điện tử phải đối chiếu chủ ví với Hệ thống thông tin hỗ trợ quản lý, giám sát và phòng ngừa rủi ro gian lận (SIMO) của NHNN và danh sách do Bộ Công an cung cấp (Điều 28.1.d). Thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO (Điều 30.2). [Đã đọc văn bản hợp nhất]",
+    "tags": ["simo", "nhnn", "lien_ngan_hang", "doi_chieu", "nghi_ngo", "bao_cao", "hang_thang", "tt40"]
   },
   {
     "chunk_id": "MOMO-INS-01",
-    "document_code": "Bảo hiểm An toàn chuyển tiền MoMo",
-    "title": "Mức bảo vệ ≤ 2 triệu đồng và điều khoản loại trừ cần đối chiếu",
+    "document_code": "Điều khoản sản phẩm Bảo hiểm An toàn chuyển tiền (MoMo)",
+    "title": "Mức bồi thường tối đa 2 triệu đồng và các trường hợp loại trừ",
     "category": "INSURANCE_POLICY",
-    "content_vi": "Gói Bảo hiểm An toàn chuyển tiền MoMo có mức bảo vệ tối đa ≤ 2 triệu đồng và có các trường hợp loại trừ theo điều khoản hợp đồng bảo hiểm chính thức; chuyên viên Risk và CSKH cần đối chiếu đúng điều khoản áp dụng thay vì tự động cam kết bồi thường.",
-    "tags": ["bao_hiem", "2_trieu", "loai_tru", "momo", "cskh"]
-  },
-  {
-    "chunk_id": "MOMO-INS-02",
-    "document_code": "Bảo hiểm An toàn chuyển tiền MoMo",
-    "title": "Ưu tiên phòng ngừa ở Phút 00 và tạm giữ 24h trước khi tiền rời ví",
-    "category": "INSURANCE_ADVISORY",
-    "content_vi": "Do mức bảo vệ của Bảo hiểm An toàn chuyển tiền MoMo giới hạn ở ≤ 2 triệu đồng cùng các trường hợp loại trừ theo quy tắc sản phẩm, việc phát hiện sớm ở Phút 00 và kích hoạt tạm giữ xác minh 24h (Opt-in) là lớp phòng ngừa thiết yếu cho các khoản chuyển tiền giá trị lớn (như 38 triệu đồng) trước khi tiền rời ví.",
-    "tags": ["bao_hiem", "2_trieu", "tam_giu_24h", "cskh", "phong_ngua"]
+    "content_vi": "Sản phẩm bảo hiểm chuyển tiền của MoMo bồi thường tối đa 2 triệu đồng sau khi phát sinh thiệt hại, loại trừ một số trường hợp như đầu tư, vay mượn, thuê bao. Đây là điều khoản sản phẩm, không phải văn bản pháp luật. [Chưa có nguồn điều khoản chính thức — cần đối chiếu trước khi trích dẫn cho khách hàng]",
+    "tags": ["bao_hiem", "momo", "2_trieu", "loai_tru", "boi_thuong", "dieu_khoan"]
   }
 ]

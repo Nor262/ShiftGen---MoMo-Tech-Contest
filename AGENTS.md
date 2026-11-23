@@ -34,3 +34,8 @@ All agents working in this repository MUST follow these rules without exception.
 - **Branching:** Work on your wave/feature branch (`wave0/foundation`, `wave1/...`, etc.). Do not commit directly to `main`; the Orchestrator merges after Reviewer sign-off.
 - **Model tiers:** Tier A/B (high-reasoning models) own contracts, security, graph algorithms, agent orchestration, and 4-layer governance; Tier C/D own UI workspaces, synthetic assets, QA suites, and documentation.
 - **Reviewer Gate:** Every branch must pass `npx prisma validate`, `npm run typecheck`, `npm test`, and `npm run build` before review. Reviewers verify guardrail compliance, contract conformance, and absence of out-of-scope edits or dead bloat.
+- **Ticket branches:** every ticket branch is created from the latest `main` (`git fetch && git switch -c ticket/<N>-<slug> origin/main`), and every PR targets `main`.
+- **Ticket completion workflow (mandatory, in order):** after implementing a GitHub ticket:
+  1. Run the `code-review` skill on the change and fix every confirmed finding.
+  2. Commit (no `Co-Authored-By` trailer), push the branch, and open or update the PR that references the ticket (`Refs #N`), attaching evidence (test output, screenshots for UI).
+  3. Only after the push and PR exist: comment the PR link on the ticket and close the ticket.

@@ -93,15 +93,15 @@ export const RISK_LEVEL_META: Record<
   },
   HIGH: {
     labelVi: "CAO",
-    badgeClass: "border-orange-300 bg-orange-50 text-orange-900",
-    barClass: "bg-orange-600",
-    borderClass: "border-orange-200",
+    badgeClass: "border-signal-200 bg-signal-50 text-signal-800",
+    barClass: "bg-signal-500",
+    borderClass: "border-signal-200",
   },
   CRITICAL: {
     labelVi: "NGHIÊM TRỌNG",
-    badgeClass: "border-red-300 bg-red-50 text-red-900",
-    barClass: "bg-red-600",
-    borderClass: "border-red-300",
+    badgeClass: "border-signal-300 bg-signal-50 text-signal-900",
+    barClass: "bg-signal-600",
+    borderClass: "border-signal-300",
   },
 };
 
@@ -163,6 +163,10 @@ export const TX_STATUS_META: Record<
   },
   CANCELLED_BY_USER: {
     labelVi: "Đã hủy — Hoàn tiền về ví",
+    badgeClass: "border-slate-300 bg-slate-100 text-slate-800",
+  },
+  CANCELLED_BY_B2E: {
+    labelVi: "Đã hủy sau xác minh bảo mật — Tiền vẫn trong ví",
     badgeClass: "border-slate-300 bg-slate-100 text-slate-800",
   },
   RELEASED: {

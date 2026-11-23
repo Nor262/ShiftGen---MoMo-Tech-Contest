@@ -333,7 +333,7 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
       <article className="flex flex-col gap-3 rounded-xl border border-slate-800 bg-slate-900/90 p-4">
         <AgentHeader
           title="3. Compliance & Policy RAG"
-          subtitle="Trích dẫn QĐ 2345, Luật 91/2025, Luật AI 134/2025, TT 77 & TT 53"
+          subtitle="Trích dẫn Luật PCRT, TT 40/2024, Luật 91/2025, Luật AI 134/2025, TT 77 & TT 53"
           icon={<BookOpen className="h-4 w-4" aria-hidden="true" />}
           phase={cr.phase}
           status={cr.output?.status}
@@ -426,7 +426,7 @@ export function AgentCardsGrid({ agentsState }: { agentsState: WarRoomAgentsStat
                   }`}
                 >
                   {fpd.output.recommend_dismiss
-                    ? "Đề xuất: Đóng cảnh báo giả (Dismiss FP)"
+                    ? "Đề xuất: Minh oan (Dismiss FP)"
                     : "Không đủ cơ sở đóng cảnh báo giả"}
                 </span>
               </div>

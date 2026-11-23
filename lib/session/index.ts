@@ -105,6 +105,34 @@ export async function ensureSessionSeeded(demoSessionId: string): Promise<number
   return seedBaselineSession(demoSessionId);
 }
 
+/** Glossary "Giải phóng": a hold past holdExpiresAt that was neither cancelled nor escalated is released. */
+export async function releaseExpiredHolds(demoSessionId: string, now = new Date()): Promise<number> {
+  const expired = await prisma.heldTransaction.findMany({
+    where: { demoSessionId, status: "ON_HOLD_24H", holdExpiresAt: { lte: now } },
+    select: { txId: true, senderId: true },
+  });
+  if (expired.length === 0) return 0;
+
+  await prisma.$transaction([
+    prisma.heldTransaction.updateMany({
+      where: { txId: { in: expired.map((t) => t.txId) }, status: "ON_HOLD_24H" },
+      data: { status: "RELEASED" },
+    }),
+    prisma.auditLog.createMany({
+      data: expired.map((t) => ({
+        demoSessionId,
+        actorId: t.senderId,
+        actorRole: "USER_B2C",
+        action: "TRANSFER_COMPLETED",
+        targetId: t.txId,
+        rationale: "Hết hạn tạm giữ 24h, không bị hủy hay chuyển cấp: giao dịch được giải phóng.",
+        metadataJson: JSON.stringify({ releaseReason: "HOLD_EXPIRED" }),
+      })),
+    }),
+  ]);
+  return expired.length;
+}
+
 export async function resetDemoSession(
   demoSessionId: string,
 ): Promise<{ sessionId: string; seededCasesCount: number }> {
@@ -148,6 +176,7 @@ export async function getSessionSnapshot(
   demoSessionId: string,
 ): Promise<SessionResponse> {
   await ensureSessionSeeded(demoSessionId);
+  await releaseExpiredHolds(demoSessionId);
 
   const [consents, scansCount, holds, cases, indicators, appeals, auditLogs] =
     await Promise.all([

@@ -45,6 +45,14 @@ function safeJsonParse<T>(raw: string | null | undefined, fallback: T): T {
   }
 }
 
+/**
+ * Glossary "Nguồn bằng chứng độc lập": sources are independent only when their TYPE differs.
+ * Type = prefix before the first "_" (MINUTE0_…, INTERNAL_…, SIMO_…).
+ */
+export function countIndependentSourceTypes(sources: string[]): number {
+  return new Set(sources.map((s) => s.trim().split("_")[0].toUpperCase()).filter(Boolean)).size;
+}
+
 function parseUniqueEvidenceSources(rawJson: string): string[] {
   const parsed = safeJsonParse<unknown>(rawJson, []);
   if (!Array.isArray(parsed)) return [];
@@ -220,12 +228,13 @@ export async function approveImmunityIndicator(
   }
 
   const uniqueSources = parseUniqueEvidenceSources(indicator.evidenceSourcesJson);
-  if (uniqueSources.length < 2) {
+  const sourceTypeCount = countIndependentSourceTypes(uniqueSources);
+  if (sourceTypeCount < 2) {
     throw new ImmunityGovernanceError(
       400,
       "INSUFFICIENT_EVIDENCE_SOURCES",
-      "Lớp 2 yêu cầu tối thiểu 2 nguồn bằng chứng độc lập để kích hoạt cảnh báo rủi ro cao toàn cộng đồng.",
-      { required: 2, provided: uniqueSources.length, sources: uniqueSources },
+      "Lớp 2 yêu cầu tối thiểu 2 nguồn bằng chứng độc lập KHÁC LOẠI để kích hoạt cảnh báo rủi ro cao toàn cộng đồng.",
+      { required: 2, provided: sourceTypeCount, sources: uniqueSources },
     );
   }
 
@@ -264,6 +273,35 @@ export async function approveImmunityIndicator(
         where: { caseId: indicator.caseId, demoSessionId },
         data: { status: "CLOSED" },
       });
+
+      // Glossary "Hủy giao dịch": Kết luận rủi ro cao → B2E cancels the case's still-unexecuted hold.
+      const caseRow = await tx.investigationCase.findFirst({
+        where: { caseId: indicator.caseId, demoSessionId },
+        select: { txId: true },
+      });
+      if (caseRow?.txId) {
+        const cancelled = await tx.heldTransaction.updateMany({
+          where: {
+            txId: caseRow.txId,
+            demoSessionId,
+            status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E"] },
+          },
+          data: { status: "CANCELLED_BY_B2E" },
+        });
+        if (cancelled.count > 0) {
+          await tx.auditLog.create({
+            data: {
+              demoSessionId,
+              actorId: checkerId,
+              actorRole: "RISK_CHECKER",
+              action: "TRANSFER_CANCELLED",
+              targetId: caseRow.txId,
+              rationale: "Vụ điều tra có Kết luận rủi ro cao: B2E hủy giao dịch tạm giữ chưa thực hiện.",
+              metadataJson: JSON.stringify({ cancelReason: "CASE_HIGH_RISK", caseId: indicator.caseId }),
+            },
+          });
+        }
+      }
     }
 
     await tx.auditLog.create({
@@ -415,6 +453,16 @@ export async function resolveAppeal(
       404,
       "INDICATOR_NOT_FOUND",
       "Không tìm thấy chỉ báo Miễn dịch liên quan đến khiếu nại.",
+    );
+  }
+
+  // Glossary "Khiếu nại": the reviewer must differ from the Checker who activated the indicator.
+  if (indicator.checkerId && reviewerId === indicator.checkerId.trim()) {
+    throw new ImmunityGovernanceError(
+      403,
+      "APPEAL_REVIEWER_CONFLICT",
+      "Người xét khiếu nại phải khác Checker đã phê duyệt kích hoạt chỉ báo này.",
+      { checkerId: indicator.checkerId, reviewerId },
     );
   }
 

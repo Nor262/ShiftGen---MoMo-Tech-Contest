@@ -123,8 +123,8 @@ function makeMockWarRoomProvider(options?: {
         }
         const raw = {
           cited_chunk_ids: options?.hallucinateGraphAndCitations
-            ? ["QD2345-02", "FABRICATED-LAW-999", "TT53-01"]
-            : ["QD2345-02", "TT77-01", "TT53-01", "TT53-02", "LAW134-01", "MOMO-INS-01", "MOMO-INS-02"],
+            ? ["PCRT29-01", "FABRICATED-LAW-999", "TT53-01"]
+            : ["PCRT29-01", "AUTH-THRESHOLD-01", "TT77-01", "TT53-01", "LAW134-01", "PCRT-STR-01"],
           policy_notes_vi: [
             "Áp dụng quy trình giải trình 2 chiều và lưu vết kiểm toán theo TT 53/2026/TT-NHNN.",
             "Không tự động khóa vĩnh viễn thiếu phê duyệt chuyên viên theo Luật AI 134/2025 Điều 4.",
@@ -273,11 +273,11 @@ afterAll(async () => {
 describe("Wave 2 — Grounded BM25 Policy Retriever (lib/agents/retriever.ts)", () => {
   const validChunkIds = new Set(rawPolicies.map((p) => p.chunk_id));
 
-  it("retrieves QĐ 2345 smurfing chunks for near-threshold split transfer queries", () => {
-    const chunks = retrievePolicyChunks("QĐ 2345 smurfing chia nhỏ 9.5 triệu dưới 10 triệu", 5);
+  it("retrieves AML Art. 29 smurfing and biometric-threshold chunks for near-threshold split transfer queries", () => {
+    const chunks = retrievePolicyChunks("smurfing chia nhỏ 9.5 triệu dưới 10 triệu mule thiết bị", 5);
     expect(chunks.length).toBeGreaterThan(0);
-    expect(chunks[0].chunk_id).toBe("QD2345-02");
-    expect(chunks.some((c) => c.chunk_id === "QD2345-01")).toBe(true);
+    expect(chunks[0].chunk_id).toBe("PCRT29-01");
+    expect(chunks.some((c) => c.chunk_id === "AUTH-THRESHOLD-01")).toBe(true);
     for (const c of chunks) {
       expect(validChunkIds.has(c.chunk_id)).toBe(true);
     }
@@ -290,11 +290,11 @@ describe("Wave 2 — Grounded BM25 Policy Retriever (lib/agents/retriever.ts)", 
   });
 
   it("retrieves TT 53 human review & audit chunks for appeal and governance queries", () => {
-    const chunks = retrievePolicyChunks("TT 53 khiếu nại human review audit log maker checker", 5);
+    const chunks = retrievePolicyChunks("TT 53 khiếu nại human review con người can thiệp", 5);
     expect(chunks.length).toBeGreaterThan(0);
     const topIds = chunks.slice(0, 2).map((c) => c.chunk_id);
-    expect(topIds).toContain("TT53-02");
     expect(topIds).toContain("TT53-01");
+    expect(topIds).toContain("LAW134-01");
   });
 
   it("retrieves MoMo insurance chunks for transfer insurance queries and returns empty on blank query", () => {
@@ -302,7 +302,6 @@ describe("Wave 2 — Grounded BM25 Policy Retriever (lib/agents/retriever.ts)", 
     expect(chunks.length).toBeGreaterThan(0);
     const topIds = chunks.slice(0, 2).map((c) => c.chunk_id);
     expect(topIds).toContain("MOMO-INS-01");
-    expect(topIds).toContain("MOMO-INS-02");
     expect(retrievePolicyChunks("   ", 5)).toEqual([]);
   });
 });

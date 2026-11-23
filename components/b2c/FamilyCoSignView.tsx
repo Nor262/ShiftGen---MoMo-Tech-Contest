@@ -85,7 +85,7 @@ export function FamilyCoSignView() {
   }
 
   return (
-    <div className="space-y-6 rounded-3xl bg-[#FAF7F9] p-4 sm:p-6">
+    <div className="space-y-6 rounded-3xl bg-slate-50 p-4 sm:p-6">
       {/* Header */}
       <section
         aria-labelledby="family-heading"
@@ -99,7 +99,7 @@ export function FamilyCoSignView() {
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 id="family-heading" className="text-xl font-extrabold text-slate-900 sm:text-2xl">
-                  Family Co-Sign — Chị Minh (FAMILY_MINH)
+                  Người giám hộ — Chị Minh (FAMILY_MINH)
                 </h1>
                 <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800">
                   {DEMO_SIMULATION_LABEL}
@@ -117,14 +117,14 @@ export function FamilyCoSignView() {
               type="button"
               onClick={() => void loadHolds()}
               disabled={loading}
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
               Làm mới
             </button>
             <Link
               href="/shield"
-              className="inline-flex min-h-[44px] items-center rounded-xl border border-momo-200 bg-momo-50 px-4 py-2 text-sm font-semibold text-momo-800 hover:bg-momo-100"
+              className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-200 bg-momo-50 px-4 py-2 text-sm font-semibold text-momo-800 hover:bg-momo-100"
             >
               ← Về B2C Phút 00
             </Link>
@@ -208,7 +208,7 @@ export function FamilyCoSignView() {
           <div>
             <Link
               href="/shield"
-              className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-momo-700"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-momo-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-momo-700"
             >
               Đi tới B2C Phút 00
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -298,7 +298,7 @@ export function FamilyCoSignView() {
                     type="button"
                     disabled={!canEscalate || escalatingTxId === hold.txId}
                     onClick={() => void handleEscalate(hold.txId)}
-                    className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
                     {escalatingTxId === hold.txId
@@ -313,7 +313,7 @@ export function FamilyCoSignView() {
                   <button
                     type="button"
                     onClick={() => setCallDialogTx(hold)}
-                    className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-900 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+                    className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-900 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
                   >
                     <PhoneCall className="h-5 w-5 text-momo-600" aria-hidden="true" />
                     Gọi kiểm tra người thân (mô phỏng)
@@ -322,7 +322,7 @@ export function FamilyCoSignView() {
                   {isEscalated && (
                     <Link
                       href="/warroom"
-                      className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border-2 border-momo-600 bg-momo-50 px-5 py-3 text-base font-bold text-momo-800 transition hover:bg-momo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+                      className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border-2 border-momo-600 bg-momo-50 px-5 py-3 text-base font-bold text-momo-800 transition hover:bg-momo-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
                     >
                       Mở ca trong B2E War-Room
                       {createdCaseId ? ` (${createdCaseId})` : ""}

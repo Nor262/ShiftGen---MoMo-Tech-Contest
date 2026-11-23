@@ -55,6 +55,7 @@ export function TransferHoldPanel({
   const [submitting, setSubmitting] = useState(false);
   const [enablingOptIn, setEnablingOptIn] = useState(false);
   const [cancellingTxId, setCancellingTxId] = useState<string | null>(null);
+  const [reviewingTxId, setReviewingTxId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [latestTransfer, setLatestTransfer] = useState<TransferResponse | null>(null);
   const [statusNote, setStatusNote] = useState<string | null>(null);
@@ -178,6 +179,36 @@ export function TransferHoldPanel({
     }
   }
 
+  // Glossary "Yêu cầu xét lại tạm giữ": owner asks a human B2E reviewer; only a human may release early (TT 53).
+  async function handleRequestReview(txId: string) {
+    setReviewingTxId(txId);
+    setErrorMessage(null);
+    setStatusNote(null);
+    try {
+      const res = await fetch(`/api/shield/family/escalate/${txId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guardianId: activeUserId,
+          note: "Chủ ví yêu cầu chuyên viên người thật xem xét lại quyết định tạm giữ tự động.",
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setErrorMessage(parseApiErrorMessage(res.status, data));
+        return;
+      }
+      setStatusNote(
+        "Đã gửi yêu cầu xét lại. Chuyên viên người thật sẽ xem xét; giao dịch vẫn được giữ cho tới khi có kết quả.",
+      );
+      await onHoldsChanged();
+    } catch {
+      setErrorMessage("Không thể kết nối máy chủ khi gửi yêu cầu xét lại.");
+    } finally {
+      setReviewingTxId(null);
+    }
+  }
+
   const triggeredReasons: string[] = [];
   if (latestScan) {
     if (latestScan.result.risk_score >= HIGH_RISK_HOLD_THRESHOLD) {
@@ -245,7 +276,7 @@ export function TransferHoldPanel({
             type="button"
             onClick={() => void handleEnableOptIn()}
             disabled={enablingOptIn}
-            className="min-h-[44px] rounded-xl bg-momo-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            className="min-h-[48px] rounded-lg bg-momo-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
           >
             {enablingOptIn ? "Đang bật..." : "Bật Bảo vệ 24h ngay cho giao dịch này"}
           </button>
@@ -293,7 +324,7 @@ export function TransferHoldPanel({
           <button
             type="submit"
             disabled={submitting}
-            className="min-h-[48px] w-full rounded-xl bg-momo-600 px-4 py-2.5 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            className="min-h-[48px] w-full rounded-lg bg-momo-600 px-4 py-2.5 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
           >
             {submitting ? "Đang xử lý..." : "Tiếp tục chuyển tiền"}
           </button>
@@ -339,13 +370,13 @@ export function TransferHoldPanel({
         <div
           role="region"
           aria-label="Biên nhận Tạm giữ Bảo mật 24h"
-          className="space-y-4 rounded-2xl border-2 border-amber-400 bg-amber-50/90 p-5 text-slate-900"
+          className="space-y-4 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-5 text-slate-900"
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-amber-800" aria-hidden="true" />
+              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-signal-700" aria-hidden="true" />
               <div className="space-y-1">
-                <span className="inline-block rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-950">
+                <span className="inline-block rounded-full bg-signal-100 px-2.5 py-0.5 text-xs font-bold text-signal-900">
                   TRẠNG THÁI: ON_HOLD_24H ({DEMO_SIMULATION_LABEL})
                 </span>
                 <p
@@ -398,7 +429,7 @@ export function TransferHoldPanel({
               type="button"
               onClick={() => void handleCancelHold(activeHoldRecord.txId)}
               disabled={cancellingTxId === activeHoldRecord.txId}
-              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
             >
               <RotateCcw className="h-5 w-5" aria-hidden="true" />
               {cancellingTxId === activeHoldRecord.txId
@@ -406,12 +437,23 @@ export function TransferHoldPanel({
                 : "Hủy giao dịch — Hoàn tiền về ví ngay"}
             </button>
 
+            <button
+              type="button"
+              onClick={() => void handleRequestReview(activeHoldRecord.txId)}
+              disabled={reviewingTxId === activeHoldRecord.txId}
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            >
+              {reviewingTxId === activeHoldRecord.txId
+                ? "Đang gửi yêu cầu..."
+                : "Yêu cầu người thật xem xét lại"}
+            </button>
+
             <Link
               href="/family"
-              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
-              Mở Family Co-Sign (Chị Minh)
+              Mở màn hình Người giám hộ (Chị Minh)
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
@@ -456,9 +498,9 @@ export function TransferHoldPanel({
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
                         href="/family"
-                        className="rounded-lg border border-momo-200 bg-white px-3 py-1.5 text-xs font-semibold text-momo-700 hover:bg-momo-50"
+                        className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-200 bg-white px-4 py-2 text-sm font-semibold text-momo-700 hover:bg-momo-50"
                       >
-                        Xem Family Co-Sign
+                        Xem màn hình Người giám hộ
                       </Link>
                       <button
                         type="button"

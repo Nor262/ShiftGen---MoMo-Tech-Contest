@@ -181,7 +181,7 @@ export function ScanResultPanel({
           aria-label="Cảnh báo Miễn dịch Cộng đồng"
           className={`rounded-2xl border-2 p-5 shadow-sm ${
             immunityHit.status === "ACTIVE"
-              ? "border-red-400 bg-red-50 text-red-950"
+              ? "border-signal-400 bg-signal-50 text-signal-950"
               : "border-amber-400 bg-amber-50 text-amber-950"
           }`}
         >
@@ -189,7 +189,7 @@ export function ScanResultPanel({
             <div className="flex items-start gap-3">
               <ShieldAlert
                 className={`mt-0.5 h-7 w-7 shrink-0 ${
-                  immunityHit.status === "ACTIVE" ? "text-red-700" : "text-amber-700"
+                  immunityHit.status === "ACTIVE" ? "text-signal-700" : "text-amber-700"
                 }`}
                 aria-hidden="true"
               />
@@ -218,17 +218,15 @@ export function ScanResultPanel({
             <div>
               <span className="block text-xs text-slate-500">Chỉ báo trùng khớp</span>
               <strong className="font-mono text-slate-900">
-                {immunityHit.indicatorType}: {immunityHit.indicatorValue}
+                {immunityHit.indicatorType}: {maskIndicatorValue(immunityHit.indicatorType, immunityHit.indicatorValue)}
               </strong>
             </div>
             <div>
               <span className="block text-xs text-slate-500">Nguồn xác minh độc lập</span>
+              {/* Q37: B2C sees only the count — source names are internal (no STR disclosure, AML Art. 40.2). */}
               <strong className="text-slate-900">
-                {immunityHit.evidenceSources.length} nguồn
+                Dấu hiệu rủi ro cao · {immunityHit.evidenceSources.length} nguồn
               </strong>
-              <span className="block text-xs text-slate-600">
-                {immunityHit.evidenceSources.join(", ")}
-              </span>
             </div>
             <div>
               <span className="block text-xs text-slate-500">Hiệu lực TTL đến</span>
@@ -245,7 +243,7 @@ export function ScanResultPanel({
             <button
               type="button"
               onClick={() => setAppealOpen((prev) => !prev)}
-              className="min-h-[44px] rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="min-h-[48px] rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               {appealOpen ? "Ẩn biểu mẫu khiếu nại" : "Gửi khiếu nại xem xét lại (TT 53/2026)"}
             </button>
@@ -308,7 +306,7 @@ export function ScanResultPanel({
               <button
                 type="submit"
                 disabled={appealSubmitting}
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+                className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-momo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
               >
                 <Send className="h-4 w-4" aria-hidden="true" />
                 {appealSubmitting ? "Đang gửi khiếu nại..." : "Gửi đơn khiếu nại cho Người thật"}
@@ -388,13 +386,13 @@ export function ScanResultPanel({
         {result.cyber_threat_flags.length > 0 && (
           <div
             role="alert"
-            className="mt-4 rounded-2xl border-2 border-red-400 bg-red-50 p-5 text-red-950"
+            className="mt-4 rounded-2xl border-2 border-signal-400 bg-signal-50 p-5 text-signal-950"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <Smartphone className="mt-0.5 h-7 w-7 shrink-0 text-red-700" aria-hidden="true" />
+                <Smartphone className="mt-0.5 h-7 w-7 shrink-0 text-signal-700" aria-hidden="true" />
                 <div className="space-y-1">
-                  <h4 className="text-lg font-extrabold text-red-900">
+                  <h4 className="text-lg font-extrabold text-signal-900">
                     Cảnh báo An toàn Thiết bị Android — Nguy cơ Mã độc .APK
                   </h4>
                   <p className="text-base leading-relaxed">
@@ -410,10 +408,10 @@ export function ScanResultPanel({
               {result.cyber_threat_flags.map((flag, idx) => (
                 <li
                   key={`${flag.type}-${idx}`}
-                  className="rounded-xl border border-red-200 bg-white p-3 text-sm"
+                  className="rounded-xl border border-signal-200 bg-white p-3 text-sm"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-800">
+                    <span className="rounded bg-signal-100 px-2 py-0.5 text-xs font-bold text-signal-800">
                       {CYBER_THREAT_VI[flag.type]}
                     </span>
                     <code className="font-mono text-xs text-slate-800">{flag.indicator}</code>
@@ -428,7 +426,7 @@ export function ScanResultPanel({
                 type="button"
                 onClick={() => void handleReportCyber()}
                 disabled={cyberReporting || Boolean(cyberReportedCaseId)}
-                className="min-h-[48px] rounded-xl bg-red-700 px-5 py-2.5 text-base font-bold text-white transition hover:bg-red-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 disabled:opacity-60"
+                className="min-h-[48px] rounded-lg bg-momo-600 px-5 py-2.5 text-base font-semibold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2 disabled:opacity-60"
               >
                 {cyberReporting
                   ? "Đang gửi War-Room..."
@@ -438,7 +436,7 @@ export function ScanResultPanel({
               </button>
 
               {cyberReportedCaseId && (
-                <span role="status" className="text-sm font-semibold text-red-900">
+                <span role="status" className="text-sm font-semibold text-slate-900">
                   Đã tạo hồ sơ <code>{cyberReportedCaseId}</code> (đã ẩn PII).{" "}
                   <Link href="/warroom" className="underline">
                     Mở B2E War-Room →
@@ -500,7 +498,7 @@ export function ScanResultPanel({
                     key={cueType}
                     className={`rounded-full border px-3 py-1 text-xs font-semibold ${
                       active
-                        ? "border-red-300 bg-red-100 text-red-900"
+                        ? "border-signal-300 bg-signal-100 text-signal-900"
                         : "border-slate-200 bg-white text-slate-500"
                     }`}
                   >
@@ -580,7 +578,7 @@ export function ScanResultPanel({
                 {result.extracted_entities.urls.length > 0 && (
                   <div className="sm:col-span-2">
                     <dt className="text-xs text-slate-500">URL / Tên miền trích xuất</dt>
-                    <dd className="break-all font-mono text-xs text-red-800">
+                    <dd className="break-all font-mono text-xs text-signal-800">
                       {result.extracted_entities.urls.join(", ")}
                     </dd>
                   </div>
@@ -588,7 +586,7 @@ export function ScanResultPanel({
                 {result.extracted_entities.apk_filenames.length > 0 && (
                   <div className="sm:col-span-2">
                     <dt className="text-xs text-slate-500">Tệp .APK phát hiện</dt>
-                    <dd className="font-mono text-xs font-bold text-red-800">
+                    <dd className="font-mono text-xs font-bold text-signal-800">
                       {result.extracted_entities.apk_filenames.join(", ")}
                     </dd>
                   </div>
@@ -655,4 +653,10 @@ export function ScanResultPanel({
       </section>
     </div>
   );
+}
+
+/** Luật 91: show only part of a personal identifier (account/phone/device); domains & APK hashes stay readable. */
+function maskIndicatorValue(type: string, value: string): string {
+  if (type === "URL_DOMAIN" || type === "APK_HASH" || value.length <= 4) return value;
+  return `${"•".repeat(Math.min(value.length - 4, 8))}${value.slice(-4)}`;
 }

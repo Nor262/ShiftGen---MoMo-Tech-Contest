@@ -26,3 +26,4 @@ public/uploads/
 coverage/
 *.tsbuildinfo
 next-env.d.ts
+/ShiftGen.png

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { CancelTransferRequestSchema, CancelTransferResponseSchema } from "@/contracts";
 import { prisma } from "@/lib/prisma";
-import { getSessionId, toHeldTransactionDto } from "@/lib/session";
+import { getSessionId, releaseExpiredHolds, toHeldTransactionDto } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,7 @@ export async function POST(
     }
 
     const demoSessionId = getSessionId(request);
+    await releaseExpiredHolds(demoSessionId);
     const existing = await prisma.heldTransaction.findFirst({
       where: { txId, demoSessionId },
     });

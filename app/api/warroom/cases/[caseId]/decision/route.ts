@@ -10,6 +10,7 @@ import {
   getSessionId,
   toImmunityIndicatorDto,
 } from "@/lib/session";
+import { countIndependentSourceTypes } from "@/lib/immunity/service";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,38 @@ export async function POST(
     }
 
     if (req.decision === "DISMISS_FP") {
+      // Glossary "Minh oan": the case's held transaction is released immediately.
+      const heldTx = caseRow.txId
+        ? await prisma.heldTransaction.findFirst({
+            where: {
+              txId: caseRow.txId,
+              demoSessionId,
+              status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E"] },
+            },
+          })
+        : null;
+      const releaseOps = heldTx
+        ? [
+            prisma.heldTransaction.update({
+              where: { txId: heldTx.txId },
+              data: { status: "RELEASED" },
+            }),
+            prisma.auditLog.create({
+              data: {
+                demoSessionId,
+                actorId: req.actorId,
+                actorRole: "RISK_MAKER",
+                action: "TRANSFER_COMPLETED",
+                targetId: heldTx.txId,
+                rationale: "Vụ điều tra được Minh oan: giao dịch tạm giữ được giải phóng.",
+                metadataJson: JSON.stringify({ releaseReason: "CASE_DISMISSED_FP", caseId: caseRow.caseId }),
+              },
+            }),
+          ]
+        : [];
+
       await prisma.$transaction([
+        ...releaseOps,
         prisma.investigationCase.update({
           where: { caseId: caseRow.caseId },
           data: { status: "DISMISSED_FP" },
@@ -106,14 +138,15 @@ export async function POST(
       );
     }
 
-    if (req.requestedLevel === "ACTIVE" && uniqueSources.length < 2) {
+    const sourceTypeCount = countIndependentSourceTypes(uniqueSources);
+    if (req.requestedLevel === "ACTIVE" && sourceTypeCount < 2) {
       return NextResponse.json(
         {
-          error: `Lớp 2 (ACTIVE Immunity) yêu cầu tối thiểu 2 nguồn bằng chứng độc lập (hiện có ${uniqueSources.length} nguồn). Vui lòng phát hành Cảnh báo mềm 72h (SOFT_WARNING) hoặc bổ sung nguồn đối chứng độc lập.`,
+          error: `Lớp 2 (ACTIVE Immunity) yêu cầu tối thiểu 2 nguồn bằng chứng độc lập KHÁC LOẠI (hiện có ${sourceTypeCount} loại nguồn). Vui lòng phát hành Cảnh báo mềm 72h (SOFT_WARNING) hoặc bổ sung nguồn đối chứng độc lập.`,
           code: "INSUFFICIENT_EVIDENCE_SOURCES",
           details: {
             required: 2,
-            provided: uniqueSources.length,
+            provided: sourceTypeCount,
             suggestedLevel: "SOFT_WARNING",
           },
         },

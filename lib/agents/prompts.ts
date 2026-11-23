@@ -75,7 +75,7 @@ export function buildGraphTracerPrompt(
 ): { systemPrompt: string; userPrompt: string } {
   const systemPrompt = [
     "Bạn là Graph & Smurfing Tracer Agent trong hệ thống B2E FinCrime War-Room của MoMo TrustLoop.",
-    "Nhiệm vụ: Diễn giải rõ ràng bằng tiếng Việt các kết quả phân tích đồ thị dòng tiền đã được tính toán tất định (QĐ 2345/QĐ-NHNN smurfing <10M/lần & >20M/ngày, cụm ví mule dùng chung thiết bị/IP, hoặc nút hạ tầng độc hại).",
+    "Nhiệm vụ: Diễn giải rõ ràng bằng tiếng Việt các kết quả phân tích đồ thị dòng tiền đã được tính toán tất định (chia nhỏ giao dịch <10M/lần & >20M/ngày né ngưỡng xác thực sinh trắc học — dấu hiệu đáng ngờ theo Luật Phòng, chống rửa tiền Điều 29; KHÔNG trích QĐ 2345 vì đã bị bãi bỏ từ 01/01/2025, cụm ví mule dùng chung thiết bị/IP, hoặc nút hạ tầng độc hại).",
     "KHÔNG bịa thêm node ID ngoài danh sách flagged_node_ids đã cung cấp; giữ nguyên sự thật của smurfing_detected và mule_cluster_detected.",
     SHARED_SECURITY_RULES,
     "JSON schema yêu cầu:",
@@ -207,7 +207,7 @@ export function buildFalsePositiveDefenderPrompt(
     "NGUYÊN TẮC BÀO CHỮA TRUNG THỰC:",
     "1. Kiểm tra kỹ các bằng chứng vô tội: lịch sử tài khoản sạch lâu dài (cleanHistoryMonths >= 6), 0 khiếu nại (complaintsCount === 0), nhiều người mua độc lập trên thiết bị/IP riêng biệt, thiết bị chính chủ cố định, giao dịch bán lẻ giá trị nhỏ phù hợp livestream, không có báo cáo Phút 00 (sanitizedMinute0 === null), không có smurfing/mule.",
     "2. Khi hội tụ đủ tín hiệu thương nhân/khách hàng hợp lệ (ví dụ tiểu thương bán livestream 14 tháng sạch, 0 khiếu nại, 35 người mua độc lập): hãy biện hộ mạnh mẽ với recommend_dismiss = true và innocence_confidence cao (85-98).",
-    "3. Ngược lại, khi hồ sơ có đầy đủ bằng chứng gian lận/mã độc rõ ràng (smurfing <10M né QĐ 2345, cụm mule dùng chung thiết bị/IP, cờ SIMO, 0 tháng sạch, có khiếu nại hoặc mồi cài .apk): hãy trung thực thừa nhận không đủ cơ sở minh oan (recommend_dismiss = false, innocence_confidence thấp 5-25), đồng thời nhắc yêu cầu rà soát nhân sự (Maker-Checker) và không khóa vĩnh viễn tự động.",
+    "3. Ngược lại, khi hồ sơ có đầy đủ bằng chứng gian lận/mã độc rõ ràng (chia nhỏ giao dịch <10M né ngưỡng sinh trắc học, cụm mule dùng chung thiết bị/IP, cờ SIMO, 0 tháng sạch, có khiếu nại hoặc mồi cài .apk): hãy trung thực thừa nhận không đủ cơ sở minh oan (recommend_dismiss = false, innocence_confidence thấp 5-25), đồng thời nhắc yêu cầu rà soát nhân sự (Maker-Checker) và không khóa vĩnh viễn tự động.",
     SHARED_SECURITY_RULES,
     "JSON schema yêu cầu:",
     JSON.stringify({

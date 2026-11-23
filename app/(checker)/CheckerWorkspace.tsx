@@ -31,7 +31,8 @@ import {
 import { B2cLiveProbeCard } from "./B2cLiveProbeCard";
 
 interface RolePersona {
-  id: "RISK_MAKER_HUYEN" | "RISK_CHECKER_TUAN";
+  // shortcut: RISK_CHECKER_LAN is a UI-only persona (not in contracts PERSONA_IDS), add to contracts when Orchestrator reopens the freeze
+  id: "RISK_MAKER_HUYEN" | "RISK_CHECKER_TUAN" | "RISK_CHECKER_LAN";
   role: ActorRole;
   displayName: string;
   titleVi: string;
@@ -44,7 +45,14 @@ const PERSONAS: readonly RolePersona[] = [
     role: "RISK_CHECKER",
     displayName: "RISK_CHECKER_TUAN — Anh Tuấn",
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
-    hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn, khác Maker), xử lý khiếu nại TT 53/2026, Rollback & Giả lập TTL.",
+    hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn khác loại, khác Maker — thiết kế quản trị riêng), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
+  },
+  {
+    id: "RISK_CHECKER_LAN",
+    role: "RISK_CHECKER",
+    displayName: "RISK_CHECKER_LAN — Chị Lan",
+    titleVi: "Risk Checker (Người xét khiếu nại độc lập)",
+    hintVi: "Xét khiếu nại cho chỉ báo do Checker khác kích hoạt; máy chủ trả 403 nếu người xét trùng người đã duyệt.",
   },
   {
     id: "RISK_MAKER_HUYEN",
@@ -66,7 +74,7 @@ const STATUS_META: Record<ImmunityStatus, { label: string; className: string }> 
   },
   ACTIVE: {
     label: "ACTIVE · Miễn dịch Cộng đồng Lớp 2",
-    className: "border-red-300 bg-red-50 text-red-900",
+    className: "border-signal-300 bg-signal-50 text-signal-900",
   },
   EXPIRED: {
     label: "EXPIRED · Hết hạn TTL Lớp 3",
@@ -95,7 +103,7 @@ const APPEAL_STATUS_META: Record<AppealStatus, { label: string; className: strin
 
 const AUDIT_ACTION_BADGE: Partial<Record<AuditAction, string>> = {
   IMMUNITY_PROPOSED: "border-indigo-200 bg-indigo-50 text-indigo-800",
-  IMMUNITY_APPROVED: "border-red-200 bg-red-50 text-red-800",
+  IMMUNITY_APPROVED: "border-signal-200 bg-signal-50 text-signal-800",
   APPEAL_SUBMITTED: "border-amber-200 bg-amber-50 text-amber-900",
   APPEAL_RESOLVED: "border-sky-200 bg-sky-50 text-sky-900",
   IMMUNITY_ROLLED_BACK: "border-emerald-200 bg-emerald-50 text-emerald-900",
@@ -343,6 +351,9 @@ export function CheckerWorkspace() {
     expired: registry.indicators.filter((i) => i.status === "EXPIRED").length,
     rolledBack: registry.indicators.filter((i) => i.status === "ROLLED_BACK").length,
     pendingAppeals: registry.appeals.filter((a) => a.status === "PENDING_HUMAN_REVIEW").length,
+    // shortcut: Minh oan count reads the 100 latest audit logs; add a server-side count if sessions grow long
+    dismissedFp: registry.auditLogs.filter((l) => l.action === "CASE_DISMISSED_FP").length,
+    overturnedAppeals: registry.appeals.filter((a) => a.status === "OVERTURNED_ROLLBACK").length,
   };
 
   const appealableIndicators = registry.indicators.filter(
@@ -433,14 +444,14 @@ export function CheckerWorkspace() {
                   {isChecker ? (
                     <UserCheck
                       className={`mt-0.5 h-5 w-5 shrink-0 ${
-                        selected ? "text-emerald-700" : "text-slate-400"
+                        selected ? "text-emerald-700" : "text-slate-500"
                       }`}
                       aria-hidden="true"
                     />
                   ) : (
                     <UserX
                       className={`mt-0.5 h-5 w-5 shrink-0 ${
-                        selected ? "text-amber-700" : "text-slate-400"
+                        selected ? "text-amber-700" : "text-slate-500"
                       }`}
                       aria-hidden="true"
                     />
@@ -483,6 +494,33 @@ export function CheckerWorkspace() {
       </section>
 
       {/* 4-Layer Governance Summary Bar */}
+      {/* Q24: honest false-positive accounting — raw demo counts only, no percentages. */}
+      <section
+        aria-label="Số đếm minh oan và thu hồi trong phiên demo"
+        className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-800"
+      >
+        <h2 className="text-base font-bold text-slate-900">
+          Ghi nhận báo nhầm trong phiên này <span className="text-xs font-semibold text-slate-500">({DEMO_SIMULATION_LABEL})</span>
+        </h2>
+        <dl className="mt-2 grid gap-2 sm:grid-cols-3">
+          <div>
+            <dt className="text-xs text-slate-600">Vụ được Minh oan</dt>
+            <dd className="text-2xl font-bold">{counts.dismissedFp}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-600">Khiếu nại được chấp nhận</dt>
+            <dd className="text-2xl font-bold">{counts.overturnedAppeals}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-600">Chỉ báo bị Thu hồi</dt>
+            <dd className="text-2xl font-bold">{counts.rolledBack}</dd>
+          </div>
+        </dl>
+        <p className="mt-2 text-xs text-slate-600">
+          Số đếm thô trên dữ liệu mô phỏng, không phải tỷ lệ báo nhầm của hệ thống thật.
+        </p>
+      </section>
+
       <section aria-label="Tóm tắt 4 Lớp Quản trị Miễn dịch" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
@@ -497,12 +535,12 @@ export function CheckerWorkspace() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-red-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-signal-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold uppercase tracking-wide text-red-800">
+            <span className="text-xs font-bold uppercase tracking-wide text-signal-800">
               Lớp 2 · Active (≥2 nguồn)
             </span>
-            <FileCheck2 className="h-4 w-4 text-red-600" aria-hidden="true" />
+            <FileCheck2 className="h-4 w-4 text-signal-600" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-extrabold text-slate-900">
             {counts.active}{" "}

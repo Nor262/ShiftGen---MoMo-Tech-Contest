@@ -10,7 +10,7 @@
 ┌─────────────────────────────────────────────────────────────────────────┐
 │        NEXT.JS 15 APP ROUTER (TypeScript + Tailwind v3 + React Flow)    │
 │  [Role Switcher: 5 Vai trò] | [Session ?session=xxx] | [Reset Demo]     │
-│  [Tab 1: B2C Phút 00] | [Tab 2: Family Co-Sign] | [Tab 3: War-Room]     │
+│  [Tab 1: B2C Phút 00] | [Tab 2: Người giám hộ ] | [Tab 3: War-Room]     │
 │  (Light MoMo Warm)     (1 màn hình duyệt ẩn PII)  (Dark Command Center) │
 └───────────────────────────────────┬─────────────────────────────────────┘
                                     │ REST API + SSE Streaming
@@ -48,6 +48,8 @@
 * `LLM_BACKEND=gemini`: Gọi Gemini REST API (`gemini-2.5-flash` hoặc model tùy chọn) với `responseMimeType: "application/json"`, hỗ trợ inline image base64.
 * `LLM_BACKEND=openai`: Gọi bất kỳ endpoint OpenAI-compatible (`/chat/completions`) với `response_format: { type: "json_object" }`.
 * **Trung thực 100%:** Khi thiếu API key hợp lệ, hệ thống trả HTTP `503` mã `LLM_NOT_CONFIGURED` kèm hướng dẫn `.env.example`, tuyệt đối không giả lập AI trên runtime. Mọi lời gọi đo `latency_ms` bằng `performance.now()`.
+* **Triển khai (Kế hoạch — bắt buộc cho cuộc thi):** chuyển sang **AWS Sandbox** với `LLM_BACKEND=bedrock`, chạy Docker trên EC2/Amplify `ap-southeast-1`; bản Vercel hiện tại giữ làm dự phòng.
+* **Dữ liệu xuyên biên giới:** ảnh người dùng tải lên hiện được gửi tới LLM đặt ngoài Việt Nam trước khi Ẩn PII (phía máy chủ). Điều kiện trước khi dùng thật: hồ sơ đánh giá tác động và Ẩn PII trên thiết bị (Luật 91/2025 Điều 20–21, xem [RESEARCH_LEGAL.md](./RESEARCH_LEGAL.md)).
 
 ---
 
@@ -89,7 +91,7 @@ momo_contest/
     │   │   ├── actor.ts           # 5 vai trò + assertRole
     │   │   └── rateLimit.ts       # Sliding-window IP rate limiter
     │   ├── kb/
-    │   │   ├── vnPolicies.json    # ~14 chunk pháp lý & bảo hiểm MoMo (có chunk_id)
+    │   │   ├── vnPolicies.json    # 12 chunk (Kế hoạch: chỉ giữ tóm tắt văn bản pháp luật)
     │   │   └── retriever.ts       # Bộ truy xuất BM25 + tag boost
     │   ├── agents/
     │   │   ├── schemas.ts         # Zod v3 Schema cứng cho Vision & 4+1 Agent
@@ -126,7 +128,7 @@ momo_contest/
 Mọi bảng đều có cột `demoSessionId` để cô lập hoàn toàn dữ liệu giữa các giám khảo, dùng `String` và `Float` thay cho native `enum` hoặc `BigInt` để tương thích tuyệt đối giữa SQLite và PostgreSQL:
 1. `UserConsent` (`id`, `demoSessionId`, `userId`, `optIn24hHold`, `guardianId`, `consentVersion`, `consentedAt`) — `@@unique([demoSessionId, userId])`.
 2. `ScanSession` (`scanId`, `demoSessionId`, `userId`, `inputType`, `imageHash`, `riskScore`, `riskLevel`, `resultJson`, `sanitizedEvidenceJson`, `piiDiffJson`, `immunityHitId`, `modelUsed`, `measuredLatencyMs`, `createdAt`).
-3. `HeldTransaction` (`txId`, `demoSessionId`, `scanId`, `senderId`, `senderLabel`, `recipientAccount`, `recipientBank`, `amountVnd`, `status`, `neutralMessage`, `holdExpiresAt`, `createdAt`, `updatedAt`).
+3. `HeldTransaction` (`txId`, `demoSessionId`, `scanId`, `senderId`, `senderLabel`, `recipientAccount`, `recipientBank`, `amountVnd`, `status`, `neutralMessage`, `holdExpiresAt`, `createdAt`, `updatedAt`). Trạng thái: `ON_HOLD_24H` → `ESCALATED_TO_B2E` (Chuyển cấp, giữ tới khi B2E phán quyết) | `CANCELLED_BY_USER` | `RELEASED` (Giải phóng khi hết hạn chưa Chuyển cấp, hoặc khi Vụ được Minh oan — đã làm) | `CANCELLED_BY_B2E` (Kế hoạch, khi Vụ có Kết luận rủi ro cao).
 4. `InvestigationCase` (`caseId`, `demoSessionId`, `txId`, `scenarioCode`, `title`, `subtitle`, `status`, `graphDataJson`, `caseContextJson`, `sanitizedMinute0Json`, `agentDebateJson`, `totalLatencyMs`, `createdAt`, `updatedAt`).
 5. `ImmunityIndicator` (`indicatorId`, `demoSessionId`, `caseId`, `indicatorType`, `indicatorValue`, `severity`, `status`, `evidenceSourcesJson`, `makerId`, `checkerId`, `ttlHours`, `expiresAt`, `rollbackReason`, `createdAt`, `updatedAt`).
 6. `Appeal` (`appealId`, `demoSessionId`, `indicatorId`, `appellantName`, `appellantNote`, `status`, `reviewerId`, `resolutionNote`, `createdAt`, `updatedAt`).
@@ -145,17 +147,25 @@ Mọi bảng đều có cột `demoSessionId` để cô lập hoàn toàn dữ l
 | `POST /api/b2c/transfer` | Thực hiện chuyển tiền; nếu rủi ro cao & có Opt-in thì giữ `ON_HOLD_24H` câu trung tính | `txId`, `status`, `neutralMessage` |
 | `POST /api/b2c/transfer/:txId/cancel` | Người dùng tự hủy giao dịch đang tạm giữ khi đã an toàn | `status: CANCELLED_BY_USER` + audit log |
 | `POST /api/b2c/report-cyber` | Đẩy cảnh báo link/APK độc hại (CASE-02) đã ẩn PII sang B2E War-Room | `caseId` mới tạo trong `InvestigationCase` |
-| `GET /api/family/holds` | Lấy danh sách giao dịch tạm giữ đã ẩn PII cho Tab Family Co-Sign | Mảng holds đã lược bỏ hoàn toàn số dư/CCCD/SĐT |
-| `POST /api/family/escalate/:txId` | Chị Minh xác nhận giữ 24h & đẩy bằng chứng ẩn PII sang B2E War-Room | `caseId` mới hoặc cập nhật |
+| `GET /api/family/holds` | Lấy danh sách giao dịch bị giữ đã Ẩn PII cho màn hình Người giám hộ | Mảng holds đã lược bỏ hoàn toàn số dư/CCCD/SĐT |
+| `POST /api/family/escalate/:txId` | Người giám hộ Chuyển cấp: đẩy Bằng chứng Phút 00 đã Ẩn PII sang B2E, kéo dài Tạm giữ tới khi B2E phán quyết; từ chối nếu giao dịch đã `RELEASED`/hủy | `caseId` mới hoặc cập nhật |
 | `GET /api/b2e/cases` | Lấy hàng đợi B2E War-Room của phiên hiện tại | Danh sách cases |
 | `POST /api/b2e/cases/:caseId/investigate` | Chạy song song 4 Agent (`Promise.allSettled`) + `DebateSynthesizer` (hỗ trợ SSE `?stream=1` & JSON) | `WarRoomDebateJSON` + `agent_latencies_ms` |
-| `POST /api/b2e/cases/:caseId/decision` | Maker chọn: `DISMISS_FP` hoặc `PROPOSE_IMMUNITY` (`SOFT_WARNING` / `ACTIVE` — chặn `400` nếu `<2` nguồn lên `ACTIVE`) | `ImmunityIndicator` hoặc `DISMISSED_FP` |
+| `POST /api/b2e/cases/:caseId/decision` | Maker chọn: `DISMISS_FP` (Minh oan — Giải phóng giao dịch bị giữ của Vụ) hoặc `PROPOSE_IMMUNITY` (`SOFT_WARNING` / `ACTIVE` — chặn `400` nếu `<2` nguồn lên `ACTIVE`) | `ImmunityIndicator` hoặc `DISMISSED_FP` + `RELEASED` |
 | `GET /api/b2e/immunity` | Lấy danh sách chỉ báo, khiếu nại và nhật ký kiểm toán | `indicators`, `appeals`, `auditLogs` |
 | `POST /api/b2e/immunity/:id/approve` | Checker (`!== makerId`, vi phạm trả `403`) duyệt chỉ báo lên `ACTIVE` kèm `TTL` | `status: ACTIVE` |
-| `POST /api/b2e/immunity/:id/appeal` | Tạo đơn khiếu nại đưa vào hàng đợi người thật rà soát (TT 53/2026) | `appealId`, `status: PENDING_HUMAN_REVIEW` |
-| `POST /api/b2e/immunity/:id/resolve-appeal` | Checker xử lý khiếu nại (`UPHELD` hoặc `OVERTURNED_ROLLBACK`) | Cập nhật `Appeal` & `ImmunityIndicator` + audit log |
-| `POST /api/b2e/immunity/:id/rollback` | Checker thu hồi tức thì chỉ báo, gỡ khỏi B2C ngay lập tức | `status: ROLLED_BACK` + audit log |
+| `POST /api/b2e/immunity/:id/appeal` | Chủ thể bị gắn Chỉ báo gửi Khiếu nại vào hàng đợi người thật rà soát | `appealId`, `status: PENDING_HUMAN_REVIEW` |
+| `POST /api/b2e/immunity/:id/resolve-appeal` | Checker **khác** Checker đã Kích hoạt xử lý Khiếu nại (`UPHELD` hoặc `OVERTURNED_ROLLBACK`); trùng người trả `403 APPEAL_REVIEWER_CONFLICT` | Cập nhật `Appeal` & `ImmunityIndicator` + audit log |
+| `POST /api/b2e/immunity/:id/rollback` | Checker Thu hồi Chỉ báo, gỡ cảnh báo khỏi B2C ngay lập tức (hồ sơ điều tra được giữ) | `status: ROLLED_BACK` + audit log |
 | `POST /api/b2e/immunity/:id/expire-demo` | Checker giả lập hết hạn TTL để kiểm chứng Lớp 3 | `status: EXPIRED` + audit log |
+
+**Thay đổi Kế hoạch (chưa xây):**
+* Endpoint **Yêu cầu xét lại tạm giữ**: người dùng xin chuyên viên người thật xem lại quyết định Tạm giữ tự động; chỉ chuyên viên được Giải phóng sớm (căn cứ TT 53/2026 [nguồn báo chí, chưa xác minh điều khoản]).
+* `decision` khi Vụ có Kết luận rủi ro cao → giao dịch bị giữ chuyển `CANCELLED_BY_B2E`; Vụ `ESCALATED_TO_B2E` hiển thị hạn phán quyết 03 ngày làm việc (quy tắc thiết kế theo mức tối đa của Luật PCRT Điều 44).
+* `evidenceSourcesJson`: mỗi nguồn ghi `LOẠI:chi tiết`, guardrail đếm theo số **loại** khác nhau (`>= 2`).
+* `/checker`: khối số đếm thô của phiên (Vụ Minh oan, Khiếu nại được chấp nhận, Chỉ báo bị Thu hồi), nhãn `MẪU MÔ PHỎNG`, không có phần trăm.
+
+> Bốn lớp Miễn dịch Cộng đồng (Cảnh báo mềm, ≥2 nguồn khác loại & Maker–Checker, TTL, Khiếu nại) là **thiết kế quản trị của TrustLoop**, không phải nghĩa vụ của TT 53/2026. Chỉ báo chỉ trả về cho người dùng khi giá trị quét/nhập trùng đúng, với nội dung "rủi ro cao"; không có endpoint công khai danh sách.
 
 ---
 
@@ -170,7 +180,7 @@ Mọi lời gọi LLM đều parse qua **Zod v3** (`src/core/agents/schemas.ts`)
 
 ## 6. Dữ liệu Mô phỏng Gốc (`seedScenarios.ts`) & Checklist `README.md`
 
-* **`CASE-01` (Bác Hùng):** Ảnh chat Zalo giả `"Cán bộ Điều tra — Phòng Hình sự"` + lệnh bắt giả dấu đỏ ghép lệch + TK đích `990123456789` + 4 lệnh `9.500.000đ` né QĐ 2345 + cụm ví mule `ACC_MULE_01/02/03` chung thiết bị `DEV_ANDROID_99` + cờ SIMO mô phỏng.
-* **`CASE-02` (Minh Anh):** Ảnh Zalo giả shipper/dịch vụ công gửi link `https://dichvucong-xacminh-hoso.example/capnhat.apk` + hướng dẫn bật quyền `Accessibility Services` (mô thức mã độc RedHook/RatHat).
+* **`CASE-01` (Bác Hùng):** Ảnh chat Zalo giả `"Cán bộ Điều tra — Phòng Hình sự"` + lệnh bắt giả dấu đỏ ghép lệch + TK đích `990123456789` + 4 lệnh `9.500.000đ` lọt dưới ngưỡng xác thực sinh trắc học 10 triệu + cụm ví mule `ACC_MULE_01/02/03` chung thiết bị `DEV_ANDROID_99` + cờ SIMO mô phỏng.
+* **`CASE-02` (Minh Anh):** Ảnh Zalo giả shipper/dịch vụ công gửi link `https://dichvucong-xacminh-hoso.example/capnhat.apk` + hướng dẫn bật quyền `Accessibility Services`. *Kế hoạch làm lại:* tin nhắn hướng dẫn cài **ứng dụng VNeID giả** có quyền điều khiển từ xa — chỉ dạng văn bản, tên miền hư cấu `.example`, gắn `MẪU MÔ PHỎNG`, lời khuyên chỉ cài ứng dụng từ kho chính thức.
 * **`CASE-03` (Chị Hoa — Tiểu thương Livestream):** Shop Gia Dụng Hoa Mai hoạt động 14 tháng, 35 giao dịch nhỏ (`150k–450k`) trong khung `20:00–21:00` (gom thành 5 cụm đại diện + badge trên đồ thị), thiết bị chính chủ cố định, `sanitizedMinute0Json = null`, `0` khiếu nại.
 * **`README.md` bắt buộc đủ 5 mục:** Hướng dẫn chạy & Live URL, Công nghệ & Mô hình AI, Khai báo 100% Dữ liệu tổng hợp + Nguồn tham khảo công khai, Danh sách Thư viện Mã nguồn mở & License, Tuyên bố Trách nhiệm & Ranh giới Thật/Mô phỏng.

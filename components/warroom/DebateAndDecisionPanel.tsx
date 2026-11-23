@@ -372,7 +372,7 @@ export function DebateAndDecisionPanel({
                 <div className="rounded-lg border border-amber-500/35 bg-amber-950/30 p-3">
                   <p className="mb-1.5 flex items-center gap-1.5 font-semibold text-amber-300">
                     <Ban className="h-3.5 w-3.5" aria-hidden="true" />
-                    TUYỆT ĐỐI KHÔNG NÓI (Tránh lỗi Klarna & Tuân thủ TT 53/2026)
+                    TUYỆT ĐỐI KHÔNG NÓI (Tránh lỗi Klarna; không tiết lộ việc đã báo cáo giao dịch đáng ngờ — Luật PCRT Điều 40.2)
                   </p>
                   <ul className="list-disc space-y-1 pl-4 text-amber-100/90">
                     {synthesis.cskh_empathetic_card.do_not_say_vi.map((item, idx) => (
@@ -450,7 +450,7 @@ export function DebateAndDecisionPanel({
                 value={indicatorValue}
                 onChange={(e) => setIndicatorValue(e.target.value)}
                 placeholder="VD: 990123456789 hoặc dichvucong-xacminh-hoso.example/capnhat.apk"
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 placeholder:text-slate-500 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs text-slate-100 placeholder:text-slate-400 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
               />
             </div>
 
@@ -502,7 +502,7 @@ export function DebateAndDecisionPanel({
                 value={rationale}
                 onChange={(e) => setRationale(e.target.value)}
                 placeholder="Ghi rõ căn cứ kỹ thuật, chính sách áp dụng và kết luận rà soát của chuyên viên..."
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
+                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-100 placeholder:text-slate-400 focus:border-momo-400 focus:outline-none focus:ring-2 focus:ring-momo-400/40"
               />
             </div>
 
@@ -534,7 +534,7 @@ export function DebateAndDecisionPanel({
             }`}
           >
             <span className="flex w-full items-center justify-between gap-2 text-xs font-bold">
-              <span>Đóng cảnh báo giả (Dismiss FP)</span>
+              <span>Minh oan (Dismiss FP)</span>
               {dismissHighlighted && (
                 <span className="rounded bg-emerald-400 px-1.5 py-0.5 text-[10px] font-extrabold text-slate-950">
                   KHUYẾN NGHỊ
@@ -602,7 +602,7 @@ export function DebateAndDecisionPanel({
                 <p className="font-bold text-white">
                   {decisionResult
                     ? decisionResult.caseStatus === "DISMISSED_FP"
-                      ? "Đã ghi nhận: Đóng cảnh báo giả (DISMISSED_FP)"
+                      ? "Đã ghi nhận: Minh oan (DISMISSED_FP)"
                       : `Đã ghi nhận đề xuất Miễn dịch (${decisionResult.indicator?.status ?? "IMMUNITY_PROPOSED"})`
                     : "Hồ sơ đã được đề xuất vào Kho Miễn dịch"}
                 </p>

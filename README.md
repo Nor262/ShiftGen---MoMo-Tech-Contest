@@ -1,7 +1,8 @@
-# MoMo TrustLoop v2 — Vòng Phòng vệ Niềm tin Số Khép kín (B2C → Family → B2E)
+# MoMo TrustLoop v2 — Vòng Phòng vệ Niềm tin Số Khép kín (B2C → Người giám hộ → B2E)
 
 > **MoMo Tech Contest 2026** — *"Imagine the Future Workspace (Human Centered. AI Powered)"*
 > Toàn bộ dữ liệu kịch bản và nhân vật trong bản demo đều là **`MẪU MÔ PHỎNG`** tổng hợp 100%, cô lập theo từng phiên chấm thi (`demoSessionId`).
+> **Định vị:** TrustLoop là lớp **bổ sung** trên SIMO của NHNN và các lớp bảo vệ MoMo đang có (cảnh báo tài khoản nhận tiền, Bảo hiểm An toàn chuyển tiền): bắt kịch bản thao túng ở **Phút 00** khi tài khoản nhận còn "sạch", và thêm quy trình Khiếu nại/người thật xem lại minh bạch. Sinh trắc học chứng minh đúng người đang thao tác, không chứng minh người đó không bị thao túng. Chi tiết: [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md); thuật ngữ: [GLOSSARY.md](./GLOSSARY.md).
 
 ---
 
@@ -9,10 +10,11 @@
 
 ### Live URL (Production)
 - **Public Demo:** [`https://momo-trustloop.vercel.app`](https://momo-trustloop.vercel.app)
-- **Hạ tầng triển khai:** Vercel (`sin1` Singapore, Fluid Compute `maxDuration` up to `300s`; route `/api/shield/scan` đặt `maxDuration = 60`, `/api/warroom/cases/[caseId]/investigate` đặt `maxDuration = 120`) + Supabase PostgreSQL (`ap-southeast-1`).
+- **Hạ tầng triển khai (Kế hoạch — bắt buộc cho cuộc thi):** chuyển sang **AWS Sandbox** — `LLM_BACKEND=bedrock`, Docker (mục "Chạy 1 Lệnh với Docker") trên EC2/Amplify `ap-southeast-1`; bản Vercel bên dưới giữ làm dự phòng.
+- **Hạ tầng hiện tại:** Vercel (`sin1` Singapore, Fluid Compute `maxDuration` up to `300s`; route `/api/shield/scan` đặt `maxDuration = 60`, `/api/warroom/cases/[caseId]/investigate` đặt `maxDuration = 120`) + Supabase PostgreSQL (`ap-southeast-1`).
 - **Lưu ý Supabase Free Tier (Keep-Alive):** Supabase Free tự tạm dừng (*auto-pause*) sau 7 ngày không có truy vấn. Khuyến nghị ping định kỳ endpoint kiểm tra sức khỏe `GET /api/health` (trả HTTP `200` kèm trạng thái DB & LLM) để giữ kết nối luôn sẵn sàng.
 - **Đồng bộ 2 thiết bị cho BGK:** Mở cùng URL với tham số `?session=momo-final` trên cả Laptop và Điện thoại.
-- **Tài liệu đi kèm:** [Hướng dẫn Demo 1 Trang (3 phút)](./docs/ONE_PAGE_GUIDE.md) | [Bảng Số đo Độ trễ Thực tế](./docs/MEASURED_LATENCIES.md) | [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md) | [Đặc tả Yêu cầu](./docs/SPEC_REQUIREMENTS.md) | [Đặc tả Thiết kế](./docs/SPEC_DESIGN.md).
+- **Tài liệu đi kèm:** [Hướng dẫn Demo 1 Trang (3 phút)](./docs/ONE_PAGE_GUIDE.md) | [Bảng Số đo Độ trễ Thực tế](./docs/MEASURED_LATENCIES.md) | [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md) | [Đặc tả Yêu cầu](./docs/SPEC_REQUIREMENTS.md) | [Đặc tả Thiết kế](./docs/SPEC_DESIGN.md) | [Căn cứ pháp lý](./docs/RESEARCH_LEGAL.md) | [Số liệu vấn đề](./docs/RESEARCH_PROBLEM.md).
 
 ### Chạy Local (SQLite — Phát triển & Kiểm thử nhanh)
 ```bash
@@ -53,7 +55,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 ### Phân tách Thuật toán Thuần (Deterministic) vs Nhiệm vụ LLM
 | Lớp xử lý | Cơ chế | Trách nhiệm cụ thể |
 | :--- | :--- | :--- |
-| **Thuần thuật toán (Không dùng LLM)** | `lib/graph/analyzer.ts` | Phát hiện chia nhỏ giao dịch (*smurfing*) dưới ngưỡng 10M/lần & 20M/ngày (QĐ 2345, múi giờ `Asia/Ho_Chi_Minh`) và cụm ví trung gian (*mule*) dùng chung thiết bị/IP. |
+| **Thuần thuật toán (Không dùng LLM)** | `lib/graph/analyzer.ts` | Phát hiện Chia nhỏ giao dịch (*smurfing*) dưới ngưỡng xác thực sinh trắc học 10M/lần & 20M/ngày (múi giờ `Asia/Ho_Chi_Minh`) và cụm Ví trung gian (*mule*) dùng chung thiết bị/IP — dấu hiệu đáng ngờ theo Luật PCRT 2022 Điều 29 & TT 40/2024 Phụ lục 01. |
 | **Thuần thuật toán (Không dùng LLM)** | `lib/agents/retriever.ts` | Chỉ mục **BM25** chuẩn hóa tiếng Việt trên 12 chunk pháp lý & bảo hiểm trong `data/vnPolicies.json`. |
 | **Thuần thuật toán (Không dùng LLM)** | `lib/pii/redactor.ts`, `lib/immunity/service.ts` | Che mờ CCCD 12 số, SĐT, số dư; bọc `<untrusted_user_content>`; hậu kiểm cứng `>= 2` nguồn độc lập (`400`), tách vai trò Maker ≠ Checker (`403`), TTL & `AuditLog`. |
 | **Runtime LLM** | `Vision Scanner` + `4+1 War-Room Agents` | Phân tích ảnh chat/biên lai/link `.apk` (Multimodal Vision), giải thích ấm áp cho người cao tuổi, tranh biện 4 Agent song song (`Promise.allSettled` + SSE) gồm `False-Positive Defender`, và soạn **Thẻ Bàn giao CSKH Thấu cảm**. |
@@ -64,15 +66,16 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 
 ### Dữ liệu Tổng hợp 100% & Tài liệu Công khai
 - Toàn bộ hồ sơ `CASE-01` (Bác Hùng), `CASE-02` (Minh Anh), `CASE-03` (Chị Hoa) và 3 ảnh mẫu trong `public/demo-images/` (`zalo-fake-police.png`, `shipper-apk.png`, `livestream-merchant.png`) đều là **`MẪU MÔ PHỎNG`** tổng hợp 100% — **không** chứa CCCD thật, số điện thoại thật hay tài khoản ngân hàng thật.
-- Kho tri thức `data/vnPolicies.json` (12 chunk) chỉ tổng hợp từ các văn bản pháp lý công khai của Việt Nam (QĐ 2345/QĐ-NHNN, Luật BVDLCN 91/2025 & NĐ 356/2025, Luật AI 134/2025, TT 77/2025/TT-NHNN, TT 53/2026/TT-NHNN) và điều khoản công khai.
+- Kho tri thức `data/vnPolicies.json` (12 chunk) tổng hợp từ văn bản pháp lý công khai và điều khoản sản phẩm. **Đã biết sai lệch:** một số chunk còn dẫn QĐ 2345/QĐ-NHNN (đã bị bãi bỏ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025) và gán cho TT 53/2026 nội dung chưa xác minh. *Kế hoạch:* làm sạch kho để chỉ còn tóm tắt văn bản pháp luật theo [RESEARCH_LEGAL.md](./docs/RESEARCH_LEGAL.md).
 
 ### Chính sách Xử lý & Xóa Ảnh Tải lên
 - Ảnh tải lên (`JPG`/`PNG`/`WEBP`, tối đa 5 MB, kiểm tra magic bytes) được giữ **trong bộ nhớ RAM theo từng request** để gửi trực tiếp tới nhà cung cấp LLM đang cấu hình (`Gemini API` hoặc `AWS Bedrock`) phục vụ phân tích thời gian thực.
-- **Không lưu ảnh gốc vào CSDL** (`ScanSession` chỉ lưu `imageHash` và JSON kết quả đã ẩn PII), **không** chuyển tiếp ảnh gốc sang `Family Co-Sign` hay `B2E War-Room` (`contains_raw_image: false`), kèm hàm `purgeExpiredUploads()` (TTL mặc định 2 giờ) dọn tệp tạm nếu có.
+- **Không lưu ảnh gốc vào CSDL** (`ScanSession` chỉ lưu `imageHash` và JSON kết quả đã ẩn PII), **không** chuyển tiếp ảnh gốc sang màn hình Người giám hộ hay `B2E War-Room` (`contains_raw_image: false`), kèm hàm `purgeExpiredUploads()` (TTL mặc định 2 giờ) dọn tệp tạm nếu có.
 
 ### Điều khoản Dữ liệu: Gemini API Free Tier vs Paid Tier / AWS Bedrock
 - **Gemini API Free Tier (ngoài khu vực EEA/UK/CH, bao gồm Việt Nam):** Theo điều khoản Google Gemini API, dữ liệu đầu vào và hình ảnh gửi qua **Free Tier** có thể được Google sử dụng để cải thiện sản phẩm và có thể qua rà soát thủ công. **Khuyến cáo Ban Giám Khảo tuyệt đối KHÔNG tải ảnh CCCD, giấy tờ tùy thân hoặc sao kê ngân hàng thật khi demo trên Free Tier.**
 - **Gemini API Paid Tier (đã bật Billing) & AWS Bedrock:** Dữ liệu đầu vào không được dùng để huấn luyện mô hình nền tảng theo điều khoản doanh nghiệp/trả phí của nhà cung cấp.
+- **Chuyển dữ liệu xuyên biên giới (trung thực):** MVP gửi ảnh người dùng tải lên tới LLM đặt **ngoài Việt Nam**; Ẩn PII chạy phía máy chủ **sau** bước Vision. Theo Luật 91/2025 Điều 20.1.c đây là chuyển dữ liệu xuyên biên giới. Điều kiện trước khi dùng với người dùng thật (Lộ trình): hồ sơ đánh giá tác động chuyển dữ liệu xuyên biên giới & DPIA (Điều 20.2, 21.1), thỏa thuận bên xử lý cấm huấn luyện, và Ẩn PII trên thiết bị.
 
 ---
 
@@ -104,7 +107,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 | :--- | :--- | :--- |
 | Quét ảnh chat/APK bằng Multimodal Vision LLM & ẩn PII | **Chạy thật 100% online** | Gọi Gemini/Bedrock/OpenAI thật; trả `503` nếu thiếu key. |
 | 4 AI Agents song song (`Promise.allSettled` + SSE) & `FP_Defender` | **Chạy thật 100% online** | Validate Zod v3 + 1x sửa định dạng + hậu kiểm cứng `>= 2` nguồn. |
-| Đồ thị QĐ 2345, Maker–Checker (`403`/`400`), TTL, Khiếu nại & Rollback | **Chạy thật 100% online** | Lưu CSDL thật theo `demoSessionId`; Rollback gỡ ngay ở B2C. |
+| Đồ thị Chia nhỏ giao dịch, Maker–Checker (`403`/`400`), TTL, Khiếu nại (Checker khác xét) & Thu hồi, Giải phóng tạm giữ | **Chạy thật 100% online** | Lưu CSDL thật theo `demoSessionId`; Thu hồi gỡ cảnh báo ngay ở B2C, hồ sơ điều tra được giữ. |
 | Cổng chuyển tiền ngân hàng, API SIMO NHNN thật, lịch sử 3 nhân vật | **Mô phỏng (`MẪU MÔ PHỎNG`)** | Dữ liệu tổng hợp 100% phục vụ kiểm chứng luồng khép kín. |
 
 ### Giới hạn đã biết — Ponytail Debt Ledger (`/ponytail-debt`)
@@ -133,7 +136,7 @@ Kết quả quét toàn bộ kho mã nguồn bằng lệnh `git grep -nE '(#|//|
 | :--- | :---: |
 | `redactText()` — Ẩn PII & bọc thẻ chống prompt injection (`lib/pii/redactor.ts`) | **`0.027 ms`** |
 | `retrievePolicyChunks()` — Truy xuất BM25 trên 12 chunk `vnPolicies.json` (`lib/agents/retriever.ts`) | **`0.123 ms`** |
-| `analyzeCaseGraph()` — Phân tích đồ thị QĐ 2345 & cụm mule (`lib/graph/analyzer.ts`) | **`0.409 ms`** |
+| `analyzeCaseGraph()` — Phân tích đồ thị Chia nhỏ giao dịch & Ví trung gian (`lib/graph/analyzer.ts`) | **`0.409 ms`** |
 
 ### Số đo Live LLM (`Gemini API` / `AWS Bedrock`)
 - **Trạng thái môi trường build hiện tại:** `GEMINI_API_KEY` chưa được cấu hình (`UNSET`), nên các ô đo thời gian gọi LLM mạng ngoài (`Vision Scanner` và `4+1 War-Room Agents`) được giữ ở trạng thái **`[Chờ đo thực tế khi cấu hình GEMINI_API_KEY]`** trong [docs/MEASURED_LATENCIES.md](./docs/MEASURED_LATENCIES.md) để điền đúng số đo `measured_latency_ms` & `model_used` trước khi xuất PDF Slide 9.
