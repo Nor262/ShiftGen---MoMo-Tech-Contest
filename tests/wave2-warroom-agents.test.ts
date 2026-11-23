@@ -682,7 +682,7 @@ describe("Wave 2 — /api/warroom/* Route Handlers", () => {
   it("returns HTTP 429 DAILY_LLM_QUOTA_EXCEEDED when daily cap is reached", async () => {
     const sessionId = createSessionId("warroom-quota");
     setLLMProviderForTest(makeMockWarRoomProvider());
-    const caseId = `${sessionId}::CASE-01`;
+    const caseId = `${sessionId}::CASE-03`; // CASE-01 now prefers its recorded replay (#15)
 
     const dateKey = getVietnamDateKey();
     await prisma.dailyLlmUsage.upsert({

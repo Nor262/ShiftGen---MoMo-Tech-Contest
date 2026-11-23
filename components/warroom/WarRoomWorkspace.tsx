@@ -1,5 +1,6 @@
 "use client";
 
+import { isReplayModel } from "@/lib/replay-label";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { addWorkingDays, ESCALATION_DECISION_WORKING_DAYS } from "@/lib/working-days";
 import {
@@ -532,7 +533,10 @@ export function WarRoomWorkspace() {
                         <>
                           <span className="inline-flex items-center gap-1 text-emerald-300">
                             <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                            Tổng thời gian thực: {Math.round(activeDebate.total_latency_ms)} ms
+                            {isReplayModel(activeDebate.model_used)
+                              ? "Thời gian của lần chạy thật đã ghi"
+                              : "Tổng thời gian thực"}
+                            : {Math.round(activeDebate.total_latency_ms)} ms
                           </span>
                           <span className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-[11px] text-slate-300">
                             Model: {activeDebate.model_used}

@@ -115,8 +115,9 @@ describe("war-room replay loader", () => {
   it("returns the recorded real run with time, model and 'phát lại'", () => {
     const replay = loadWarRoomReplay("CASE-01");
     expect(replay).not.toBeNull();
-    expect(replay!.noticeVi).toMatch(/^Kết quả đã chạy thật lúc \d{2}:\d{2} \d{2}\/\d{2}\/\d{4} · model .+ · phát lại$/);
     expect(isReplayModel(replay!.debate.model_used)).toBe(true);
+    // the War-Room UI only sees model_used, so the recording time must travel inside it
+    expect(replay!.debate.model_used).toMatch(/^.+ \(phát lại · chạy thật \d{2}:\d{2} \d{2}\/\d{2}\/\d{4}\)$/);
     expect(isReplayModel("Qwen3.8-27B")).toBe(false);
   });
 
@@ -207,7 +208,29 @@ describe("investigate route uses the labelled replay only when the live run fail
   it("invents nothing for scenarios without a recorded run", async () => {
     setLLMProviderForTest(failing());
     const res = await investigate("CASE-03");
-    const body = await res.json();
-    expect(res.status === 200 ? isReplayModel(body.debate.model_used) : false).toBe(false);
+    expect(res.status).toBeGreaterThanOrEqual(500);
+  });
+
+  it("does not hide non-LLM failures (e.g. a bug or DB error) behind the replay", async () => {
+    const boom = async () => {
+      throw new Error("database is locked");
+    };
+    setLLMProviderForTest({ ...failing(), generateJSON: boom as LLMProvider["generateJSON"] });
+    const res = await investigate("CASE-01");
+    expect(res.status).toBe(502);
+  });
+
+  it("prefers the replay when the daily AI quota is used up (same as scan)", async () => {
+    setLLMProviderForTest(failing());
+    const previous = process.env.DAILY_LLM_CALL_LIMIT;
+    process.env.DAILY_LLM_CALL_LIMIT = "0";
+    try {
+      const res = await investigate("CASE-01");
+      expect(res.status).toBe(200);
+      expect(isReplayModel((await res.json()).debate.model_used)).toBe(true);
+    } finally {
+      if (previous === undefined) delete process.env.DAILY_LLM_CALL_LIMIT;
+      else process.env.DAILY_LLM_CALL_LIMIT = previous;
+    }
   });
 });

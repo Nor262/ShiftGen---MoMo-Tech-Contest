@@ -8,7 +8,13 @@ import {
   type WarRoomSseEvent,
 } from "@/contracts";
 import { runWarRoomInvestigation, type InvestigateCaseOutput } from "@/lib/agents";
-import { getLLMProvider, LLMNotConfiguredError, LLMTimeoutError } from "@/lib/llm";
+import { analyzeCaseGraph } from "@/lib/graph/analyzer";
+import {
+  getLLMProvider,
+  LLMNotConfiguredError,
+  LLMQuotaExceededError,
+  LLMTimeoutError,
+} from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { loadWarRoomReplay } from "@/lib/replay";
 import { checkDbRateLimit, extractClientIp } from "@/lib/rate-limit";
@@ -22,27 +28,28 @@ import {
 export const maxDuration = 120;
 export const dynamic = "force-dynamic";
 
-/**
- * Ticket #15: when the live run fails (throws, or every agent degraded), show the recorded real
- * run instead — always labelled via model_used "(phát lại)". Partial live results stay live.
- * Missing credentials never reach here (503 LLM_NOT_CONFIGURED is returned before).
- */
 type PersistableOutput = Pick<InvestigateCaseOutput, "debate" | "annotatedGraph">;
 
+/**
+ * Ticket #15: when the AI provider fails (times out, is over quota, or every agent degraded), show
+ * the recorded real run instead — always labelled via model_used "(phát lại · chạy thật …)".
+ * Partial live results stay live. Missing credentials keep 503 LLM_NOT_CONFIGURED (checked first).
+ */
 function replayDebateIfAllDegraded(debate: WarRoomDebate, scenarioCode: string): WarRoomDebate {
   const allDegraded = Object.values(debate.agents).every((a) => a.status === "AGENT_DEGRADED");
   return (allDegraded && loadWarRoomReplay(scenarioCode)?.debate) || debate;
 }
 
-function replayOutputOnFailure(
-  err: unknown,
-  scenarioCode: string,
-  graphData: GraphData,
-): PersistableOutput | null {
-  if (err instanceof LLMNotConfiguredError) return null;
+/** Replay output for a provider failure; null for anything else (bugs, DB errors) so it is never hidden. */
+function replayOutput(scenarioCode: string, graphData: GraphData): PersistableOutput | null {
   const replay = loadWarRoomReplay(scenarioCode);
-  // shortcut: the replayed case keeps the un-annotated graph; re-run graph analysis if the UI needs flags here.
-  return replay ? { debate: replay.debate, annotatedGraph: graphData } : null;
+  if (!replay) return null;
+  // graph analysis is deterministic (no LLM), so the replayed case still gets real graph flags
+  return { debate: replay.debate, annotatedGraph: analyzeCaseGraph({ graphData }).annotatedGraph };
+}
+
+function isProviderFailure(err: unknown): boolean {
+  return err instanceof LLMTimeoutError || err instanceof LLMQuotaExceededError;
 }
 
 function wantsSseStream(request: Request): boolean {
@@ -175,7 +182,51 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
       );
     }
 
+    const caseDto = toInvestigationCaseDto(caseRow);
+    const { actorId, actorRole } = parsedReq.data;
+    const streamRequested = wantsSseStream(request);
+    const persist = (output: PersistableOutput) =>
+      persistInvestigationResult({
+        demoSessionId,
+        caseId: caseDto.caseId,
+        scenarioCode: caseDto.scenarioCode,
+        actorId,
+        actorRole,
+        output,
+      });
+
     const quota = await consumeDailyLlmQuota();
+    const quotaReplay = quota.allowed
+      ? null
+      : replayOutput(caseDto.scenarioCode, caseDto.graphData);
+    if (quotaReplay) {
+      await persist(quotaReplay);
+      if (streamRequested) {
+        const completed = WarRoomSseEventSchema.parse({
+          event: "completed",
+          debate: quotaReplay.debate,
+        });
+        return new Response(
+          `data: ${JSON.stringify(completed)}
+
+`,
+          {
+            status: 200,
+            headers: {
+              "Content-Type": "text/event-stream; charset=utf-8",
+              "Cache-Control": "no-cache",
+            },
+          },
+        );
+      }
+      return NextResponse.json(
+        InvestigateCaseResponseSchema.parse({
+          caseId: caseDto.caseId,
+          status: "PENDING_DECISION",
+          debate: quotaReplay.debate,
+        }),
+      );
+    }
     if (!quota.allowed) {
       return NextResponse.json(
         {
@@ -191,10 +242,6 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
         { status: 429 },
       );
     }
-
-    const caseDto = toInvestigationCaseDto(caseRow);
-    const { actorId, actorRole } = parsedReq.data;
-    const streamRequested = wantsSseStream(request);
 
     if (streamRequested) {
       const encoder = new TextEncoder();
@@ -224,30 +271,18 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
               provider,
               onEvent: pushEvent,
               beforeComplete: async (output) => {
-                await persistInvestigationResult({
-                  demoSessionId,
-                  caseId: caseDto.caseId,
-                  scenarioCode: caseDto.scenarioCode,
-                  actorId,
-                  actorRole,
-                  output: {
-                    ...output,
-                    debate: replayDebateIfAllDegraded(output.debate, caseDto.scenarioCode),
-                  },
+                await persist({
+                  ...output,
+                  debate: replayDebateIfAllDegraded(output.debate, caseDto.scenarioCode),
                 });
               },
             });
           } catch (err) {
-            const replayed = replayOutputOnFailure(err, caseDto.scenarioCode, caseDto.graphData);
+            const replayed = isProviderFailure(err)
+              ? replayOutput(caseDto.scenarioCode, caseDto.graphData)
+              : null;
             if (replayed) {
-              await persistInvestigationResult({
-                demoSessionId,
-                caseId: caseDto.caseId,
-                scenarioCode: caseDto.scenarioCode,
-                actorId,
-                actorRole,
-                output: replayed,
-              });
+              await persist(replayed);
               pushEvent({ event: "completed", debate: replayed.debate });
             } else if (err instanceof LLMNotConfiguredError) {
               pushEvent({
@@ -300,16 +335,9 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
         sanitizedMinute0: caseDto.sanitizedMinute0,
         provider,
         beforeComplete: async (res) => {
-          await persistInvestigationResult({
-            demoSessionId,
-            caseId: caseDto.caseId,
-            scenarioCode: caseDto.scenarioCode,
-            actorId,
-            actorRole,
-            output: {
-              ...res,
-              debate: replayDebateIfAllDegraded(res.debate, caseDto.scenarioCode),
-            },
+          await persist({
+            ...res,
+            debate: replayDebateIfAllDegraded(res.debate, caseDto.scenarioCode),
           });
         },
       });
@@ -318,16 +346,11 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
         debate: replayDebateIfAllDegraded(live.debate, caseDto.scenarioCode),
       };
     } catch (err) {
-      const replayed = replayOutputOnFailure(err, caseDto.scenarioCode, caseDto.graphData);
+      const replayed = isProviderFailure(err)
+        ? replayOutput(caseDto.scenarioCode, caseDto.graphData)
+        : null;
       if (!replayed) throw err;
-      await persistInvestigationResult({
-        demoSessionId,
-        caseId: caseDto.caseId,
-        scenarioCode: caseDto.scenarioCode,
-        actorId,
-        actorRole,
-        output: replayed,
-      });
+      await persist(replayed);
       output = replayed;
     }
 
