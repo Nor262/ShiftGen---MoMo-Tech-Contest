@@ -5,6 +5,10 @@ import { initialStoryState, isBeatLocked, STORY_BEATS, storyReducer, type StoryS
 function succeed(s: StoryState, result: unknown = { ok: true }): StoryState {
   return storyReducer(storyReducer(s, { type: "beatStarted" }), { type: "beatSucceeded", result });
 }
+/** Run the beat on stage, then move on to the next one (the presenter's two clicks). */
+function play(s: StoryState): StoryState {
+  return storyReducer(succeed(s), { type: "next" });
+}
 
 describe("story beats", () => {
   it("are the 8 beats of the spec, in order, each with an actor and copy", () => {
@@ -46,6 +50,22 @@ describe("story state machine", () => {
     expect(isBeatLocked(s, "1.2")).toBe(false);
   });
 
+  it("holds the stage on the finished beat so its effect can be shown, then moves on with 'next'", () => {
+    let s = succeed(initialStoryState()); // 1.1 done
+    s = storyReducer(s, { type: "next" });
+    s = succeed(s); // 1.2 (scan) done → next beat is in chapter 2
+    expect(s.shown).toBe("1.2");
+    expect(s.viewing).toBe(1);
+    const moved = storyReducer(s, { type: "next" });
+    expect(moved.shown).toBe("2.1");
+    expect(moved.viewing).toBe(2);
+  });
+
+  it("only runs the beat that is on stage", () => {
+    const s = succeed(initialStoryState()); // shown 1.1 (done), current 1.2
+    expect(storyReducer(s, { type: "beatStarted" })).toBe(s);
+  });
+
   it("ignores a second start while a beat is running (double click = one call)", () => {
     const running = storyReducer(initialStoryState(), { type: "beatStarted" });
     expect(storyReducer(running, { type: "beatStarted" })).toBe(running);
@@ -70,20 +90,26 @@ describe("story state machine", () => {
 
   it("ends as done after beat 4.2", () => {
     let s = initialStoryState();
-    for (let i = 0; i < STORY_BEATS.length; i++) s = succeed(s);
+    for (let i = 0; i < STORY_BEATS.length; i++) s = play(s);
     expect(s.current).toBe("done");
     expect(s.done).toHaveLength(8);
+    expect(s.shown).toBe("4.2");
     expect(storyReducer(s, { type: "beatStarted" })).toBe(s);
+    expect(storyReducer(s, { type: "next" })).toBe(s);
   });
 
-  it("follows the current chapter and lets the presenter look back without rerunning", () => {
+  it("lets the presenter look back at a chapter without rerunning, then return", () => {
     let s = initialStoryState();
     expect(s.viewing).toBe(1);
-    for (let i = 0; i < 4; i++) s = succeed(s); // now at 3.1
+    for (let i = 0; i < 4; i++) s = play(s); // on stage: 3.1
     expect(s.viewing).toBe(3);
     const back = storyReducer(s, { type: "viewChapter", chapter: 1 });
     expect(back.viewing).toBe(1);
+    expect(back.shown).toBe("1.2");
     expect(back.current).toBe("3.1");
+    expect(storyReducer(back, { type: "beatStarted" })).toBe(back); // looking back never reruns
+    const returned = storyReducer(back, { type: "viewChapter", chapter: 3 });
+    expect(returned.shown).toBe("3.1");
     expect(storyReducer(s, { type: "viewChapter", chapter: 4 })).toBe(s); // not reached yet
   });
 });

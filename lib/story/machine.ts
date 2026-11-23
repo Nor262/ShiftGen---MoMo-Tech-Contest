@@ -83,7 +83,10 @@ export const STORY_BEATS: readonly StoryBeat[] = [
 ];
 
 export interface StoryState {
+  /** First beat not yet run ("done" when the story is over). */
   current: BeatId | "done";
+  /** Beat on stage: the one about to run, or a finished one whose effect is being shown. */
+  shown: BeatId;
   done: BeatId[];
   running: boolean;
   error: string | null;
@@ -95,10 +98,11 @@ export type StoryAction =
   | { type: "beatStarted" }
   | { type: "beatSucceeded"; result: unknown }
   | { type: "beatFailed"; message: string }
+  | { type: "next" }
   | { type: "viewChapter"; chapter: Chapter };
 
 export function initialStoryState(): StoryState {
-  return { current: "1.1", done: [], running: false, error: null, viewing: 1, results: {} };
+  return { current: "1.1", shown: "1.1", done: [], running: false, error: null, viewing: 1, results: {} };
 }
 
 function chapterOf(id: BeatId): Chapter {
@@ -109,16 +113,19 @@ export function isBeatLocked(s: StoryState, id: BeatId): boolean {
   return s.current !== id && !s.done.includes(id);
 }
 
+const onStage = (s: StoryState, shown: BeatId): StoryState => ({ ...s, shown, viewing: chapterOf(shown) });
+
 export function storyReducer(s: StoryState, a: StoryAction): StoryState {
   switch (a.type) {
     case "beatStarted":
-      return s.running || s.current === "done" ? s : { ...s, running: true, error: null };
+      return s.running || s.shown !== s.current ? s : { ...s, running: true, error: null };
     case "beatFailed":
       return s.running ? { ...s, running: false, error: a.message } : s;
     case "beatSucceeded": {
       if (!s.running || s.current === "done") return s;
       const beat = s.current;
       const next = STORY_BEATS[STORY_BEATS.findIndex((b) => b.id === beat) + 1];
+      // the stage stays on `beat` so its effect is visible; "next" moves on
       return {
         ...s,
         running: false,
@@ -126,12 +133,16 @@ export function storyReducer(s: StoryState, a: StoryAction): StoryState {
         done: [...s.done, beat],
         results: { ...s.results, [beat]: a.result },
         current: next ? next.id : "done",
-        viewing: next ? next.chapter : s.viewing,
       };
     }
+    case "next":
+      return s.current === "done" || s.shown === s.current || s.running ? s : onStage(s, s.current);
     case "viewChapter": {
       const reached = s.current === "done" ? 4 : chapterOf(s.current);
-      return a.chapter <= reached ? { ...s, viewing: a.chapter } : s;
+      if (a.chapter > reached) return s;
+      if (s.current !== "done" && a.chapter === chapterOf(s.current)) return onStage(s, s.current);
+      const finished = STORY_BEATS.filter((b) => b.chapter === a.chapter && s.done.includes(b.id));
+      return onStage(s, finished[finished.length - 1].id);
     }
   }
 }
