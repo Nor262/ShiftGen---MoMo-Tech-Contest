@@ -68,7 +68,7 @@ export const RECOMMENDATION_META: Record<
     badgeClass: "border-red-500/50 bg-red-500/20 text-red-200",
   },
   RECOMMEND_DISMISS_FP: {
-    labelVi: "Đề xuất Đóng cảnh báo giả (Khách hàng thật)",
+    labelVi: "Đề xuất Minh oan (Khách hàng thật)",
     badgeClass: "border-emerald-500/50 bg-emerald-500/20 text-emerald-200",
   },
   NEED_MORE_EVIDENCE: {

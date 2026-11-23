@@ -99,7 +99,7 @@ export function FamilyCoSignView() {
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 id="family-heading" className="text-xl font-extrabold text-slate-900 sm:text-2xl">
-                  Family Co-Sign — Chị Minh (FAMILY_MINH)
+                  Người giám hộ — Chị Minh (FAMILY_MINH)
                 </h1>
                 <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800">
                   {DEMO_SIMULATION_LABEL}

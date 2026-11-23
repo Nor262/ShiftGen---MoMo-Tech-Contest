@@ -344,7 +344,7 @@ function makeQaLlmProvider(options?: {
         }
         return {
           data: schema.parse({
-            cited_chunk_ids: ["QD2345-02", "TT53-01", "TT77-01", "LAW134-01"],
+            cited_chunk_ids: ["PCRT29-01", "TT53-01", "TT77-01", "LAW134-01"],
             policy_notes_vi: [
               "Áp dụng giải trình 2 chiều và rà soát khiếu nại bởi con người theo TT 53/2026/TT-NHNN.",
               "Tôn trọng Điều 4 Luật AI 134/2025: không tự động khóa vĩnh viễn thiếu phê duyệt.",

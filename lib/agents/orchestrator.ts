@@ -201,7 +201,7 @@ export function buildPolicyQueryForCase(
     parts.push(input.caseContext.behavioralNoteVi);
   }
   if (graphAnalysis.smurfing_detected || graphAnalysis.mule_cluster_detected) {
-    parts.push("QĐ 2345 smurfing chia nhỏ 10 triệu 20 triệu mule sinh trắc học");
+    parts.push("Điều 29 phòng chống rửa tiền chia nhỏ smurfing mule ví trung gian thiết bị Phụ lục 01 ngưỡng sinh trắc học 10 triệu 20 triệu");
   }
   if (input.caseContext.simoFlagSimulated === true) {
     parts.push("SIMO NHNN liên ngân hàng tài khoản nghi vấn");
@@ -218,14 +218,14 @@ export function buildPolicyQueryForCase(
     input.caseContext.cleanHistoryMonths >= 6 &&
     input.caseContext.complaintsCount === 0
   ) {
-    parts.push("Luật 134 điều 4 không khóa tự động TT 53 khiếu nại human review maker checker");
+    parts.push("Luật 134 điều 4 con người can thiệp không khóa tự động TT 53 khiếu nại human review");
   }
   if (input.sanitizedMinute0) {
     parts.push(input.sanitizedMinute0.summary_vi, "Luật 91 PII che mờ");
   }
 
   // Always include baseline governance + MoMo transfer insurance anchors.
-  parts.push("TT 53 giải trình audit log bảo hiểm MoMo 2 triệu loại trừ");
+  parts.push("báo cáo giao dịch đáng ngờ lưu trữ 5 năm cấm tiết lộ tạm dừng giao dịch TT 40");
   return parts.filter(Boolean).join(" ");
 }
 

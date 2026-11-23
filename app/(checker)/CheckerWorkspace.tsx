@@ -45,7 +45,7 @@ const PERSONAS: readonly RolePersona[] = [
     role: "RISK_CHECKER",
     displayName: "RISK_CHECKER_TUAN — Anh Tuấn",
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
-    hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn, khác Maker), xử lý khiếu nại TT 53/2026, Rollback & Giả lập TTL.",
+    hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn khác loại, khác Maker — thiết kế quản trị riêng), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
   },
   {
     id: "RISK_CHECKER_LAN",

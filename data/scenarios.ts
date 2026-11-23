@@ -63,7 +63,7 @@ export const SCENARIO_FIXTURES: ScenarioFixture[] = [
   {
     scenarioCode: "CASE-01",
     title: `[${DEMO_SIMULATION_LABEL}] Bác Hùng (62t) — Giả danh Công an & Chia nhỏ 4×9,5M`,
-    subtitle: `${DEMO_SIMULATION_LABEL} — Cụm ví mule dùng chung thiết bị DEV_ANDROID_99 & né ngưỡng QĐ 2345`,
+    subtitle: `${DEMO_SIMULATION_LABEL} — Cụm ví mule dùng chung thiết bị DEV_ANDROID_99 & né ngưỡng xác thực sinh trắc học`,
     demoImagePath: "/demo-images/zalo-fake-police.png",
     graphData: GraphDataSchema.parse({
       nodes: [
@@ -309,7 +309,7 @@ export const SCENARIO_FIXTURES: ScenarioFixture[] = [
       complaintsCount: 3,
       independentSources: ["MINUTE_0_ZALO_SCAN", "GRAPH_SMURFING_MULE"],
       behavioralNoteVi:
-        "Chia nhỏ 38 triệu thành 4 lệnh 9,5 triệu (<10M/lần nhưng >20M/ngày) né ngưỡng sinh trắc học QĐ 2345; cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88.",
+        "Chia nhỏ 38 triệu thành 4 lệnh 9,5 triệu (<10M/lần nhưng >20M/ngày) né ngưỡng xác thực sinh trắc học; cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88.",
       transactions: [
         {
           txId: "TX_C01_HUNG_01",

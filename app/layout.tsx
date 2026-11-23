@@ -6,13 +6,13 @@ import { DEMO_SIMULATION_LABEL } from "@/contracts";
 export const metadata: Metadata = {
   title: "MoMo TrustLoop v2 — Closed-Loop Anti-Scam & Multi-Agent Workspace",
   description:
-    "Hệ sinh thái phòng vệ niềm tin số khép kín: B2C Phút 00, Family Co-Sign, B2E FinCrime War-Room 4 Agent và Miễn dịch Cộng đồng 4 Lớp.",
+    "Hệ sinh thái phòng vệ niềm tin số khép kín: B2C Phút 00, Người giám hộ, B2E FinCrime War-Room 4 Agent và Miễn dịch Cộng đồng 4 Lớp.",
 };
 
 const NAV_ITEMS = [
   { href: "/", label: "Tổng quan" },
   { href: "/shield", label: "B2C Phút 00" },
-  { href: "/family", label: "Family Co-Sign" },
+  { href: "/family", label: "Người giám hộ" },
   { href: "/warroom", label: "B2E War-Room" },
   { href: "/checker", label: "Checker & Miễn dịch" },
 ] as const;

@@ -32,7 +32,7 @@ export function tokenizeVietnamese(input: string): string[] {
       tokens.push(tok);
     }
 
-    // Join Vietnamese legal prefixes with adjacent numbers (e.g. "qd 2345" -> "qd2345", "tt 77" -> "tt77").
+    // Join Vietnamese legal prefixes with adjacent numbers (e.g. "tt 40" -> "tt40", "tt 77" -> "tt77").
     const next = rawTokens[i + 1];
     if (next && CODE_PREFIXES.has(tok) && /^\d+$/.test(next)) {
       tokens.push(`${tok}${next}`);

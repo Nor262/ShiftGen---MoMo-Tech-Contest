@@ -316,7 +316,7 @@ export function B2CShieldWorkspace() {
               href="/family"
               className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-semibold text-slate-700 hover:bg-momo-50 hover:text-momo-700"
             >
-              Mở Family Co-Sign →
+              Mở màn hình Người giám hộ →
             </Link>
           </div>
         </div>

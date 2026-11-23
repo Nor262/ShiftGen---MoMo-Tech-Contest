@@ -20,7 +20,7 @@ const WORKSPACES = [
   },
   {
     href: "/family",
-    title: "2. Family Co-Sign (1 Màn hình)",
+    title: "2. Người giám hộ (1 Màn hình)",
     role: "FAMILY_GUARDIAN · Chị Minh",
     description:
       "Xem thẻ cảnh báo đã ẩn CCCD/SĐT/số dư và xác nhận giữ chậm 24h hoặc đẩy khẩn sang đội Risk.",
@@ -39,7 +39,7 @@ const WORKSPACES = [
     title: "4. Checker & Miễn dịch 4 Lớp",
     role: "RISK_CHECKER · Anh Tuấn",
     description:
-      "Phê duyệt 2 cấp Maker–Checker (≥2 nguồn độc lập), quản lý TTL, xử lý khiếu nại người thật (TT 53/2026) và Rollback tức thì.",
+      "Thiết kế quản trị riêng: phê duyệt 2 cấp Maker–Checker (≥2 nguồn độc lập khác loại), thời hạn hiệu lực; khiếu nại do người thật xem xét lại (Luật AI 134 Điều 4.2, TT 53/2026) và Thu hồi tức thì.",
     wave: "Wave 3",
   },
 ] as const;
@@ -102,7 +102,7 @@ export default function HomePage() {
               MoMo TrustLoop v2 — Vòng lặp Phòng vệ Niềm tin Số
             </h1>
             <p className="max-w-2xl text-sm text-slate-600">
-              Kiến trúc 3 trụ cột cứng nối liền tuyến đầu B2C Phút 00, Family Co-Sign ẩn PII,
+              Kiến trúc 3 trụ cột cứng nối liền tuyến đầu B2C Phút 00, Người giám hộ nhận thẻ đã ẩn PII,
               Phòng Tác chiến 4 Agent có phản biện và Miễn dịch Cộng đồng 4 Lớp. Toàn bộ dữ liệu
               kịch bản là <strong>{DEMO_SIMULATION_LABEL}</strong> tổng hợp 100%.
             </p>

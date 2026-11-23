@@ -411,7 +411,7 @@ export function TransferHoldPanel({
               className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
-              Mở Family Co-Sign (Chị Minh)
+              Mở màn hình Người giám hộ (Chị Minh)
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>
@@ -458,7 +458,7 @@ export function TransferHoldPanel({
                         href="/family"
                         className="rounded-lg border border-momo-200 bg-white px-3 py-1.5 text-xs font-semibold text-momo-700 hover:bg-momo-50"
                       >
-                        Xem Family Co-Sign
+                        Xem màn hình Người giám hộ
                       </Link>
                       <button
                         type="button"

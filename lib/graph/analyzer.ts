@@ -118,7 +118,7 @@ function isNearBiometricThreshold(amountVnd: number): boolean {
 }
 
 /**
- * Pure deterministic QĐ 2345/QĐ-NHNN smurfing detector.
+ * Pure deterministic smurfing detector (biometric thresholds 10M/txn, 20M/day; AML Law Art. 29 suspicious sign).
  * Flags >= 2 same-day transfers strictly below 10M (>= 7M & < 10M) whose cumulative sum exceeds 20M/day,
  * both per (fromAccount, toAccount, day) pair and for same-sender split bursts across multiple recipients.
  */
@@ -661,7 +661,7 @@ function buildGraphFromTransactions(
   }
 
   const badgeParts: string[] = [];
-  if (smurfing.smurfing_detected) badgeParts.push("Phát hiện Smurfing QĐ 2345");
+  if (smurfing.smurfing_detected) badgeParts.push("Phát hiện Chia nhỏ giao dịch");
   if (mules.mule_cluster_detected) badgeParts.push("Phát hiện Cụm Mule");
   if (badgeParts.length === 0) badgeParts.push(`${txs.length} giao dịch`);
 
@@ -719,7 +719,7 @@ export function buildTransactionGraph(
 }
 
 /**
- * Runs complete deterministic graph analysis combining QĐ 2345 smurfing detection,
+ * Runs complete deterministic graph analysis combining smurfing detection,
  * mule-ring shared device/IP clustering, and cyber-node inspection.
  */
 export function analyzeCaseGraph(input: AnalyzeCaseGraphInput): GraphAnalysisResult {
@@ -749,7 +749,7 @@ export function analyzeCaseGraph(input: AnalyzeCaseGraphInput): GraphAnalysisRes
   const keyFindings: string[] = [];
   for (const g of smurfing.smurfing_groups) {
     keyFindings.push(
-      `Phát hiện dấu hiệu chia nhỏ giao dịch (smurfing) né ngưỡng QĐ 2345/QĐ-NHNN: ${g.fromAccount} → ${g.toAccount} (${g.txCount} lệnh dưới 10 triệu, tổng ${formatVnd(g.totalVnd)} trong ngày ${g.day}, vượt ngưỡng 20 triệu/ngày).`,
+      `Phát hiện dấu hiệu chia nhỏ giao dịch (smurfing) né ngưỡng xác thực sinh trắc học (dấu hiệu đáng ngờ theo Luật Phòng, chống rửa tiền Điều 29): ${g.fromAccount} → ${g.toAccount} (${g.txCount} lệnh dưới 10 triệu, tổng ${formatVnd(g.totalVnd)} trong ngày ${g.day}, vượt ngưỡng 20 triệu/ngày).`,
     );
   }
   for (const d of mules.shared_devices) {
@@ -790,7 +790,7 @@ export function analyzeCaseGraph(input: AnalyzeCaseGraphInput): GraphAnalysisRes
   }
   if (keyFindings.length === 0) {
     keyFindings.push(
-      "Không phát hiện dấu hiệu chia nhỏ giao dịch (QĐ 2345), cụm ví mule dùng chung thiết bị/IP, hay nút hạ tầng độc hại trên đồ thị.",
+      "Không phát hiện dấu hiệu chia nhỏ giao dịch, cụm ví mule dùng chung thiết bị/IP, hay nút hạ tầng độc hại trên đồ thị.",
     );
   }
 
@@ -799,8 +799,8 @@ export function analyzeCaseGraph(input: AnalyzeCaseGraphInput): GraphAnalysisRes
   if (!smurfing.smurfing_detected) {
     benignSignals.push(
       txs.length > 0
-        ? `Không phát hiện hành vi chia nhỏ giao dịch né ngưỡng 10 triệu/lần & 20 triệu/ngày (QĐ 2345/QĐ-NHNN) trong ${txs.length} giao dịch.`
-        : "Không ghi nhận giao dịch chia nhỏ né ngưỡng QĐ 2345/QĐ-NHNN.",
+        ? `Không phát hiện hành vi chia nhỏ giao dịch né ngưỡng xác thực sinh trắc học 10 triệu/lần & 20 triệu/ngày trong ${txs.length} giao dịch.`
+        : "Không ghi nhận giao dịch chia nhỏ né ngưỡng xác thực sinh trắc học.",
     );
   }
   if (!mules.mule_cluster_detected) {
