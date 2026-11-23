@@ -54,4 +54,18 @@ describe("Gemini adapter retry on transient overload", () => {
     await assertion;
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("stops waiting as soon as the caller's timeout aborts during backoff", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => response(503));
+    vi.stubGlobal("fetch", fetchMock);
+    const controller = new AbortController();
+
+    const call = createGeminiAdapter().callRaw({ ...params, signal: controller.signal });
+    const assertion = expect(call).rejects.toThrow();
+    await vi.advanceTimersByTimeAsync(10);
+    controller.abort(new Error("timeout"));
+    await vi.advanceTimersByTimeAsync(10);
+    await assertion;
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

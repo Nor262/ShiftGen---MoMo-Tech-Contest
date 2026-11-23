@@ -12,6 +12,10 @@ const ENV_KEYS = [
   "AWS_SESSION_TOKEN",
   "BEDROCK_VISION_MODEL",
   "BEDROCK_REASONING_MODEL",
+  "LLM_FALLBACK_BACKEND",
+  "GEMINI_API_KEY",
+  "OPENAI_API_KEY",
+  "LLM_API_KEY",
 ] as const;
 let saved: Record<string, string | undefined> = {};
 
@@ -53,6 +57,23 @@ describe("Bedrock configuration status", () => {
     expect(status.configured).toBe(adapter.isConfigured());
     expect(status.vision_model).toBe(adapter.visionModel);
     expect(status.reasoning_model).toBe(adapter.reasoningModel);
+  });
+});
+
+describe("Bedrock edge cases", () => {
+  it("temporary (ASIA…) keys without a session token are not configured", () => {
+    process.env.AWS_ACCESS_KEY_ID = "ASIATESTKEY";
+    process.env.AWS_SECRET_ACCESS_KEY = "secret";
+    expect(createBedrockAdapter().isConfigured()).toBe(false);
+    expect(getLlmStatus().configured).toBe(false);
+  });
+
+  it("health reports the fallback that actually serves calls when the primary has no keys", () => {
+    process.env.LLM_FALLBACK_BACKEND = "gemini";
+    process.env.GEMINI_API_KEY = "gemini-test-key";
+    const status = getLlmStatus();
+    expect(status.backend).toBe("gemini");
+    expect(status.configured).toBe(true);
   });
 });
 

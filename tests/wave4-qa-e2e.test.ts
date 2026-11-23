@@ -707,7 +707,7 @@ describe("Wave 4 QA — 2. LLM Adapters (Gemini/OpenAI/Bedrock), Failover, 503 &
   it("verifies AWS Bedrock Converse adapter payload, image bytes, guardrailConfig, and JSON extraction", async () => {
     vi.stubEnv("AWS_ACCESS_KEY_ID", "AKIATESTKEY");
     vi.stubEnv("AWS_SECRET_ACCESS_KEY", "secret-test-key");
-    vi.stubEnv("BEDROCK_REGION", "ap-southeast-1");
+    vi.stubEnv("BEDROCK_REGION", "ap-southeast-2");
     vi.stubEnv("BEDROCK_VISION_MODEL", "apac.amazon.nova-pro-v1:0");
     vi.stubEnv("BEDROCK_GUARDRAIL_ID", "gr-qa-01");
     vi.stubEnv("BEDROCK_GUARDRAIL_VERSION", "1");

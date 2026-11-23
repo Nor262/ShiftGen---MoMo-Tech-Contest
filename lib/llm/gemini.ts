@@ -12,7 +12,20 @@ interface GeminiResponse {
 // Google documents 503 UNAVAILABLE ("high demand") as temporary; 429 (quota) is not retried.
 // shortcut: fixed 1s/3s backoff for the demo, add jitter + Retry-After if traffic grows.
 const RETRY_DELAYS_MS = [1000, 3000] as const;
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+// Backoff that ends early when the caller's timeout aborts, so a call never outlives its budget.
+const sleep = (ms: number, signal: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    if (signal.aborted) return reject(signal.reason);
+    const timer = setTimeout(resolve, ms);
+    signal.addEventListener(
+      "abort",
+      () => {
+        clearTimeout(timer);
+        reject(signal.reason);
+      },
+      { once: true },
+    );
+  });
 
 export function createGeminiAdapter(): LLMRawAdapter {
   const visionModel = process.env.GEMINI_VISION_MODEL ?? "gemini-3-flash-preview";
@@ -70,7 +83,8 @@ export function createGeminiAdapter(): LLMRawAdapter {
       let res = await send();
       for (const delay of RETRY_DELAYS_MS) {
         if (res.status !== 503) break;
-        await sleep(delay);
+        await res.body?.cancel().catch(() => undefined); // release the socket of the discarded 503
+        await sleep(delay, params.signal);
         res = await send();
       }
 

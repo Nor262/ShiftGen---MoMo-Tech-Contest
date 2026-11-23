@@ -30,8 +30,12 @@ export function createBedrockAdapter(): LLMRawAdapter {
     backend: "bedrock",
     visionModel,
     reasoningModel,
-    isConfigured: () =>
-      Boolean(process.env.AWS_ACCESS_KEY_ID?.trim() && process.env.AWS_SECRET_ACCESS_KEY?.trim()),
+    isConfigured: () => {
+      const keyId = process.env.AWS_ACCESS_KEY_ID?.trim();
+      if (!keyId || !process.env.AWS_SECRET_ACCESS_KEY?.trim()) return false;
+      // Temporary (STS / Sandbox) keys start with "ASIA" and are unusable without their session token.
+      return !keyId.startsWith("ASIA") || Boolean(process.env.AWS_SESSION_TOKEN?.trim());
+    },
     async callRaw(params: RawCallParams): Promise<string> {
       const content: ContentBlock[] = [];
       if (params.imageBase64) {
