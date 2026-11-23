@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import {
   ensureSessionSeeded,
   getSessionId,
+  releaseExpiredHolds,
   toInvestigationCaseDto,
 } from "@/lib/session";
 
@@ -47,6 +48,7 @@ export async function POST(
 
     const demoSessionId = getSessionId(request);
     await ensureSessionSeeded(demoSessionId);
+    await releaseExpiredHolds(demoSessionId);
 
     const tx = await prisma.heldTransaction.findFirst({
       where: { txId, demoSessionId },
@@ -57,7 +59,7 @@ export async function POST(
         { status: 404 },
       );
     }
-    if (tx.status === "CANCELLED_BY_USER" || tx.status === "COMPLETED") {
+    if (tx.status === "CANCELLED_BY_USER" || tx.status === "COMPLETED" || tx.status === "RELEASED") {
       return NextResponse.json(
         {
           error: `Không thể chuyển vụ việc từ giao dịch ở trạng thái ${tx.status}.`,

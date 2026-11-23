@@ -1039,7 +1039,7 @@ describe("Wave 4 QA — 3. Full E2E Closed-Loop Acceptance Matrix (E2E-01, E2E-0
       makeRequest(`/api/immunity/${indicatorId}/resolve-appeal`, sessionId, {
         body: {
           appealId: appealData.appeal.appealId,
-          reviewerId: "RISK_CHECKER_TUAN",
+          reviewerId: "RISK_CHECKER_LAN",
           reviewerRole: "RISK_CHECKER",
           resolution: "OVERTURNED_ROLLBACK",
           resolutionNote: "Chấp nhận khiếu nại TT 53/2026 và thu hồi chỉ báo tức thì.",

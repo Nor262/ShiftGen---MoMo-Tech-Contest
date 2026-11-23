@@ -7,7 +7,7 @@ import {
   SanitizedEvidenceSchema,
 } from "@/contracts";
 import { prisma } from "@/lib/prisma";
-import { ensureSessionSeeded, getSessionId } from "@/lib/session";
+import { ensureSessionSeeded, getSessionId, releaseExpiredHolds } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,7 @@ export async function GET(request: Request) {
   try {
     const demoSessionId = getSessionId(request);
     await ensureSessionSeeded(demoSessionId);
+    await releaseExpiredHolds(demoSessionId);
 
     const rows = await prisma.heldTransaction.findMany({
       where: {

@@ -418,6 +418,16 @@ export async function resolveAppeal(
     );
   }
 
+  // Glossary "Khiếu nại": the reviewer must differ from the Checker who activated the indicator.
+  if (indicator.checkerId && reviewerId === indicator.checkerId.trim()) {
+    throw new ImmunityGovernanceError(
+      403,
+      "APPEAL_REVIEWER_CONFLICT",
+      "Người xét khiếu nại phải khác Checker đã phê duyệt kích hoạt chỉ báo này.",
+      { checkerId: indicator.checkerId, reviewerId },
+    );
+  }
+
   const appeal = await prisma.appeal.findFirst({
     where: { appealId, indicatorId, demoSessionId },
   });

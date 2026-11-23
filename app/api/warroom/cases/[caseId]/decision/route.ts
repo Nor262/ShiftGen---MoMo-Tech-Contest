@@ -63,7 +63,38 @@ export async function POST(
     }
 
     if (req.decision === "DISMISS_FP") {
+      // Glossary "Minh oan": the case's held transaction is released immediately.
+      const heldTx = caseRow.txId
+        ? await prisma.heldTransaction.findFirst({
+            where: {
+              txId: caseRow.txId,
+              demoSessionId,
+              status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E"] },
+            },
+          })
+        : null;
+      const releaseOps = heldTx
+        ? [
+            prisma.heldTransaction.update({
+              where: { txId: heldTx.txId },
+              data: { status: "RELEASED" },
+            }),
+            prisma.auditLog.create({
+              data: {
+                demoSessionId,
+                actorId: req.actorId,
+                actorRole: "RISK_MAKER",
+                action: "TRANSFER_COMPLETED",
+                targetId: heldTx.txId,
+                rationale: "Vụ điều tra được Minh oan: giao dịch tạm giữ được giải phóng.",
+                metadataJson: JSON.stringify({ releaseReason: "CASE_DISMISSED_FP", caseId: caseRow.caseId }),
+              },
+            }),
+          ]
+        : [];
+
       await prisma.$transaction([
+        ...releaseOps,
         prisma.investigationCase.update({
           where: { caseId: caseRow.caseId },
           data: { status: "DISMISSED_FP" },

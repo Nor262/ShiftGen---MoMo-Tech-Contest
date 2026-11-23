@@ -31,7 +31,8 @@ import {
 import { B2cLiveProbeCard } from "./B2cLiveProbeCard";
 
 interface RolePersona {
-  id: "RISK_MAKER_HUYEN" | "RISK_CHECKER_TUAN";
+  // shortcut: RISK_CHECKER_LAN is a UI-only persona (not in contracts PERSONA_IDS), add to contracts when Orchestrator reopens the freeze
+  id: "RISK_MAKER_HUYEN" | "RISK_CHECKER_TUAN" | "RISK_CHECKER_LAN";
   role: ActorRole;
   displayName: string;
   titleVi: string;
@@ -45,6 +46,13 @@ const PERSONAS: readonly RolePersona[] = [
     displayName: "RISK_CHECKER_TUAN — Anh Tuấn",
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
     hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn, khác Maker), xử lý khiếu nại TT 53/2026, Rollback & Giả lập TTL.",
+  },
+  {
+    id: "RISK_CHECKER_LAN",
+    role: "RISK_CHECKER",
+    displayName: "RISK_CHECKER_LAN — Chị Lan",
+    titleVi: "Risk Checker (Người xét khiếu nại độc lập)",
+    hintVi: "Xét khiếu nại cho chỉ báo do Checker khác kích hoạt; máy chủ trả 403 nếu người xét trùng người đã duyệt.",
   },
   {
     id: "RISK_MAKER_HUYEN",
