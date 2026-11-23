@@ -5,6 +5,8 @@ import { isReplayNotice } from "@/lib/replay-label";
 import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import { useEffect, useState } from "react";
 import { modelDisplayName } from "@/lib/cast";
+import { shouldOfferPoliceGuide } from "@/lib/police-report";
+import { PoliceReportGuide } from "./PoliceReportGuide";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -687,6 +689,7 @@ export function ScanResultPanel({
           )}
         </div>
       </section>
+      {shouldOfferPoliceGuide({ riskLevel: scan.result.risk_level }) && <PoliceReportGuide scan={scan} />}
     </div>
   );
 }

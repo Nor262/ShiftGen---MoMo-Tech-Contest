@@ -29,6 +29,7 @@ import {
   parseApiErrorMessage,
 } from "./labels";
 import { CAST } from "@/lib/cast";
+import { PoliceReportGuide } from "./PoliceReportGuide";
 
 interface TransferHoldPanelProps {
   activeUserId: PersonaId;
@@ -148,6 +149,10 @@ export function TransferHoldPanel({
     }
   }
 
+  const [cancelledByUser, setCancelledByUser] = useState(false);
+  // a new scan is a new situation: the guide belongs to the transfer that was just cancelled
+  useEffect(() => setCancelledByUser(false), [latestScan]);
+
   async function handleCancelHold(txId: string) {
     setCancellingTxId(txId);
     setErrorMessage(null);
@@ -169,6 +174,7 @@ export function TransferHoldPanel({
       if (latestTransfer?.txId === txId) {
         setLatestTransfer(null);
       }
+      setCancelledByUser(true);
       setStatusNote(
         `Đã hủy giao dịch ${txId} và hoàn tiền ngay về ví mô phỏng. Tài khoản được bảo toàn 100%.`,
       );
@@ -521,6 +527,7 @@ export function TransferHoldPanel({
           </ul>
         </div>
       )}
+      {cancelledByUser && <PoliceReportGuide scan={latestScan} txStatus="CANCELLED_BY_USER" />}
     </section>
   );
 }
