@@ -175,7 +175,7 @@ export function B2CShieldWorkspace() {
       setConsentFeedback({
         ok: true,
         text: optInValue
-          ? "Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Chị Minh (FAMILY_MINH)."
+          ? "Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Người giám hộ Chị Minh."
           : "Đã cập nhật: Chế độ Bảo vệ 24h ĐANG TẮT (thu hồi đồng ý thành công).",
       });
       return true;
@@ -311,7 +311,7 @@ export function B2CShieldWorkspace() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="rounded-lg border border-momo-200 bg-momo-50 px-3 py-1.5 font-semibold text-momo-800">
+            <span className="tech-only rounded-lg border border-momo-200 bg-momo-50 px-3 py-1.5 font-semibold text-momo-800">
               Phiên: <code className="font-mono">{session?.sessionId ?? "..."}</code>
             </span>
             <Link
@@ -345,7 +345,7 @@ export function B2CShieldWorkspace() {
                 >
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-base font-bold">{persona.shortLabel}</span>
-                    <span className="rounded bg-white/90 px-2 py-0.5 font-mono text-xs font-semibold text-momo-700">
+                    <span className="tech-only rounded bg-white/90 px-2 py-0.5 font-mono text-xs font-semibold text-momo-700">
                       {persona.badgeLabel}
                     </span>
                   </div>
@@ -373,7 +373,7 @@ export function B2CShieldWorkspace() {
                 Mặc định luôn <strong>TẮT</strong>. Khi bạn tự nguyện bật, các giao dịch rủi ro cao
                 (&ge;75 điểm hoặc khớp chỉ báo cộng đồng) sẽ tạm giữ 24 giờ và chỉ gửi{" "}
                 <strong>tóm tắt đã ẩn CCCD/SĐT/số dư</strong> cho người thân{" "}
-                <strong>Chị Minh (FAMILY_MINH)</strong>. Bạn có quyền thu hồi bất kỳ lúc nào.
+                <strong>Chị Minh</strong>. Bạn có quyền thu hồi bất kỳ lúc nào.
               </p>
             </div>
           </div>
@@ -404,7 +404,7 @@ export function B2CShieldWorkspace() {
             />
             <span>
               <strong>Tôi tự nguyện đồng ý</strong> bật quy tắc tạm giữ xác minh 24 giờ cho giao
-              dịch rủi ro cao và liên kết người thân giám hộ <strong>Chị Minh (FAMILY_MINH)</strong>
+              dịch rủi ro cao và liên kết người thân giám hộ <strong>Chị Minh</strong>
               {activeConsent?.consentedAt && savedOptIn ? (
                 <span className="mt-0.5 block text-xs text-slate-500">
                   Cập nhật gần nhất: {formatDateTimeVi(activeConsent.consentedAt)} (

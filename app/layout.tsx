@@ -3,6 +3,7 @@ import { Be_Vietnam_Pro, JetBrains_Mono } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import "./globals.css";
+import { TechModeToggle } from "@/components/TechModeToggle";
 import { DEMO_SIMULATION_LABEL } from "@/contracts";
 
 // DESIGN.md: Be Vietnam Pro (native Vietnamese diacritics) + JetBrains Mono.
@@ -69,6 +70,13 @@ export default function RootLayout({
         </header>
 
         <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
+
+        <footer className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 pb-8 text-sm text-slate-600">
+          <span>
+            TrustLoop by ShiftGen · Dữ liệu demo là {DEMO_SIMULATION_LABEL}
+          </span>
+          <TechModeToggle />
+        </footer>
       </body>
     </html>
   );

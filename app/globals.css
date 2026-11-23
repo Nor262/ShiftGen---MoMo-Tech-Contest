@@ -34,3 +34,8 @@ h3 {
 .b2c-large :where(.text-sm) { font-size: 1.125rem; line-height: 1.55; }
 .b2c-large :where(.text-base) { font-size: 1.25rem; line-height: 1.55; }
 .b2c-large { font-size: 1.125rem; }
+
+/* "Chế độ kỹ thuật": technical codes are hidden unless the viewer turns it on (TechModeToggle). */
+html:not([data-tech="on"]) .tech-only {
+  display: none !important;
+}

@@ -409,7 +409,7 @@ export function DebateAndDecisionPanel({
           </div>
 
           <span className="rounded-md border border-slate-700 bg-slate-950 px-2.5 py-1 font-mono text-xs text-slate-300">
-            Actor: RISK_MAKER_HUYEN
+            <span className="tech-only">Actor: RISK_MAKER_HUYEN</span>
           </span>
         </div>
 

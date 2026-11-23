@@ -94,7 +94,7 @@ export function TransferHoldPanel({
     const ok = await onEnableOptInNow();
     if (ok) {
       setStatusNote(
-        "Đã bật chế độ Bảo vệ 24h và liên kết Chị Minh (FAMILY_MINH). Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.",
+        "Đã bật chế độ Bảo vệ 24h và liên kết Người giám hộ Chị Minh. Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.",
       );
     }
     setEnablingOptIn(false);
@@ -377,7 +377,7 @@ export function TransferHoldPanel({
               <Lock className="mt-0.5 h-6 w-6 shrink-0 text-signal-700" aria-hidden="true" />
               <div className="space-y-1">
                 <span className="inline-block rounded-full bg-signal-100 px-2.5 py-0.5 text-xs font-bold text-signal-900">
-                  TRẠNG THÁI: ON_HOLD_24H ({DEMO_SIMULATION_LABEL})
+                  ĐANG TẠM GIỮ ({DEMO_SIMULATION_LABEL})<span className="tech-only"> · ON_HOLD_24H</span>
                 </span>
                 <p
                   data-testid="neutral-hold-message"
