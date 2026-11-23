@@ -1,3 +1,4 @@
+import { getPrimaryLlmStatus } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { seedBaselineSession } from "@/prisma/seed";
 import {
@@ -10,7 +11,6 @@ import {
   ImmunityIndicatorTypeSchema,
   ImmunitySeveritySchema,
   ImmunityStatusSchema,
-  LlmBackendSchema,
   SanitizedEvidenceSchema,
   WarRoomDebateSchema,
   type LlmStatus,
@@ -66,39 +66,7 @@ export function getSessionId(request?: Request): string {
 }
 
 export function getLlmStatus(): LlmStatus {
-  const parsedBackend = LlmBackendSchema.safeParse(
-    (process.env.LLM_BACKEND ?? "gemini").toLowerCase(),
-  );
-  const backend = parsedBackend.success ? parsedBackend.data : "gemini";
-
-  if (backend === "bedrock") {
-    return {
-      backend,
-      configured: Boolean(
-        process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY,
-      ),
-      vision_model: process.env.BEDROCK_VISION_MODEL ?? "apac.amazon.nova-pro-v1:0",
-      reasoning_model:
-        process.env.BEDROCK_REASONING_MODEL ??
-        "apac.anthropic.claude-sonnet-4-20250514-v1:0",
-    };
-  }
-
-  if (backend === "openai") {
-    return {
-      backend,
-      configured: Boolean(process.env.OPENAI_API_KEY || process.env.LLM_API_KEY),
-      vision_model: process.env.LLM_VISION_MODEL ?? "gpt-4o-mini",
-      reasoning_model: process.env.LLM_REASONING_MODEL ?? "gpt-4o-mini",
-    };
-  }
-
-  return {
-    backend: "gemini",
-    configured: Boolean(process.env.GEMINI_API_KEY),
-    vision_model: process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash",
-    reasoning_model: process.env.GEMINI_REASONING_MODEL ?? "gemini-2.5-flash",
-  };
+  return getPrimaryLlmStatus();
 }
 
 export async function ensureSessionSeeded(demoSessionId: string): Promise<number> {

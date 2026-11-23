@@ -1,4 +1,4 @@
-import { LlmBackendSchema, type LlmBackend } from "@/contracts";
+import { LlmBackendSchema, type LlmBackend, type LlmStatus } from "@/contracts";
 import { createBedrockAdapter } from "./bedrock";
 import { createGeminiAdapter } from "./gemini";
 import { createOpenAIAdapter } from "./openai";
@@ -31,15 +31,28 @@ function buildAdapter(backend: LlmBackend): LLMRawAdapter {
   }
 }
 
+function resolvePrimaryBackend(): LlmBackend {
+  const parsed = LlmBackendSchema.safeParse((process.env.LLM_BACKEND ?? "gemini").trim().toLowerCase());
+  return parsed.success ? parsed.data : "gemini";
+}
+
+/** What /api/health reports — read from the very adapter that serves calls, so they never disagree. */
+export function getPrimaryLlmStatus(): LlmStatus {
+  const adapter = buildAdapter(resolvePrimaryBackend());
+  return {
+    backend: adapter.backend,
+    configured: adapter.isConfigured(),
+    vision_model: adapter.visionModel,
+    reasoning_model: adapter.reasoningModel,
+  };
+}
+
 export function getLLMProvider(): LLMProvider {
   if (testProviderOverride) {
     return testProviderOverride;
   }
 
-  const parsedPrimary = LlmBackendSchema.safeParse(
-    (process.env.LLM_BACKEND ?? "gemini").trim().toLowerCase(),
-  );
-  const primaryBackend: LlmBackend = parsedPrimary.success ? parsedPrimary.data : "gemini";
+  const primaryBackend = resolvePrimaryBackend();
   const primary = buildAdapter(primaryBackend);
 
   const fallbackRaw = process.env.LLM_FALLBACK_BACKEND?.trim().toLowerCase();
