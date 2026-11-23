@@ -27,3 +27,7 @@ coverage/
 *.tsbuildinfo
 next-env.d.ts
 /ShiftGen.png
+
+# brainstorming companion mockups
+.superpowers/
+.impeccable/

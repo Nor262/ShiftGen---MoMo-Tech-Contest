@@ -1467,10 +1467,10 @@ describe("Wave 4 QA — 5. Friendly Error Handling & Resilience", () => {
       expect(scanData.fallbackNoticeVi?.trim().length).toBeGreaterThan(10);
 
       const invRes = await postInvestigate(
-        makeRequest(`/api/warroom/cases/${sessionId}::CASE-01/investigate`, sessionId, {
+        makeRequest(`/api/warroom/cases/${sessionId}::CASE-03/investigate`, sessionId, {
           body: { actorId: "RISK_MAKER_HUYEN", actorRole: "RISK_MAKER" },
         }),
-        { params: Promise.resolve({ caseId: `${sessionId}::CASE-01` }) },
+        { params: Promise.resolve({ caseId: `${sessionId}::CASE-03` }) },
       );
       expect(invRes.status).toBe(429);
       expect((await invRes.json()).code).toBe("DAILY_LLM_QUOTA_EXCEEDED");
