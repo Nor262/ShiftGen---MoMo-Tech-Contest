@@ -1,5 +1,4 @@
 import { describe, expect, it } from "vitest";
-// @ts-expect-error -- plain ESM script shared with scripts/measure-latency.mjs
 import { summarize } from "../scripts/latency-stats.mjs";
 
 /** Seam: how measured runs become the min/median/max on Slide 9 (ticket #4). */
