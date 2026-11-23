@@ -22,12 +22,14 @@ export const metadata: Metadata = {
     "Hệ sinh thái phòng vệ niềm tin số khép kín: B2C Phút 00, Người giám hộ, B2E FinCrime War-Room 4 Agent và Miễn dịch Cộng đồng 4 Lớp.",
 };
 
+// The story is the demo; the 4 full screens stay reachable in Technical Mode.
 const NAV_ITEMS = [
-  { href: "/", label: "Tổng quan" },
-  { href: "/shield", label: "① Người dùng" },
-  { href: "/family", label: "② Người giám hộ" },
-  { href: "/warroom", label: "③ Đội Risk điều tra" },
-  { href: "/checker", label: "④ Duyệt & bảo vệ" },
+  { href: "/", label: "Tổng quan", techOnly: false },
+  { href: "/story", label: "Xem câu chuyện", techOnly: false },
+  { href: "/shield", label: "① Người dùng", techOnly: true },
+  { href: "/family", label: "② Người giám hộ", techOnly: true },
+  { href: "/warroom", label: "③ Đội Risk điều tra", techOnly: true },
+  { href: "/checker", label: "④ Duyệt & bảo vệ", techOnly: true },
 ] as const;
 
 export default function RootLayout({
@@ -61,7 +63,7 @@ export default function RootLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-momo-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue"
+                  className={`${item.techOnly ? "tech-only " : ""}rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-momo-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue`}
                 >
                   {item.label}
                 </Link>
