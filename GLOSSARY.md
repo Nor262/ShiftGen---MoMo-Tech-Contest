@@ -11,7 +11,11 @@ Thời điểm người dùng bắt đầu nghi ngờ một tin nhắn hay đư�
 _Tránh dùng_: Minute-0, thời điểm quét
 
 **Phút 89**:
-Thời điểm quy trình truyền thống mới phát hiện lừa đảo, khi tiền đã mất. Đây là điểm mù mà TrustLoop muốn thu hẹp.
+Thời điểm nạn nhân mở ví để chuyển tiền. Đây là khoảnh khắc duy nhất một ứng dụng tài chính đơn lẻ quan sát được; từ Phút 00 tới Phút 88 là điểm mù ngoài ứng dụng.
+_Tránh dùng_: thời điểm phát hiện, lúc mất tiền
+
+**Phút 90+**:
+Giai đoạn sau khi tiền đã rời ví và bị tẩu tán qua các tài khoản trung gian.
 
 ## B2C — Lá chắn người dùng
 
@@ -39,7 +43,7 @@ _Tránh dùng_: đóng băng, chặn
 Một lệnh chuyển tiền đã đi qua bước kiểm tra Tạm giữ, kèm trạng thái và hạn giữ.
 
 **Giải phóng** (`RELEASED`):
-Việc kết thúc Tạm giữ để tiền được chuyển đi. Xảy ra khi hết hạn giữ mà giao dịch chưa bị hủy hay Chuyển cấp, hoặc khi Vụ điều tra liên quan được Minh oan.
+Việc kết thúc Tạm giữ để tiền được chuyển đi. Xảy ra khi hết hạn giữ mà giao dịch chưa bị hủy hay Chuyển cấp, khi Vụ điều tra liên quan được Minh oan, hoặc khi chuyên viên chấp thuận Yêu cầu xét lại tạm giữ.
 _Tránh dùng_: mở khóa, duyệt
 
 **Thông báo trung tính** (Neutral hold message):
@@ -50,15 +54,19 @@ Người thân được người dùng chỉ định. Họ xem thẻ duyệt đ�
 _Tránh dùng_: người đồng ký, co-signer
 
 **Chuyển cấp** (`ESCALATED_TO_B2E`):
-Việc Người giám hộ đẩy một Giao dịch bị giữ sang B2E để điều tra.
-_Tránh dùng_: Family Co-Sign, đồng duyệt
+Việc Người giám hộ đẩy một Giao dịch bị giữ sang B2E để điều tra. Chuyển cấp đồng thời kéo dài Tạm giữ cho tới khi B2E ra phán quyết.
+_Tránh dùng_: Family Co-Sign, đồng duyệt, khóa
+
+**Yêu cầu xét lại tạm giữ**:
+Đề nghị của chính người dùng xin một chuyên viên người thật xem lại quyết định Tạm giữ tự động. Chỉ chuyên viên đó mới được Giải phóng sớm giao dịch.
+_Tránh dùng_: Khiếu nại (Khiếu nại dành riêng cho Chỉ báo Miễn dịch)
 
 **Báo cáo An ninh mạng** (Cyber report):
 Việc người dùng chủ động gửi Bằng chứng Phút 00 về một mối đe dọa kỹ thuật (đường link, APK) sang B2E. Việc này không cần có giao dịch nào.
 _Tránh dùng_: tố cáo, report
 
 **Hủy giao dịch**:
-Việc chấm dứt một Giao dịch bị giữ, khiến tiền không được chuyển. Có hai trường hợp, phải luôn phân biệt rõ: người dùng tự hủy (`CANCELLED_BY_USER`), và B2E hủy khi Vụ được Xác nhận lừa đảo (`CANCELLED_BY_B2E`). Không bao giờ ghi việc B2E hủy thành người dùng hủy.
+Việc chấm dứt một Giao dịch bị giữ, khiến tiền không được chuyển. Có hai trường hợp, phải luôn phân biệt rõ: người dùng tự hủy (`CANCELLED_BY_USER`), và B2E hủy khi Vụ có Kết luận rủi ro cao (`CANCELLED_BY_B2E`). Không bao giờ ghi việc B2E hủy thành người dùng hủy.
 
 ## B2E — Phòng Tác chiến
 
@@ -67,7 +75,7 @@ Một hồ sơ được điều tra trong Phòng Tác chiến. Vụ có ba ngu�
 _Tránh dùng_: case, ticket, hồ sơ
 
 **Chia nhỏ giao dịch** (Smurfing):
-Hành vi tách một khoản tiền lớn thành nhiều lệnh nhỏ hơn 10 triệu/lần, với tổng vượt 20 triệu/ngày (giờ UTC+7), để lọt dưới ngưỡng giám sát của QĐ 2345.
+Hành vi tách một khoản tiền lớn thành nhiều lệnh nhỏ hơn 10 triệu/lần, với tổng vượt 20 triệu/ngày (giờ UTC+7), để lọt dưới ngưỡng bắt buộc xác thực sinh trắc học. Luật Phòng, chống rửa tiền xếp đây vào nhóm dấu hiệu giao dịch đáng ngờ.
 _Tránh dùng_: structuring
 
 **Ví trung gian** (Mule):
@@ -80,9 +88,9 @@ Phần tổng hợp hai chiều từ các agent: một bên buộc tội, một 
 Kết luận rằng một Vụ điều tra là giao dịch hợp pháp bị nghi nhầm (false positive). Giao dịch bị giữ của Vụ được Giải phóng ngay.
 _Tránh dùng_: bỏ qua, đóng vụ
 
-**Xác nhận lừa đảo** (`CLOSED`):
-Kết luận rằng một Vụ điều tra là lừa đảo thật, đạt được khi Chỉ báo Miễn dịch của Vụ được Kích hoạt.
-_Tránh dùng_: đóng vụ, closed
+**Kết luận rủi ro cao** (`CLOSED`):
+Kết luận nghiệp vụ của B2E rằng một Vụ điều tra có rủi ro lừa đảo cao, đạt được khi Chỉ báo Miễn dịch của Vụ được Kích hoạt. Đây không phải kết luận về tội phạm; chỉ cơ quan có thẩm quyền mới kết luận được điều đó.
+_Tránh dùng_: Xác nhận lừa đảo, kết luận tội phạm, đóng vụ
 
 **Thẻ bàn giao CSKH** (Handoff card):
 Bản tóm tắt dành cho nhân viên CSKH, viết với giọng thấu cảm, để họ liên hệ người dùng sau khi có phán quyết.
@@ -116,7 +124,7 @@ Thời gian một Chỉ báo còn hiệu lực trước khi tự hết hạn (`E
 Yêu cầu xem xét lại một Chỉ báo đang có hiệu lực, do chính chủ thể bị gắn Chỉ báo gửi lên. Người xét là một Checker con người, khác với Checker đã Kích hoạt Chỉ báo. Kết quả là giữ nguyên (`UPHELD`) hoặc Thu hồi.
 
 **Thu hồi** (`ROLLED_BACK` / `OVERTURNED_ROLLBACK`):
-Việc gỡ hiệu lực một Chỉ báo sau khi Khiếu nại được chấp nhận. Mọi bước đều được ghi vào nhật ký kiểm toán bất biến.
+Việc gỡ hiệu lực cảnh báo của một Chỉ báo sau khi Khiếu nại được chấp nhận. Hồ sơ điều tra không bị xóa, và mọi bước đều được ghi vào nhật ký kiểm toán bất biến.
 _Tránh dùng_: xóa, hủy
 
 ## Demo
