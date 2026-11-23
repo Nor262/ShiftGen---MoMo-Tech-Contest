@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { isReplayNotice } from "@/lib/replay-label";
 import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import { useEffect, useState } from "react";
 import {
@@ -40,6 +41,8 @@ interface ScanResultPanelProps {
   scan: ShieldScanResponse;
   activeUserId: PersonaId;
   onCyberReported?: (caseId: string) => void;
+  /** Re-runs the same demo preset live (shown on replayed results). */
+  onRunLive?: () => void;
 }
 
 const PII_FIELD_LABELS: readonly { key: PiiFieldType; label: string }[] = [
@@ -53,6 +56,7 @@ export function ScanResultPanel({
   scan,
   activeUserId,
   onCyberReported,
+  onRunLive,
 }: ScanResultPanelProps) {
   const { result, piiDiff, immunityHit } = scan;
   const riskMeta = RISK_LEVEL_META[result.risk_level];
@@ -164,7 +168,29 @@ export function ScanResultPanel({
 
   return (
     <div className="space-y-4">
-      {scan.fallbackMode && (
+      {scan.fallbackMode && isReplayNotice(scan.fallbackNoticeVi) && (
+        <div
+          role="status"
+          className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-900"
+        >
+          <div className="space-y-1">
+            <p className="font-semibold">Phát lại kết quả AI đã chạy thật</p>
+            <p className="font-mono text-sm">{scan.fallbackNoticeVi}</p>
+            <p className="text-sm">AI đang quá tải hoặc hết hạn mức nên hệ thống hiển thị lại lần chạy thật gần nhất.</p>
+          </div>
+          {onRunLive && (
+            <button
+              type="button"
+              onClick={onRunLive}
+              className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-600 bg-white px-5 py-2 font-semibold text-momo-600 hover:bg-momo-50"
+            >
+              Chạy lại trực tiếp
+            </button>
+          )}
+        </div>
+      )}
+
+      {scan.fallbackMode && !isReplayNotice(scan.fallbackNoticeVi) && (
         <div
           role="status"
           className="flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-950"

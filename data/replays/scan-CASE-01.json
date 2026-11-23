@@ -1,0 +1,50 @@
+{
+  "kind": "scan",
+  "presetCode": "CASE-01",
+  "recordedAt": "2026-11-23T14:06:21.778Z",
+  "modelUsed": "gemini-3-flash-preview",
+  "measuredLatencyMs": 9792,
+  "result": {
+    "status": "ANALYZED",
+    "risk_score": 100,
+    "risk_level": "CRITICAL",
+    "scam_category": "POLICE_IMPERSONATION",
+    "visual_tampering_flags": [
+      "Lệnh bắt tạm giam gửi qua tin nhắn Zalo",
+      "Dấu mộc đỏ giả mạo trên văn bản điện tử",
+      "Văn bản sai quy chuẩn hành chính nhà nước"
+    ],
+    "psych_manipulation_cues": [
+      {
+        "type": "FEAR_THREAT",
+        "quote_vi": "LỆNH BẮT TẠM GIAM... phong tỏa tài sản trong 30 phút",
+        "explanation_vi": "Kẻ gian đe dọa bắt giam và tịch thu tài sản để làm nạn nhân hoảng sợ, mất khả năng suy xét."
+      },
+      {
+        "type": "URGENCY_PRESSURE",
+        "quote_vi": "KHẨN CẤP TRƯỚC 15H00",
+        "explanation_vi": "Tạo áp lực thời gian cực ngắn để nạn nhân cuống cuồng chuyển tiền mà không kịp kiểm tra thông tin."
+      },
+      {
+        "type": "SECRECY_ISOLATION",
+        "quote_vi": "TUYỆT ĐỐI KHÔNG BÁO CON GÁI... KHÔNG NÓI VỚI AI!",
+        "explanation_vi": "Yêu cầu giữ bí mật nhằm cô lập nạn nhân khỏi sự trợ giúp hoặc lời khuyên từ người thân."
+      }
+    ],
+    "cyber_threat_flags": [],
+    "extracted_entities": {
+      "recipient_account": "990123456789",
+      "recipient_bank": "NGAN_HANG_MO_PHONG_X",
+      "urls": [],
+      "domains": [],
+      "amount_vnd": 38000000,
+      "apk_filenames": []
+    },
+    "calm_guidance_vi": "Bác hãy bình tĩnh, đây chắc chắn là lừa đảo. Cơ quan Công an, Viện kiểm sát tuyệt đối không bao giờ làm việc qua Zalo hay yêu cầu người dân chuyển tiền vào tài khoản cá nhân để 'xác minh'. Bác hãy dừng mọi giao dịch và liên lạc ngay với người thân hoặc ra trụ sở Công an gần nhất để trình báo.",
+    "deescalation_questions_vi": [
+      "Tại sao Công an lại yêu cầu bác chuyển tiền vào một tài khoản ngân hàng thay vì mời bác lên trụ sở làm việc?",
+      "Nếu là việc chính danh, tại sao họ lại bắt bác phải giấu con cái và người thân?",
+      "Bác có thấy lạ khi một lệnh bắt quan trọng lại được gửi qua tin nhắn điện thoại thay vì văn bản giấy có chính quyền địa phương đi cùng không?"
+    ]
+  }
+}

@@ -85,6 +85,7 @@ export function B2CShieldWorkspace() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [scanResponse, setScanResponse] = useState<ShieldScanResponse | null>(null);
+  const [lastPresetCode, setLastPresetCode] = useState<"CASE-01" | "CASE-02" | "CASE-03" | null>(null);
 
   const activePersona =
     B2C_PERSONAS.find((p) => p.key === activePersonaKey) ?? B2C_PERSONAS[0];
@@ -222,6 +223,7 @@ export function B2CShieldWorkspace() {
   }
 
   async function handlePresetScan(presetCode: "CASE-01" | "CASE-02" | "CASE-03") {
+    setLastPresetCode(presetCode);
     setScanning(true);
     setScanError(null);
     try {
@@ -658,6 +660,7 @@ export function B2CShieldWorkspace() {
         <ScanResultPanel
           scan={scanResponse}
           activeUserId={activePersona.apiUserId}
+          onRunLive={lastPresetCode && !scanning ? () => void handlePresetScan(lastPresetCode) : undefined}
           onCyberReported={() => {
             void refreshSession();
           }}

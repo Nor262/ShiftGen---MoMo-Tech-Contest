@@ -1,3 +1,4 @@
+import { loadScanReplay } from "@/lib/replay";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { NextResponse } from "next/server";
@@ -264,20 +265,30 @@ export async function POST(request: Request) {
           }
           const userPrompt = promptParts.join("\n");
 
-          const llmRes = activeImage
-            ? await provider.analyzeImage({
-                systemPrompt,
-                userPrompt,
-                imageBase64: activeImage.base64,
-                imageMimeType: activeImage.mimeType,
-              })
-            : await provider.generateJSON(ScanResultSchema, {
-                systemPrompt,
-                userPrompt,
-              });
-
-          rawResult = llmRes.data;
-          modelUsed = llmRes.modelUsed;
+          try {
+            const llmRes = activeImage
+              ? await provider.analyzeImage({
+                  systemPrompt,
+                  userPrompt,
+                  imageBase64: activeImage.base64,
+                  imageMimeType: activeImage.mimeType,
+                })
+              : await provider.generateJSON(ScanResultSchema, {
+                  systemPrompt,
+                  userPrompt,
+                });
+            rawResult = llmRes.data;
+            modelUsed = llmRes.modelUsed;
+          } catch (llmErr) {
+            // Runtime LLM failure (overload, quota, timeout) on a demo preset: show the recorded
+            // REAL run, always labelled as a replay. Never invented; missing credentials never get here.
+            const replay = req.inputType === "DEMO_PRESET" && req.presetCode ? loadScanReplay(req.presetCode) : null;
+            if (!replay) throw llmErr;
+            rawResult = replay.result;
+            modelUsed = replay.modelUsed;
+            fallbackMode = true;
+            fallbackNoticeVi = replay.noticeVi;
+          }
         }
       }
     }
