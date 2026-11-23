@@ -20,6 +20,11 @@ export function replayModelLabel(modelUsed: string): string {
   return `${modelUsed} (phát lại)`;
 }
 
+/** True for a model name produced by replayModelLabel (War-Room debates carry the label in model_used). */
+export function isReplayModel(model: string): boolean {
+  return model.endsWith(" (phát lại)");
+}
+
 // shortcut: replay is detected from the notice prefix because contracts are frozen (no boolean field);
 // add an explicit `replay` flag to ShieldScanResponse when the Orchestrator reopens contracts.
 export function isReplayNotice(notice: string | undefined): boolean {

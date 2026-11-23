@@ -1,7 +1,14 @@
 import { z } from "zod";
-import { ScanResultSchema, ShieldScanRequestSchema, type ScanResult } from "@/contracts";
+import {
+  ScanResultSchema,
+  ShieldScanRequestSchema,
+  WarRoomDebateSchema,
+  type ScanResult,
+  type WarRoomDebate,
+} from "@/contracts";
 import case01 from "@/data/replays/scan-CASE-01.json";
-import { formatReplayNoticeVi } from "@/lib/replay-label";
+import warroomCase01 from "@/data/replays/warroom-CASE-01.json";
+import { formatReplayNoticeVi, replayModelLabel } from "@/lib/replay-label";
 import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/session/shield";
 
 /**
@@ -40,4 +47,37 @@ export function loadScanReplay(
   const record = SCAN_REPLAY_RECORDS[presetCode];
   if (!record) return null;
   return { result: record.result, modelUsed: record.modelUsed, noticeVi: formatReplayNoticeVi(record) };
+}
+
+const PresetCodeSchema = ShieldScanRequestSchema.innerType().shape.presetCode.unwrap();
+
+const WarRoomReplayRecordSchema = z.object({
+  kind: z.literal("warroom"),
+  scenarioCode: PresetCodeSchema,
+  recordedAt: z.string().datetime(),
+  modelUsed: z
+    .string()
+    .min(1)
+    .refine((m) => !NON_LLM_MODELS.includes(m), "replay must come from a real LLM run"),
+  debate: WarRoomDebateSchema,
+});
+export type WarRoomReplayRecord = z.infer<typeof WarRoomReplayRecordSchema>;
+
+export function parseWarRoomReplayRecord(raw: unknown): WarRoomReplayRecord {
+  return WarRoomReplayRecordSchema.parse(raw);
+}
+
+/** Recorded from a full live War-Room run (ticket #15). */
+// shortcut: each new recording needs its JSON imported here by hand; switch to a generated index if scenarios grow.
+const WARROOM_REPLAY_RECORDS: Partial<Record<WarRoomReplayRecord["scenarioCode"], WarRoomReplayRecord>> = {
+  "CASE-01": parseWarRoomReplayRecord(warroomCase01),
+};
+
+export function loadWarRoomReplay(scenarioCode: string): { debate: WarRoomDebate; noticeVi: string } | null {
+  const record = WARROOM_REPLAY_RECORDS[scenarioCode as WarRoomReplayRecord["scenarioCode"]];
+  if (!record) return null;
+  return {
+    debate: { ...record.debate, model_used: replayModelLabel(record.modelUsed) },
+    noticeVi: formatReplayNoticeVi(record),
+  };
 }
