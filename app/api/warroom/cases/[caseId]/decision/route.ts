@@ -10,6 +10,7 @@ import {
   getSessionId,
   toImmunityIndicatorDto,
 } from "@/lib/session";
+import { countIndependentSourceTypes } from "@/lib/immunity/service";
 
 export const dynamic = "force-dynamic";
 
@@ -137,14 +138,15 @@ export async function POST(
       );
     }
 
-    if (req.requestedLevel === "ACTIVE" && uniqueSources.length < 2) {
+    const sourceTypeCount = countIndependentSourceTypes(uniqueSources);
+    if (req.requestedLevel === "ACTIVE" && sourceTypeCount < 2) {
       return NextResponse.json(
         {
-          error: `Lớp 2 (ACTIVE Immunity) yêu cầu tối thiểu 2 nguồn bằng chứng độc lập (hiện có ${uniqueSources.length} nguồn). Vui lòng phát hành Cảnh báo mềm 72h (SOFT_WARNING) hoặc bổ sung nguồn đối chứng độc lập.`,
+          error: `Lớp 2 (ACTIVE Immunity) yêu cầu tối thiểu 2 nguồn bằng chứng độc lập KHÁC LOẠI (hiện có ${sourceTypeCount} loại nguồn). Vui lòng phát hành Cảnh báo mềm 72h (SOFT_WARNING) hoặc bổ sung nguồn đối chứng độc lập.`,
           code: "INSUFFICIENT_EVIDENCE_SOURCES",
           details: {
             required: 2,
-            provided: uniqueSources.length,
+            provided: sourceTypeCount,
             suggestedLevel: "SOFT_WARNING",
           },
         },

@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     const rows = await prisma.heldTransaction.findMany({
       where: {
         demoSessionId,
-        status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E", "CANCELLED_BY_USER", "RELEASED"] },
+        status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E", "CANCELLED_BY_USER", "CANCELLED_BY_B2E", "RELEASED"] },
       },
       orderBy: { createdAt: "desc" },
     });

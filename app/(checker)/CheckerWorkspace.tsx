@@ -351,6 +351,9 @@ export function CheckerWorkspace() {
     expired: registry.indicators.filter((i) => i.status === "EXPIRED").length,
     rolledBack: registry.indicators.filter((i) => i.status === "ROLLED_BACK").length,
     pendingAppeals: registry.appeals.filter((a) => a.status === "PENDING_HUMAN_REVIEW").length,
+    // shortcut: Minh oan count reads the 100 latest audit logs; add a server-side count if sessions grow long
+    dismissedFp: registry.auditLogs.filter((l) => l.action === "CASE_DISMISSED_FP").length,
+    overturnedAppeals: registry.appeals.filter((a) => a.status === "OVERTURNED_ROLLBACK").length,
   };
 
   const appealableIndicators = registry.indicators.filter(
@@ -491,6 +494,33 @@ export function CheckerWorkspace() {
       </section>
 
       {/* 4-Layer Governance Summary Bar */}
+      {/* Q24: honest false-positive accounting — raw demo counts only, no percentages. */}
+      <section
+        aria-label="Số đếm minh oan và thu hồi trong phiên demo"
+        className="rounded-xl border border-slate-200 bg-white p-4 text-sm text-slate-800"
+      >
+        <h2 className="text-base font-bold text-slate-900">
+          Ghi nhận báo nhầm trong phiên này <span className="text-xs font-semibold text-slate-500">({DEMO_SIMULATION_LABEL})</span>
+        </h2>
+        <dl className="mt-2 grid gap-2 sm:grid-cols-3">
+          <div>
+            <dt className="text-xs text-slate-600">Vụ được Minh oan</dt>
+            <dd className="text-2xl font-bold">{counts.dismissedFp}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-600">Khiếu nại được chấp nhận</dt>
+            <dd className="text-2xl font-bold">{counts.overturnedAppeals}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-slate-600">Chỉ báo bị Thu hồi</dt>
+            <dd className="text-2xl font-bold">{counts.rolledBack}</dd>
+          </div>
+        </dl>
+        <p className="mt-2 text-xs text-slate-600">
+          Số đếm thô trên dữ liệu mô phỏng, không phải tỷ lệ báo nhầm của hệ thống thật.
+        </p>
+      </section>
+
       <section aria-label="Tóm tắt 4 Lớp Quản trị Miễn dịch" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-2xl border border-amber-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">

@@ -218,17 +218,15 @@ export function ScanResultPanel({
             <div>
               <span className="block text-xs text-slate-500">Chỉ báo trùng khớp</span>
               <strong className="font-mono text-slate-900">
-                {immunityHit.indicatorType}: {immunityHit.indicatorValue}
+                {immunityHit.indicatorType}: {maskIndicatorValue(immunityHit.indicatorType, immunityHit.indicatorValue)}
               </strong>
             </div>
             <div>
               <span className="block text-xs text-slate-500">Nguồn xác minh độc lập</span>
+              {/* Q37: B2C sees only the count — source names are internal (no STR disclosure, AML Art. 40.2). */}
               <strong className="text-slate-900">
-                {immunityHit.evidenceSources.length} nguồn
+                Dấu hiệu rủi ro cao · {immunityHit.evidenceSources.length} nguồn
               </strong>
-              <span className="block text-xs text-slate-600">
-                {immunityHit.evidenceSources.join(", ")}
-              </span>
             </div>
             <div>
               <span className="block text-xs text-slate-500">Hiệu lực TTL đến</span>
@@ -655,4 +653,10 @@ export function ScanResultPanel({
       </section>
     </div>
   );
+}
+
+/** Luật 91: show only part of a personal identifier (account/phone/device); domains & APK hashes stay readable. */
+function maskIndicatorValue(type: string, value: string): string {
+  if (type === "URL_DOMAIN" || type === "APK_HASH" || value.length <= 4) return value;
+  return `${"•".repeat(Math.min(value.length - 4, 8))}${value.slice(-4)}`;
 }

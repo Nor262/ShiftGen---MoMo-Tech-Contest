@@ -1,7 +1,13 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { prisma } from "@/lib/prisma";
 import { releaseExpiredHolds, SESSION_HEADER_NAME } from "@/lib/session";
-import { ImmunityGovernanceError, resolveAppeal } from "@/lib/immunity/service";
+import {
+  approveImmunityIndicator,
+  countIndependentSourceTypes,
+  ImmunityGovernanceError,
+  resolveAppeal,
+} from "@/lib/immunity/service";
+import { addWorkingDays } from "@/lib/working-days";
 import { POST as postDecision } from "@/app/api/warroom/cases/[caseId]/decision/route";
 import { POST as postEscalate } from "@/app/api/shield/family/escalate/[txId]/route";
 
@@ -151,5 +157,71 @@ describe("Fix 4 — Người xét khiếu nại khác Checker đã kích hoạt"
 
     const ok = await resolveAppeal({ ...input, reviewerId: "RISK_CHECKER_LAN" });
     expect(ok.appeal.status).toBe("UPHELD");
+  });
+});
+
+describe("Q36 — Nguồn độc lập phải khác loại", () => {
+  it("counts distinct source types by prefix", () => {
+    expect(countIndependentSourceTypes(["MINUTE0_B2C_EVIDENCE", "MINUTE0_B2C_APK_SCREENSHOT"])).toBe(1);
+    expect(countIndependentSourceTypes(["MINUTE0_B2C_EVIDENCE", "INTERNAL_GRAPH_SMURFING_MULE"])).toBe(2);
+  });
+});
+
+describe("Q38 — Kết luận rủi ro cao hủy giao dịch tạm giữ (CANCELLED_BY_B2E)", () => {
+  async function setup(sources: string[]) {
+    const s = session("w5-b2e");
+    const tx = await heldTx(s, "ESCALATED_TO_B2E", new Date(Date.now() + 3_600_000));
+    const c = await prisma.investigationCase.create({
+      data: { demoSessionId: s, txId: tx.txId, scenarioCode: "TEST", title: "MẪU MÔ PHỎNG", subtitle: "", status: "IMMUNITY_PROPOSED", graphDataJson: "{}", caseContextJson: "{}" },
+    });
+    const ind = await prisma.immunityIndicator.create({
+      data: {
+        demoSessionId: s, caseId: c.caseId, indicatorType: "BANK_ACCOUNT", indicatorValue: "000111222333",
+        severity: "HIGH_RISK", status: "PENDING_CHECKER", evidenceSourcesJson: JSON.stringify(sources),
+        makerId: "RISK_MAKER_HUYEN", ttlHours: 720, expiresAt: new Date(Date.now() + 3_600_000),
+      },
+    });
+    const approve = () =>
+      approveImmunityIndicator({
+        demoSessionId: s, indicatorId: ind.indicatorId, checkerId: "RISK_CHECKER_TUAN",
+        checkerRole: "RISK_CHECKER", rationale: "Đủ 2 loại nguồn", ttlHours: 720,
+      });
+    return { s, tx, approve };
+  }
+
+  it("rejects two sources of the same type", async () => {
+    const { approve } = await setup(["MINUTE0_A", "MINUTE0_B"]);
+    await expect(approve()).rejects.toMatchObject({ statusCode: 400, code: "INSUFFICIENT_EVIDENCE_SOURCES" });
+  });
+
+  it("cancels the case's held tx as CANCELLED_BY_B2E with a checker audit", async () => {
+    const { s, tx, approve } = await setup(["MINUTE0_B2C_EVIDENCE", "INTERNAL_GRAPH_SMURFING_MULE"]);
+    await approve();
+    expect((await prisma.heldTransaction.findUniqueOrThrow({ where: { txId: tx.txId } })).status).toBe("CANCELLED_BY_B2E");
+    const log = await prisma.auditLog.findFirstOrThrow({ where: { demoSessionId: s, targetId: tx.txId, action: "TRANSFER_CANCELLED" } });
+    expect(log.actorRole).toBe("RISK_CHECKER");
+  });
+});
+
+describe("Q40 — Yêu cầu xét lại tạm giữ", () => {
+  it("owner self-escalation is audited as HOLD_REVIEW_REQUESTED, not as a guardian action", async () => {
+    const s = session("w5-review");
+    const tx = await heldTx(s, "ON_HOLD_24H", new Date(Date.now() + 3_600_000));
+    const res = await postEscalate(
+      post(`/api/shield/family/escalate/${tx.txId}`, s, { guardianId: "USER_B2C_HUNG" }),
+      { params: Promise.resolve({ txId: tx.txId }) },
+    );
+    expect(res.status).toBeLessThan(300);
+    expect((await prisma.heldTransaction.findUniqueOrThrow({ where: { txId: tx.txId } })).status).toBe("ESCALATED_TO_B2E");
+    const log = await prisma.auditLog.findFirstOrThrow({ where: { demoSessionId: s, action: "HOLD_REVIEW_REQUESTED" } });
+    expect(log.actorRole).toBe("USER_B2C");
+  });
+});
+
+describe("Q39 — addWorkingDays", () => {
+  it("skips the weekend (UTC+7)", () => {
+    // Fri 2026-11-27 10:00 +07 → +3 working days = Wed 2026-12-02
+    const d = addWorkingDays(new Date("2026-11-27T03:00:00Z"), 3);
+    expect(d.toISOString().slice(0, 10)).toBe("2026-12-02");
   });
 });

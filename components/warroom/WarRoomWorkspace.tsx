@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { addWorkingDays, ESCALATION_DECISION_WORKING_DAYS } from "@/lib/working-days";
 import {
   AlertCircle,
   ChevronDown,
@@ -497,6 +498,10 @@ export function WarRoomWorkspace() {
                     </div>
                     <h2 className="text-lg font-bold text-white">{selectedCase.title}</h2>
                     <p className="text-xs text-slate-300">{selectedCase.subtitle}</p>
+                    <EscalationDeadline
+                      escalatedAt={selectedCase.caseContext.escalatedAt}
+                      decided={selectedCase.status === "DISMISSED_FP" || selectedCase.status === "CLOSED"}
+                    />
                   </div>
 
                   <div className="flex flex-col items-stretch gap-2 sm:items-end">
@@ -730,5 +735,22 @@ export function WarRoomWorkspace() {
         )}
       </section>
     </div>
+  );
+}
+
+/** Q39: show the 3-working-day decision deadline for an escalated hold; flag overdue, never auto-act. */
+function EscalationDeadline({ escalatedAt, decided }: { escalatedAt: unknown; decided: boolean }) {
+  if (typeof escalatedAt !== "string" || decided) return null;
+  const deadline = addWorkingDays(new Date(escalatedAt), ESCALATION_DECISION_WORKING_DAYS);
+  const overdue = Date.now() > deadline.getTime();
+  return (
+    <p
+      role={overdue ? "alert" : undefined}
+      className={`text-xs font-semibold ${overdue ? "text-red-300" : "text-amber-200"}`}
+    >
+      {overdue ? "QUÁ HẠN — " : ""}Hạn ra phán quyết giao dịch tạm giữ:{" "}
+      {deadline.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} (
+      {ESCALATION_DECISION_WORKING_DAYS} ngày làm việc kể từ khi Chuyển cấp)
+    </p>
   );
 }

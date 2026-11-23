@@ -70,6 +70,9 @@ export async function POST(
     }
 
     const { guardianId, note } = parsed.data;
+    // Glossary "Yêu cầu xét lại tạm giữ": the wallet owner escalates their own hold for human review (TT 53).
+    const isSelfReview = guardianId === tx.senderId;
+    const originLabel = isSelfReview ? "Người dùng yêu cầu xét lại" : "Gia đình báo cáo";
     const scan = tx.scanId
       ? await prisma.scanSession.findFirst({
           where: { scanId: tx.scanId, demoSessionId },
@@ -126,6 +129,8 @@ export async function POST(
             familyEscalatedBy: guardianId,
             familyEscalationNote: note ?? null,
             escalatedTxId: tx.txId,
+            escalationOrigin: originLabel,
+            escalatedAt: new Date().toISOString(),
           }),
         },
       });
@@ -159,7 +164,7 @@ export async function POST(
             flagged: true,
           },
         ],
-        summary_badge: `${DEMO_SIMULATION_LABEL} · Gia đình báo cáo`,
+        summary_badge: `${DEMO_SIMULATION_LABEL} · ${originLabel}`,
       });
 
       savedCase = await prisma.investigationCase.create({
@@ -167,7 +172,7 @@ export async function POST(
           demoSessionId,
           txId: tx.txId,
           scenarioCode: "CASE-FAMILY-CUSTOM",
-          title: `[${DEMO_SIMULATION_LABEL}] Báo cáo Gia đình — TK ${tx.recipientAccount}`,
+          title: `[${DEMO_SIMULATION_LABEL}] ${originLabel} — TK ${tx.recipientAccount}`,
           subtitle: `${DEMO_SIMULATION_LABEL} · Chuyển tiếp bởi ${guardianId}`,
           status: "OPEN",
           graphDataJson: JSON.stringify(graphData),
@@ -178,6 +183,8 @@ export async function POST(
             familyEscalatedBy: guardianId,
             familyEscalationNote: note ?? null,
             escalatedTxId: tx.txId,
+            escalationOrigin: originLabel,
+            escalatedAt: new Date().toISOString(),
           }),
           sanitizedMinute0Json: JSON.stringify(sanitizedEvidence),
         },
@@ -188,8 +195,8 @@ export async function POST(
       data: {
         demoSessionId,
         actorId: guardianId,
-        actorRole: "FAMILY_GUARDIAN",
-        action: "FAMILY_ESCALATED",
+        actorRole: isSelfReview ? "USER_B2C" : "FAMILY_GUARDIAN",
+        action: isSelfReview ? "HOLD_REVIEW_REQUESTED" : "FAMILY_ESCALATED",
         targetId: savedCase.caseId,
         rationale:
           note?.trim() ||

@@ -165,6 +165,10 @@ export const TX_STATUS_META: Record<
     labelVi: "Đã hủy — Hoàn tiền về ví",
     badgeClass: "border-slate-300 bg-slate-100 text-slate-800",
   },
+  CANCELLED_BY_B2E: {
+    labelVi: "Đã hủy sau xác minh bảo mật — Tiền vẫn trong ví",
+    badgeClass: "border-slate-300 bg-slate-100 text-slate-800",
+  },
   RELEASED: {
     labelVi: "Đã giải tỏa xác minh",
     badgeClass: "border-emerald-300 bg-emerald-50 text-emerald-800",

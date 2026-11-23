@@ -55,6 +55,7 @@ export function TransferHoldPanel({
   const [submitting, setSubmitting] = useState(false);
   const [enablingOptIn, setEnablingOptIn] = useState(false);
   const [cancellingTxId, setCancellingTxId] = useState<string | null>(null);
+  const [reviewingTxId, setReviewingTxId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [latestTransfer, setLatestTransfer] = useState<TransferResponse | null>(null);
   const [statusNote, setStatusNote] = useState<string | null>(null);
@@ -175,6 +176,36 @@ export function TransferHoldPanel({
       setErrorMessage("Không thể kết nối máy chủ khi hủy giao dịch.");
     } finally {
       setCancellingTxId(null);
+    }
+  }
+
+  // Glossary "Yêu cầu xét lại tạm giữ": owner asks a human B2E reviewer; only a human may release early (TT 53).
+  async function handleRequestReview(txId: string) {
+    setReviewingTxId(txId);
+    setErrorMessage(null);
+    setStatusNote(null);
+    try {
+      const res = await fetch(`/api/shield/family/escalate/${txId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          guardianId: activeUserId,
+          note: "Chủ ví yêu cầu chuyên viên người thật xem xét lại quyết định tạm giữ tự động.",
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setErrorMessage(parseApiErrorMessage(res.status, data));
+        return;
+      }
+      setStatusNote(
+        "Đã gửi yêu cầu xét lại. Chuyên viên người thật sẽ xem xét; giao dịch vẫn được giữ cho tới khi có kết quả.",
+      );
+      await onHoldsChanged();
+    } catch {
+      setErrorMessage("Không thể kết nối máy chủ khi gửi yêu cầu xét lại.");
+    } finally {
+      setReviewingTxId(null);
     }
   }
 
@@ -404,6 +435,17 @@ export function TransferHoldPanel({
               {cancellingTxId === activeHoldRecord.txId
                 ? "Đang hủy giao dịch..."
                 : "Hủy giao dịch — Hoàn tiền về ví ngay"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => void handleRequestReview(activeHoldRecord.txId)}
+              disabled={reviewingTxId === activeHoldRecord.txId}
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            >
+              {reviewingTxId === activeHoldRecord.txId
+                ? "Đang gửi yêu cầu..."
+                : "Yêu cầu người thật xem xét lại"}
             </button>
 
             <Link
