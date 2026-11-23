@@ -4,6 +4,19 @@ import type { Config } from "tailwindcss";
 // TrustLoop tokens so existing components adopt the design system without touching every class.
 // Every shade used for text on light surfaces was measured >= 4.5:1 (see DESIGN.md).
 // shortcut: legacy names kept as aliases, rename to semantic names (navy/seafoam/signal) when components are next touched.
+const shiftBlueScale = {
+  50: "#eef3fd",
+  100: "#dde7fb",
+  200: "#bccff7",
+  300: "#8fb0f0",
+  400: "#4d82e6",
+  500: "#0b57d0",
+  600: "#111a4a",
+  700: "#0d1438",
+  800: "#0a1029",
+  900: "#070b1d",
+};
+
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -14,20 +27,10 @@ const config: Config = {
     extend: {
       colors: {
         // Brand: navy for structure, Shift Blue (from ShiftGen logo) for interactive emphasis.
-        momo: {
-          50: "#eef3fd",
-          100: "#dde7fb",
-          200: "#bccff7",
-          300: "#8fb0f0",
-          400: "#4d82e6",
-          500: "#0b57d0",
-          600: "#111a4a",
-          700: "#0d1438",
-          800: "#0a1029",
-          900: "#070b1d",
-          primary: "#111a4a",
-          accent: "#0b57d0",
-        },
+        momo: { ...shiftBlueScale, primary: "#111a4a", accent: "#0b57d0" },
+        // Info/pending badges (sky, indigo) share the brand blue scale.
+        sky: shiftBlueScale,
+        indigo: shiftBlueScale,
         // Neutrals: canvas, hairlines, Steel 600 muted text, Slate Ink body, navy headings.
         slate: {
           50: "#f6f6f8",
@@ -57,7 +60,7 @@ const config: Config = {
           950: "#04211c",
         },
         // Signal: hold / high risk — from the ShiftGen arrow.
-        red: {
+        signal: {
           50: "#fdf0e9",
           100: "#fbe0d3",
           200: "#f7c3a8",
@@ -69,6 +72,20 @@ const config: Config = {
           800: "#7c2d12",
           900: "#5c210d",
           950: "#341307",
+        },
+        // Errors only (form/API failures) — never for risk or hold state (that is `signal`).
+        red: {
+          50: "#fef3f2",
+          100: "#fee4e2",
+          200: "#fecdca",
+          300: "#fda29b",
+          400: "#f97066",
+          500: "#c4261a",
+          600: "#b42318",
+          700: "#912018",
+          800: "#7a271a",
+          900: "#55160c",
+          950: "#2b0a05",
         },
         amber: {
           50: "#fdf6e3",

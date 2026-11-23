@@ -276,7 +276,7 @@ export function TransferHoldPanel({
             type="button"
             onClick={() => void handleEnableOptIn()}
             disabled={enablingOptIn}
-            className="min-h-[44px] rounded-xl bg-momo-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            className="min-h-[48px] rounded-lg bg-momo-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
           >
             {enablingOptIn ? "Đang bật..." : "Bật Bảo vệ 24h ngay cho giao dịch này"}
           </button>
@@ -324,7 +324,7 @@ export function TransferHoldPanel({
           <button
             type="submit"
             disabled={submitting}
-            className="min-h-[48px] w-full rounded-xl bg-momo-600 px-4 py-2.5 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+            className="min-h-[48px] w-full rounded-lg bg-momo-600 px-4 py-2.5 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
           >
             {submitting ? "Đang xử lý..." : "Tiếp tục chuyển tiền"}
           </button>
@@ -370,13 +370,13 @@ export function TransferHoldPanel({
         <div
           role="region"
           aria-label="Biên nhận Tạm giữ Bảo mật 24h"
-          className="space-y-4 rounded-2xl border-2 border-amber-400 bg-amber-50/90 p-5 text-slate-900"
+          className="space-y-4 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-5 text-slate-900"
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-amber-800" aria-hidden="true" />
+              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-signal-700" aria-hidden="true" />
               <div className="space-y-1">
-                <span className="inline-block rounded-full bg-amber-200 px-2.5 py-0.5 text-xs font-bold text-amber-950">
+                <span className="inline-block rounded-full bg-signal-100 px-2.5 py-0.5 text-xs font-bold text-signal-900">
                   TRẠNG THÁI: ON_HOLD_24H ({DEMO_SIMULATION_LABEL})
                 </span>
                 <p
@@ -429,7 +429,7 @@ export function TransferHoldPanel({
               type="button"
               onClick={() => void handleCancelHold(activeHoldRecord.txId)}
               disabled={cancellingTxId === activeHoldRecord.txId}
-              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg bg-momo-600 px-5 py-3 text-base font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
             >
               <RotateCcw className="h-5 w-5" aria-hidden="true" />
               {cancellingTxId === activeHoldRecord.txId
@@ -441,7 +441,7 @@ export function TransferHoldPanel({
               type="button"
               onClick={() => void handleRequestReview(activeHoldRecord.txId)}
               disabled={reviewingTxId === activeHoldRecord.txId}
-              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-3 text-base font-semibold text-slate-800 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
             >
               {reviewingTxId === activeHoldRecord.txId
                 ? "Đang gửi yêu cầu..."
@@ -450,7 +450,7 @@ export function TransferHoldPanel({
 
             <Link
               href="/family"
-              className="inline-flex min-h-[48px] items-center gap-2 rounded-xl border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
+              className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
               Mở màn hình Người giám hộ (Chị Minh)

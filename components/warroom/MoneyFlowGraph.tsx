@@ -215,23 +215,23 @@ export function MoneyFlowGraph({
           label: labelText,
           animated: edgeFlagged,
           style: {
-            stroke: edgeFlagged ? "#ef4444" : "#34d399",
+            stroke: edgeFlagged ? "#ec652b" : "#44b48b",
             strokeWidth: edgeFlagged ? 2.2 : 1.7,
           },
           labelStyle: {
-            fill: "#e2e8f0",
+            fill: "#e3e4e8",
             fontSize: 11,
             fontWeight: 600,
           },
           labelBgStyle: {
-            fill: "#0f172a",
+            fill: "#0c0f16",
             fillOpacity: 0.92,
           },
           labelBgPadding: [6, 3],
           labelBgBorderRadius: 4,
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: edgeFlagged ? "#ef4444" : "#34d399",
+            color: edgeFlagged ? "#ec652b" : "#44b48b",
           },
         };
       }),
@@ -290,7 +290,7 @@ export function MoneyFlowGraph({
                 onNodeClick={(_event, node) => setSelectedNodeId(node.id)}
                 onPaneClick={() => setSelectedNodeId(null)}
               >
-                <Background color="#334155" gap={20} />
+                <Background color="#23262f" gap={20} />
                 <Controls className="!rounded-lg !border !border-slate-700 !bg-slate-900 [&_button]:!border-slate-700 [&_button]:!bg-slate-900 [&_button]:!fill-slate-200 hover:[&_button]:!bg-slate-800" />
                 <MiniMap
                   pannable
@@ -299,9 +299,9 @@ export function MoneyFlowGraph({
                   maskColor="rgba(2, 6, 23, 0.72)"
                   nodeColor={(node) => {
                     const data = node.data as TrustLoopNodeData | undefined;
-                    if (data?.isFlagged) return "#ef4444";
-                    if (data?.isVerifiedMerchant) return "#10b981";
-                    return "#64748b";
+                    if (data?.isFlagged) return "#ec652b";
+                    if (data?.isVerifiedMerchant) return "#44b48b";
+                    return "#9a9ea8";
                   }}
                 />
               </ReactFlow>

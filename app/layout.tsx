@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className={`${fontSans.variable} ${fontMono.variable}`}>
-      <body className="min-h-screen bg-slate-50 font-sans text-slate-700 antialiased">
+      <body className="min-h-screen font-sans">
         <header className="border-b border-slate-200 bg-white">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
             <div className="flex items-center gap-3">

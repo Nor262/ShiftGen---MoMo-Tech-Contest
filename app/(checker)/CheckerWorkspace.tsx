@@ -74,7 +74,7 @@ const STATUS_META: Record<ImmunityStatus, { label: string; className: string }> 
   },
   ACTIVE: {
     label: "ACTIVE · Miễn dịch Cộng đồng Lớp 2",
-    className: "border-red-300 bg-red-50 text-red-900",
+    className: "border-signal-300 bg-signal-50 text-signal-900",
   },
   EXPIRED: {
     label: "EXPIRED · Hết hạn TTL Lớp 3",
@@ -103,7 +103,7 @@ const APPEAL_STATUS_META: Record<AppealStatus, { label: string; className: strin
 
 const AUDIT_ACTION_BADGE: Partial<Record<AuditAction, string>> = {
   IMMUNITY_PROPOSED: "border-indigo-200 bg-indigo-50 text-indigo-800",
-  IMMUNITY_APPROVED: "border-red-200 bg-red-50 text-red-800",
+  IMMUNITY_APPROVED: "border-signal-200 bg-signal-50 text-signal-800",
   APPEAL_SUBMITTED: "border-amber-200 bg-amber-50 text-amber-900",
   APPEAL_RESOLVED: "border-sky-200 bg-sky-50 text-sky-900",
   IMMUNITY_ROLLED_BACK: "border-emerald-200 bg-emerald-50 text-emerald-900",
@@ -535,12 +535,12 @@ export function CheckerWorkspace() {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-red-200 bg-white p-4 shadow-sm">
+        <div className="rounded-2xl border border-signal-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold uppercase tracking-wide text-red-800">
+            <span className="text-xs font-bold uppercase tracking-wide text-signal-800">
               Lớp 2 · Active (≥2 nguồn)
             </span>
-            <FileCheck2 className="h-4 w-4 text-red-600" aria-hidden="true" />
+            <FileCheck2 className="h-4 w-4 text-signal-600" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-extrabold text-slate-900">
             {counts.active}{" "}

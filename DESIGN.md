@@ -32,6 +32,7 @@ All text colors below are measured against white (`#ffffff`) and canvas (`#f6f6f
 | Signal Orange 700 | `#c2410c` | `--color-signal` | 5.2 / 4.8 | **The one signal surface per page**: hold banner, high-risk badge fill (white text on it = 5.2:1) |
 | Signal Orange 500 | `#ec652b` | `--color-signal-bright` | 3.3 / 3.0 | Large decorative accents ≥ 24px bold, icons, timeline marker — never small text, never text-bearing fills |
 | Signal Wash | `#fdf0e9` | `--color-signal-wash` | — | Background behind orange content |
+| Error Red 600 | `#b42318` | `--color-error` | 6.4 / 5.9 | Form/API **errors** only (`role="alert"`). Never for risk or hold state — that is Signal Orange |
 | Amber 800 | `#8a5a00` | `--color-amber` | ≈ 5.9 | Medium-risk text; pair with `#fdf6e3` wash |
 | Midnight Ink | `#011821` | `--color-midnight` | — | Dark inverted sections (B2E War-Room canvas) |
 
@@ -113,7 +114,7 @@ White card, hairline shadow. Numbers in JetBrains Mono or Be Vietnam Pro 600 tin
 Session IDs, DB/LLM status, persona codes (`RISK_MAKER`), enum statuses and wave labels are hidden by default behind a "Chế độ kỹ thuật" toggle in the footer. Judges see Vietnamese labels; engineers can reveal codes.
 
 ### Team Mark
-ShiftGen logo (cropped mark) 28px in the nav next to the product name "TrustLoop", with "by ShiftGen" in caption Steel on the Home footer. The logo's cyan→blue→orange gradient lives only inside the logo file — never on UI elements.
+ShiftGen logo (cropped mark, `public/shiftgen-mark.png`) 28px in the nav next to the product name "TrustLoop", followed by "by ShiftGen" in caption Steel. The logo's cyan→blue→orange gradient lives only inside the logo file — never on UI elements.
 
 ## Layout
 
@@ -124,7 +125,8 @@ ShiftGen logo (cropped mark) 28px in the nav next to the product name "TrustLoop
 ## Do
 
 - Write every label in plain Vietnamese first; put codes (enum, persona IDs) only in technical mode.
-- Use Signal Orange 700 for at most one state surface per page.
+- Use at most one **solid** Signal Orange surface per page (the Hold Banner). Other risk content (risk cards, high-risk badges) uses Signal Wash or badges, never a second solid fill.
+- Keep errors red and risk orange: an error is "something failed", a signal is "this transfer/account is risky".
 - Keep body text ≥ 4.5:1; check new colors before use.
 - Keep heading line-height ≥ 1.2 for Vietnamese diacritics.
 - Use GLOSSARY.md terms in UI copy (Tạm giữ, Giải phóng, Chuyển cấp, Minh oan, Kết luận rủi ro cao…).
@@ -166,6 +168,7 @@ ShiftGen logo (cropped mark) 28px in the nav next to the product name "TrustLoop
   --color-signal: #c2410c;
   --color-signal-bright: #ec652b;
   --color-signal-wash: #fdf0e9;
+  --color-error: #b42318;
   --color-amber: #8a5a00;
   --color-amber-wash: #fdf6e3;
   --color-midnight: #011821;

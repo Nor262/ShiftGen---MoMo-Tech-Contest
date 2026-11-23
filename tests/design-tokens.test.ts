@@ -22,7 +22,7 @@ function contrast(a: string, b: string): number {
 }
 
 const LIGHT_SURFACES = ["#ffffff", "#f6f6f8"];
-const scales = ["momo", "slate", "emerald", "red", "amber"] as const;
+const scales = ["momo", "slate", "emerald", "red", "signal", "amber", "sky", "indigo"] as const;
 
 describe("DESIGN.md color tokens", () => {
   // Known-good anchors from DESIGN.md (independent of the config values).

@@ -93,15 +93,15 @@ export const RISK_LEVEL_META: Record<
   },
   HIGH: {
     labelVi: "CAO",
-    badgeClass: "border-red-200 bg-red-50 text-red-800",
-    barClass: "bg-red-500",
-    borderClass: "border-red-200",
+    badgeClass: "border-signal-200 bg-signal-50 text-signal-800",
+    barClass: "bg-signal-500",
+    borderClass: "border-signal-200",
   },
   CRITICAL: {
     labelVi: "NGHIÊM TRỌNG",
-    badgeClass: "border-red-300 bg-red-50 text-red-900",
-    barClass: "bg-red-600",
-    borderClass: "border-red-300",
+    badgeClass: "border-signal-300 bg-signal-50 text-signal-900",
+    barClass: "bg-signal-600",
+    borderClass: "border-signal-300",
   },
 };
 
