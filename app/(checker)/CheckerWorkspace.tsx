@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { CAST, castName } from "@/lib/cast";
 import {
   AlertOctagon,
   CheckCircle2,
@@ -43,23 +44,23 @@ const PERSONAS: readonly RolePersona[] = [
   {
     id: "RISK_CHECKER_TUAN",
     role: "RISK_CHECKER",
-    displayName: "Anh Tuấn",
+    displayName: CAST.RISK_CHECKER_TUAN.name,
     titleVi: "Risk Checker (Người phê duyệt độc lập)",
-    hintVi: "Có quyền duyệt Lớp 2 (≥2 nguồn khác loại, khác Maker — thiết kế quản trị riêng), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
+    hintVi: "Có quyền duyệt kích hoạt chỉ báo (≥2 nguồn khác loại, khác người đề xuất), xét khiếu nại người thật, Thu hồi & Giả lập hết hạn.",
   },
   {
     id: "RISK_CHECKER_LAN",
     role: "RISK_CHECKER",
-    displayName: "Chị Lan",
+    displayName: CAST.RISK_CHECKER_LAN.name,
     titleVi: "Risk Checker (Người xét khiếu nại độc lập)",
     hintVi: "Xét khiếu nại cho chỉ báo do Checker khác kích hoạt; máy chủ trả 403 nếu người xét trùng người đã duyệt.",
   },
   {
     id: "RISK_MAKER_HUYEN",
     role: "RISK_MAKER",
-    displayName: "Chị Huyền",
+    displayName: CAST.RISK_MAKER_HUYEN.name,
     titleVi: "Risk Maker (Chuyên viên đề xuất)",
-    hintVi: "Dùng để kiểm chứng trực tiếp chặn HTTP 403 Maker≠Checker từ máy chủ khi tự bấm phê duyệt.",
+    hintVi: "Dùng để thử: người đã đề xuất tự bấm duyệt thì hệ thống từ chối (Maker ≠ Checker).",
   },
 ] as const;
 
@@ -69,19 +70,19 @@ const STATUS_META: Record<ImmunityStatus, { label: string; className: string }> 
     className: "border-indigo-300 bg-indigo-50 text-indigo-900",
   },
   SOFT_WARNING: {
-    label: "Cảnh báo mềm (Lớp 1)",
+    label: "Cảnh báo mềm",
     className: "border-amber-300 bg-amber-50 text-amber-950",
   },
   ACTIVE: {
-    label: "Kích hoạt (Lớp 2)",
+    label: "Đang kích hoạt",
     className: "border-signal-300 bg-signal-50 text-signal-900",
   },
   EXPIRED: {
-    label: "Hết hạn (Lớp 3)",
+    label: "Hết hạn",
     className: "border-slate-300 bg-slate-100 text-slate-700",
   },
   ROLLED_BACK: {
-    label: "Thu hồi (Lớp 4)",
+    label: "Đã thu hồi",
     className: "border-emerald-300 bg-emerald-50 text-emerald-900",
   },
 };
@@ -188,7 +189,7 @@ export function CheckerWorkspace() {
       setBanner({
         type: "error",
         title: "Lỗi kết nối",
-        message: "Không thể kết nối tới GET /api/immunity.",
+        message: "Không tải được danh mục chỉ báo. Vui lòng thử lại.",
       });
     } finally {
       setLoading(false);
@@ -247,7 +248,7 @@ export function CheckerWorkspace() {
     const ttlHours = ttlSelection[indicator.indicatorId] ?? IMMUNITY_TTL_HOURS.ACTIVE;
     const rationale =
       (approveRationale[indicator.indicatorId] ?? "").trim() ||
-      `Đã kiểm tra đối chứng ${indicator.evidenceSources.length} nguồn độc lập và phê duyệt kích hoạt Lớp 2 (${ttlHours}h).`;
+      `Đã kiểm tra đối chứng ${indicator.evidenceSources.length} nguồn độc lập và phê duyệt kích hoạt chỉ báo (${ttlHours} giờ).`;
 
     await callGovernanceApi(
       `approve-${indicator.indicatorId}`,
@@ -258,15 +259,15 @@ export function CheckerWorkspace() {
         rationale,
         ttlHours,
       },
-      "Đã phê duyệt Miễn dịch Cộng đồng (Lớp 2 — ACTIVE)",
-      `Chỉ báo ${indicator.indicatorValue} đã được kích hoạt với TTL ${ttlHours} giờ và ghi nhận vào Nhật ký Kiểm toán.`,
+      "Đã kích hoạt chỉ báo",
+      `Chỉ báo ${indicator.indicatorValue} đã được kích hoạt trong ${ttlHours} giờ và ghi nhận vào Nhật ký Kiểm toán.`,
     );
   }
 
   async function handleRollback(indicator: ImmunityIndicatorDto) {
     const reason =
       (rollbackReason[indicator.indicatorId] ?? "").trim() ||
-      "Thu hồi tức thì theo quy trình Lớp 4 để chống chặn oan (False Positive).";
+      "Thu hồi ngay để tránh chặn oan.";
 
     await callGovernanceApi(
       `rollback-${indicator.indicatorId}`,
@@ -276,7 +277,7 @@ export function CheckerWorkspace() {
         checkerRole: activePersona.role,
         reason,
       },
-      "Đã thu hồi tức thì (Lớp 4 — ROLLED_BACK)",
+      "Đã thu hồi chỉ báo",
       `Chỉ báo ${indicator.indicatorValue} đã bị gỡ khỏi Danh mục Miễn dịch đang hoạt động.`,
     );
   }
@@ -288,9 +289,9 @@ export function CheckerWorkspace() {
       {
         checkerId: activePersona.id,
         checkerRole: activePersona.role,
-        rationale: `Kiểm chứng Lớp 3 TTL tự động hết hạn (${DEMO_SIMULATION_LABEL})`,
+        rationale: `Kiểm chứng chỉ báo tự hết hạn (${DEMO_SIMULATION_LABEL})`,
       },
-      `Đã giả lập hết hạn TTL (Lớp 3 — EXPIRED · ${DEMO_SIMULATION_LABEL})`,
+      `Đã giả lập hết hạn chỉ báo (${DEMO_SIMULATION_LABEL})`,
       `Chỉ báo ${indicator.indicatorValue} đã chuyển sang EXPIRED và ngừng kích hoạt cảnh báo B2C.`,
     );
   }
@@ -336,10 +337,10 @@ export function CheckerWorkspace() {
         resolutionNote,
       },
       resolution === "OVERTURNED_ROLLBACK"
-        ? "Đã chấp nhận khiếu nại & Rollback tức thì"
+        ? "Đã chấp nhận khiếu nại và thu hồi chỉ báo"
         : "Đã giữ nguyên cảnh báo (UPHELD)",
       resolution === "OVERTURNED_ROLLBACK"
-        ? "Khiếu nại được chấp nhận (OVERTURNED_ROLLBACK) và chỉ báo liên quan đã chuyển sang ROLLED_BACK."
+        ? "Khiếu nại được chấp nhận và chỉ báo liên quan đã được thu hồi."
         : "Khiếu nại đã được kết luận giữ nguyên cảnh báo và lưu Nhật ký Kiểm toán.",
     );
   }
@@ -380,9 +381,9 @@ export function CheckerWorkspace() {
             </div>
             <p className="max-w-3xl text-sm text-slate-600">
               Cổng kiểm duyệt độc lập Risk Checker: thực thi nguyên tắc <strong>Maker ≠ Checker</strong>,
-              ngưỡng <strong>≥ 2 nguồn bằng chứng độc lập</strong>, cơ chế <strong>TTL tự hết hạn</strong>,
+              ngưỡng <strong>≥ 2 nguồn bằng chứng độc lập</strong>, cơ chế <strong>tự hết hạn</strong>,
               hàng đợi <strong>Khiếu nại Người thật (TT 53/2026)</strong> và{" "}
-              <strong>Rollback tức thì</strong> trên Nhật ký Kiểm toán bất biến.
+              <strong>Thu hồi tức thì</strong> trên Nhật ký Kiểm toán bất biến.
             </p>
           </div>
 
@@ -559,20 +560,20 @@ export function CheckerWorkspace() {
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-bold uppercase tracking-wide text-slate-700">
-              Lớp 3 · TTL &amp; Hết hạn
+              Lớp 3 · Tự hết hạn
             </span>
             <Clock className="h-4 w-4 text-slate-600" aria-hidden="true" />
           </div>
           <p className="mt-2 text-2xl font-extrabold text-slate-900">{counts.expired}</p>
           <p className="mt-1 text-xs text-slate-600">
-            Tự động chuyển EXPIRED khi hết TTL + hỗ trợ nút Giả lập hết hạn Demo ({DEMO_SIMULATION_LABEL}).
+            Tự động hết hiệu lực khi hết thời hạn, có nút Giả lập hết hạn Demo ({DEMO_SIMULATION_LABEL}).
           </p>
         </div>
 
         <div className="rounded-2xl border border-emerald-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-bold uppercase tracking-wide text-emerald-800">
-              Lớp 4 · Khiếu nại &amp; Rollback
+              Lớp 4 · Khiếu nại &amp; Thu hồi
             </span>
             <Scale className="h-4 w-4 text-emerald-600" aria-hidden="true" />
           </div>
@@ -583,7 +584,7 @@ export function CheckerWorkspace() {
             </span>
           </p>
           <p className="mt-1 text-xs text-slate-600">
-            Người thật rà soát khiếu nại (TT 53/2026) và Rollback tức thì gỡ cảnh báo B2C.
+            Người thật rà soát khiếu nại (TT 53/2026) và thu hồi ngay để gỡ cảnh báo cho người dùng.
           </p>
         </div>
       </section>
@@ -687,16 +688,22 @@ export function CheckerWorkspace() {
                   <dl className="mt-3 grid gap-3 rounded-xl border border-slate-200 bg-white p-3.5 text-xs sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                       <dt className="font-semibold text-slate-500">Maker đề xuất</dt>
-                      <dd className="mt-0.5 font-mono font-bold text-slate-900">{ind.makerId}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-500">Checker phê duyệt</dt>
-                      <dd className="mt-0.5 font-mono font-bold text-slate-900">
-                        {ind.checkerId ?? "Chưa phê duyệt"}
+                      <dd className="mt-0.5 font-bold text-slate-900">
+                        {castName(ind.makerId)}
+                        <span className="tech-only font-mono font-normal"> · {ind.makerId}</span>
                       </dd>
                     </div>
                     <div>
-                      <dt className="font-semibold text-slate-500">Hiệu lực TTL</dt>
+                      <dt className="font-semibold text-slate-500">Checker phê duyệt</dt>
+                      <dd className="mt-0.5 font-bold text-slate-900">
+                        {ind.checkerId ? castName(ind.checkerId) : "Chưa phê duyệt"}
+                        {ind.checkerId && (
+                          <span className="tech-only font-mono font-normal"> · {ind.checkerId}</span>
+                        )}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-semibold text-slate-500">Thời hạn hiệu lực</dt>
                       <dd className="mt-0.5 font-semibold text-slate-900">
                         {ind.ttlHours} giờ · Hết hạn {formatViTime(ind.expiresAt)}
                       </dd>
@@ -709,14 +716,14 @@ export function CheckerWorkspace() {
                         {ind.evidenceSources.map((src) => (
                           <span
                             key={src}
-                            className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-800"
+                            className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-xs font-semibold text-slate-800"
                           >
                             {src}
                           </span>
                         ))}
                         {!hasEnoughSources && (
-                          <span className="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-900">
-                            &lt; 2 nguồn (Chặn Lớp 2 — HTTP 400)
+                          <span className="rounded border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-900">
+                            Chưa đủ 2 nguồn khác loại nên chưa thể kích hoạt
                           </span>
                         )}
                       </dd>
@@ -725,7 +732,7 @@ export function CheckerWorkspace() {
 
                   {ind.rollbackReason && (
                     <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-950">
-                      <strong>Lý do thu hồi (Rollback):</strong> {ind.rollbackReason}
+                      <strong>Lý do thu hồi:</strong> {ind.rollbackReason}
                     </p>
                   )}
 
@@ -735,11 +742,11 @@ export function CheckerWorkspace() {
                     {canApprove && (
                       <div className="space-y-2.5 rounded-xl border border-indigo-200 bg-white p-3.5">
                         <p className="text-xs font-extrabold uppercase tracking-wide text-indigo-900">
-                          Lớp 2 · Phê duyệt Phát hành (Maker ≠ Checker &amp; ≥2 nguồn)
+                          Phê duyệt kích hoạt (người duyệt khác người đề xuất, ≥2 nguồn)
                         </p>
                         <div className="grid gap-2 sm:grid-cols-2">
                           <label className="block space-y-1 text-xs">
-                            <span className="font-semibold text-slate-700">Thời hạn TTL</span>
+                            <span className="font-semibold text-slate-700">Thời hạn</span>
                             <select
                               value={selectedTtl}
                               onChange={(e) =>
@@ -783,7 +790,7 @@ export function CheckerWorkspace() {
                           <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                           {busyKey === `approve-${ind.indicatorId}`
                             ? "Đang gửi phê duyệt..."
-                            : `Phê duyệt Kích hoạt (Lớp 2) — ${activePersona.displayName}`}
+                            : `Phê duyệt kích hoạt — ${activePersona.displayName}`}
                         </button>
                       </div>
                     )}
@@ -792,7 +799,7 @@ export function CheckerWorkspace() {
                     {(canRollback || canExpireDemo) && (
                       <div className="space-y-2.5 rounded-xl border border-slate-200 bg-white p-3.5">
                         <p className="text-xs font-extrabold uppercase tracking-wide text-slate-800">
-                          Lớp 3 &amp; Lớp 4 · Thu hồi tức thì (Rollback) &amp; Giả lập hết hạn TTL
+                          Thu hồi tức thì &amp; giả lập hết hạn
                         </p>
                         {canRollback && (
                           <div className="flex flex-col gap-2 sm:flex-row">
@@ -809,7 +816,7 @@ export function CheckerWorkspace() {
                                   [ind.indicatorId]: e.target.value,
                                 }))
                               }
-                              placeholder="Lý do Rollback (VD: Chống chặn oan / xác minh hợp lệ)..."
+                              placeholder="Lý do thu hồi (VD: Chống chặn oan / xác minh hợp lệ)..."
                               className="min-h-[44px] flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
                             />
                             <button
@@ -819,7 +826,7 @@ export function CheckerWorkspace() {
                               className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60"
                             >
                               <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                              Thu hồi tức thì — Rollback (Lớp 4)
+                              Thu hồi tức thì
                             </button>
                           </div>
                         )}
@@ -832,7 +839,7 @@ export function CheckerWorkspace() {
                             className="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-slate-100 px-4 py-2 text-sm font-bold text-slate-800 transition hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
                           >
                             <TimerOff className="h-4 w-4" aria-hidden="true" />
-                            Giả lập hết hạn TTL (Demo — Lớp 3 · {DEMO_SIMULATION_LABEL})
+                            Giả lập hết hạn ({DEMO_SIMULATION_LABEL})
                           </button>
                         )}
                       </div>
@@ -857,8 +864,8 @@ export function CheckerWorkspace() {
             </h2>
             <p className="text-sm text-slate-600">
               Bảo đảm quyền khiếu nại để con người rà soát lại quyết định tự động theo Thông tư
-              53/2026/TT-NHNN. Khi chấp nhận khiếu nại (<code>OVERTURNED_ROLLBACK</code>), hệ thống
-              tự động thu hồi chỉ báo ngay lập tức.
+              53/2026/TT-NHNN. Khi chấp nhận khiếu nại, hệ thống tự động thu
+              hồi chỉ báo ngay lập tức.
             </p>
           </div>
 
@@ -926,7 +933,7 @@ export function CheckerWorkspace() {
               disabled={busyKey === "submit-appeal"}
               className="inline-flex min-h-[42px] items-center gap-2 rounded-xl bg-momo-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
             >
-              Gửi khiếu nại (POST /api/immunity/[id]/appeal)
+              Gửi khiếu nại
             </button>
           </form>
         )}
@@ -935,8 +942,7 @@ export function CheckerWorkspace() {
           <p className="mt-4 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm text-slate-600">
             Chưa có khiếu nại nào trong phiên hiện tại. Người dùng có thể gửi khiếu nại trực tiếp từ
             cảnh báo Miễn dịch tại <strong>/shield</strong> hoặc nhấn{" "}
-            <strong>Tạo khiếu nại thử</strong> ở trên khi có chỉ báo <code>ACTIVE</code> /{" "}
-            <code>SOFT_WARNING</code>.
+            <strong>Tạo khiếu nại thử</strong> ở trên khi có chỉ báo đang kích hoạt hoặc cảnh báo mềm.
           </p>
         ) : (
           <div className="mt-4 space-y-3">
@@ -1025,7 +1031,7 @@ export function CheckerWorkspace() {
                           className="inline-flex min-h-[42px] items-center gap-1.5 rounded-xl bg-emerald-700 px-4 py-2 text-sm font-bold text-white transition hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 disabled:opacity-60"
                         >
                           <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                          Chấp nhận khiếu nại &amp; Rollback tức thì (OVERTURNED_ROLLBACK)
+                          Chấp nhận khiếu nại &amp; thu hồi chỉ báo ngay
                         </button>
                       </div>
                     </div>
@@ -1095,13 +1101,13 @@ export function CheckerWorkspace() {
                       </td>
                       <td className="whitespace-nowrap px-3 py-2.5">
                         <span className="block font-mono font-bold text-slate-900">
-                          {log.actorId}
+                          {castName(log.actorId)}<span className="tech-only font-mono"> · {log.actorId}</span>
                         </span>
-                        <span className="text-[11px] text-slate-500">{log.actorRole}</span>
+                        <span className="text-xs text-slate-500">{log.actorRole}</span>
                       </td>
                       <td className="whitespace-nowrap px-3 py-2.5">
                         <span
-                          className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-[11px] font-bold ${badgeClass}`}
+                          className={`inline-block rounded-full border px-2.5 py-0.5 font-mono text-xs font-bold ${badgeClass}`}
                         >
                           {log.action}
                         </span>

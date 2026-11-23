@@ -28,6 +28,7 @@ import {
   formatVnd,
   parseApiErrorMessage,
 } from "./labels";
+import { CAST } from "@/lib/cast";
 
 interface TransferHoldPanelProps {
   activeUserId: PersonaId;
@@ -94,7 +95,7 @@ export function TransferHoldPanel({
     const ok = await onEnableOptInNow();
     if (ok) {
       setStatusNote(
-        "Đã bật chế độ Bảo vệ 24h và liên kết Người giám hộ Chị Minh. Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.",
+        `Đã bật chế độ Bảo vệ 24h và liên kết Người giám hộ ${CAST.FAMILY_MINH.name}. Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.`,
       );
     }
     setEnablingOptIn(false);
@@ -268,7 +269,7 @@ export function TransferHoldPanel({
               </p>
               <p className="text-sm text-amber-900">
                 Theo Luật 91/2025, hệ thống không tự bật ngầm. Hãy bật tự nguyện nếu muốn tạm giữ 24h
-                và báo người thân (Chị Minh) kiểm tra trước khi tiền rời ví.
+                và báo người thân ({CAST.FAMILY_MINH.name}) kiểm tra trước khi tiền rời ví.
               </p>
             </div>
           </div>
@@ -370,7 +371,7 @@ export function TransferHoldPanel({
         <div
           role="region"
           aria-label="Biên nhận Tạm giữ Bảo mật 24h"
-          className="space-y-4 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-5 text-slate-900"
+          className="space-y-4 rounded-lg border-l-4 border-signal-700 bg-signal-50 p-5 text-slate-900"
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-3">
@@ -453,7 +454,7 @@ export function TransferHoldPanel({
               className="inline-flex min-h-[48px] items-center gap-2 rounded-lg border border-momo-300 bg-white px-5 py-3 text-base font-semibold text-momo-700 transition hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500"
             >
               <ShieldCheck className="h-5 w-5" aria-hidden="true" />
-              Mở màn hình Người giám hộ (Chị Minh)
+              Mở màn hình Người giám hộ ({CAST.FAMILY_MINH.name})
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </Link>
           </div>

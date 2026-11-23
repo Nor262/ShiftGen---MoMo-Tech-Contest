@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { modelDisplayName } from "@/lib/cast";
 import {
   AlertTriangle,
   Clock,
@@ -118,7 +119,7 @@ export function B2cLiveProbeCard({
         query: raw,
         httpStatus: 0,
         errorCode: "NETWORK_ERROR",
-        errorMessage: "Không thể kết nối tới POST /api/shield/scan.",
+        errorMessage: "Không thể kết nối tới dịch vụ quét.",
       });
     } finally {
       setLoading(false);
@@ -141,9 +142,8 @@ export function B2cLiveProbeCard({
             </span>
           </div>
           <p className="text-sm text-slate-600">
-            Gửi trực tiếp <code>POST /api/shield/scan</code> (<code>TEXT_LOOKUP</code>) với vai trò
-            người dùng mới để kiểm chứng cảnh báo Miễn dịch xuất hiện sau <strong>Phê duyệt</strong>{" "}
-            và biến mất ngay sau <strong>Rollback</strong> hoặc <strong>Giả lập hết hạn TTL</strong>.
+            Tra cứu với vai trò người dùng mới để kiểm chứng cảnh báo Miễn dịch xuất hiện sau <strong>Phê duyệt</strong>{" "}
+            và biến mất ngay sau khi <strong>Thu hồi</strong> hoặc <strong>Giả lập hết hạn</strong>.
           </p>
         </div>
 
@@ -180,7 +180,7 @@ export function B2cLiveProbeCard({
           className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-momo-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
         >
           <Search className="h-4 w-4" aria-hidden="true" />
-          {loading ? "Đang tra cứu B2C..." : "Kiểm chứng ngay (POST /api/shield/scan)"}
+          {loading ? "Đang tra cứu B2C..." : "Kiểm chứng ngay"}
         </button>
       </form>
 
@@ -231,7 +231,7 @@ export function B2cLiveProbeCard({
                       <p className="mt-0.5 text-sm">
                         Tầng khớp: <strong>{outcome.scan.immunityTierMatched}</strong> · Điểm rủi
                         ro: <strong>{outcome.scan.result.risk_score}/100</strong> (
-                        {outcome.scan.result.risk_level}) · Hết hạn TTL:{" "}
+                        {outcome.scan.result.risk_level}) · Hết hạn:{" "}
                         <strong>{formatViDateTime(outcome.scan.immunityHit.expiresAt)}</strong>
                       </p>
                       <p className="mt-1 text-xs">
@@ -247,7 +247,7 @@ export function B2cLiveProbeCard({
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-lg border border-current/20 bg-white/80 px-2.5 py-1 font-mono font-semibold">
                       <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
-                      {outcome.scan.modelUsed}
+                      {modelDisplayName(outcome.scan.modelUsed)}<span className="tech-only font-mono"> · {outcome.scan.modelUsed}</span>
                     </span>
                   </div>
                 </div>
@@ -282,7 +282,7 @@ export function B2cLiveProbeCard({
                     </span>
                     <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2.5 py-1 font-mono font-semibold text-emerald-900">
                       <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
-                      {outcome.scan.modelUsed}
+                      {modelDisplayName(outcome.scan.modelUsed)}<span className="tech-only font-mono"> · {outcome.scan.modelUsed}</span>
                     </span>
                   </div>
                 </div>
@@ -301,12 +301,12 @@ export function B2cLiveProbeCard({
                 <div className="space-y-1 text-sm">
                   <p className="font-bold">
                     {outcome.errorCode === "LLM_NOT_CONFIGURED"
-                      ? `Không trùng khớp Kho Miễn dịch Tầng 1 (immunityHit: null) · HTTP 503 (${outcome.errorCode})`
+                      ? `Không khớp Kho Miễn dịch, và AI hiện chưa sẵn sàng để phân tích thêm.`
                       : `HTTP ${outcome.httpStatus} · ${outcome.errorCode}`}
                   </p>
                   <p>
                     {outcome.errorCode === "LLM_NOT_CONFIGURED"
-                      ? `Chỉ dấu "${outcome.query}" hiện KHÔNG còn nằm trong Danh mục Miễn dịch đang hoạt động (đã thu hồi, hết hạn TTL hoặc chưa được kích hoạt). Hệ thống đã chuyển sang phân tích AI trực tiếp nhưng chưa cấu hình khóa API LLM trên máy chủ.`
+                      ? `Chỉ dấu "${outcome.query}" hiện KHÔNG còn nằm trong Danh mục Miễn dịch đang hoạt động (đã thu hồi, hết hạn hoặc chưa được kích hoạt). Hệ thống đã chuyển sang phân tích AI trực tiếp nhưng chưa cấu hình khóa API LLM trên máy chủ.`
                       : outcome.errorMessage}
                   </p>
                 </div>

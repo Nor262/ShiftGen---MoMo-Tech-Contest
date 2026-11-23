@@ -25,6 +25,8 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // DESIGN.md: minimum text size anywhere is 13px (Tailwind default xs is 12px).
+      fontSize: { xs: ["0.8125rem", { lineHeight: "1.125rem" }] },
       colors: {
         // Brand: navy for structure, Shift Blue (from ShiftGen logo) for interactive emphasis.
         momo: { ...shiftBlueScale, primary: "#111a4a", accent: "#0b57d0" },

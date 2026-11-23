@@ -29,6 +29,7 @@ import {
 } from "./labels";
 import { ScanResultPanel } from "./ScanResultPanel";
 import { TransferHoldPanel } from "./TransferHoldPanel";
+import { CAST } from "@/lib/cast";
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -184,7 +185,7 @@ export function B2CShieldWorkspace() {
       setConsentFeedback({
         ok: true,
         text: optInValue
-          ? "Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Người giám hộ Chị Minh."
+          ? `Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Người giám hộ ${CAST.FAMILY_MINH.name}.`
           : "Đã cập nhật: Chế độ Bảo vệ 24h ĐANG TẮT (thu hồi đồng ý thành công).",
       });
       return true;
@@ -382,7 +383,7 @@ export function B2CShieldWorkspace() {
                 Mặc định luôn <strong>TẮT</strong>. Khi bạn tự nguyện bật, các giao dịch rủi ro cao
                 (&ge;75 điểm hoặc khớp chỉ báo cộng đồng) sẽ tạm giữ 24 giờ và chỉ gửi{" "}
                 <strong>tóm tắt đã ẩn CCCD/SĐT/số dư</strong> cho người thân{" "}
-                <strong>Chị Minh</strong>. Bạn có quyền thu hồi bất kỳ lúc nào.
+                <strong>{CAST.FAMILY_MINH.name}</strong>. Bạn có quyền thu hồi bất kỳ lúc nào.
               </p>
             </div>
           </div>
@@ -398,7 +399,7 @@ export function B2CShieldWorkspace() {
             {sessionLoading
               ? "Đang kiểm tra..."
               : savedOptIn
-                ? "Trạng thái: ĐANG BẬT (Chị Minh)"
+                ? `Trạng thái: ĐANG BẬT (${CAST.FAMILY_MINH.name})`
                 : "Trạng thái: ĐANG TẮT (Mặc định)"}
           </span>
         </div>
@@ -413,7 +414,7 @@ export function B2CShieldWorkspace() {
             />
             <span>
               <strong>Tôi tự nguyện đồng ý</strong> bật quy tắc tạm giữ xác minh 24 giờ cho giao
-              dịch rủi ro cao và liên kết người thân giám hộ <strong>Chị Minh</strong>
+              dịch rủi ro cao và liên kết người thân giám hộ <strong>{CAST.FAMILY_MINH.name}</strong>
               {activeConsent?.consentedAt && savedOptIn ? (
                 <span className="mt-0.5 block text-xs text-slate-500">
                   Cập nhật gần nhất: {formatDateTimeVi(activeConsent.consentedAt)} (
@@ -471,7 +472,7 @@ export function B2CShieldWorkspace() {
                 Máy quét Phút 00 — Kiểm tra Ảnh Chat, Link .APK &amp; Số Tài khoản
               </h2>
               <p className="text-sm text-slate-600">
-                Tầng 1 tra Kho Miễn dịch trước, Tầng 2 phân tích AI đa phương thức &amp; ẩn PII tự
+                Tra Kho Miễn dịch trước, sau đó AI phân tích đa phương thức &amp; ẩn PII tự
                 động.
               </p>
             </div>
@@ -650,7 +651,7 @@ export function B2CShieldWorkspace() {
             role="status"
             className="rounded-xl border border-momo-200 bg-momo-50 px-4 py-3 text-base font-semibold text-momo-900"
           >
-            Đang đối chiếu Kho Miễn dịch Tầng 1 và phân tích nội dung Phút 00...
+            Đang đối chiếu Kho Miễn dịch và phân tích nội dung Phút 00...
           </div>
         )}
 

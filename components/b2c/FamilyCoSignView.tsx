@@ -26,6 +26,7 @@ import {
   formatVnd,
   parseApiErrorMessage,
 } from "./labels";
+import { CAST } from "@/lib/cast";
 
 export function FamilyCoSignView() {
   const [holds, setHolds] = useState<FamilyHoldDto[]>([]);
@@ -66,7 +67,7 @@ export function FamilyCoSignView() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           guardianId: "FAMILY_MINH",
-          note: "Chị Minh xác nhận tạm giữ 24h và chuyển đội MoMo Risk kiểm tra.",
+          note: `${CAST.FAMILY_MINH.name} xác nhận tạm giữ 24h và chuyển đội Risk kiểm tra.`,
         }),
       });
       const data = await res.json().catch(() => null);
@@ -99,7 +100,7 @@ export function FamilyCoSignView() {
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 id="family-heading" className="text-xl font-extrabold text-slate-900 sm:text-2xl">
-                  Người giám hộ — Chị Minh <span className="tech-only font-mono text-sm font-normal">(FAMILY_MINH)</span>
+                  Người giám hộ — {CAST.FAMILY_MINH.name} <span className="tech-only font-mono text-sm font-normal">(FAMILY_MINH)</span>
                 </h1>
                 <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-800">
                   {DEMO_SIMULATION_LABEL}

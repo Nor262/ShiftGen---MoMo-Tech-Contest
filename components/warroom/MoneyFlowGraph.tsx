@@ -89,14 +89,14 @@ function TrustLoopGraphNode({ data, selected }: NodeProps<TrustFlowNode>) {
 
       <div className="mb-1.5 flex items-center justify-between gap-2">
         <span
-          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${badgeClass}`}
+          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${badgeClass}`}
         >
           {getNodeIcon(raw.type)}
           <span>{typeMeta.labelVi}</span>
         </span>
         {typeof raw.risk_score === "number" && (
           <span
-            className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+            className={`rounded px-1.5 py-0.5 font-mono text-xs font-bold ${
               isFlagged
                 ? "bg-red-500/30 text-red-100"
                 : isVerifiedMerchant
@@ -111,19 +111,19 @@ function TrustLoopGraphNode({ data, selected }: NodeProps<TrustFlowNode>) {
 
       <p className="truncate text-xs font-bold leading-snug text-white">{raw.label}</p>
       {raw.subtitle && (
-        <p className="mt-0.5 line-clamp-2 text-[11px] leading-tight text-slate-300">
+        <p className="mt-0.5 line-clamp-2 text-xs leading-tight text-slate-300">
           {raw.subtitle}
         </p>
       )}
 
       {isFlagged && (
-        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-red-500/25 px-1.5 py-0.5 text-[10px] font-semibold text-red-200">
+        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-red-500/25 px-1.5 py-0.5 text-xs font-semibold text-red-200">
           <AlertOctagon className="h-3 w-3" aria-hidden="true" />
           ĐÁNH DẤU RỦI RO
         </p>
       )}
       {isVerifiedMerchant && (
-        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-emerald-500/25 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-200">
+        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-emerald-500/25 px-1.5 py-0.5 text-xs font-semibold text-emerald-200">
           <ShieldCheck className="h-3 w-3" aria-hidden="true" />
           HỢP LỆ / SẠCH
         </p>
@@ -257,12 +257,12 @@ export function MoneyFlowGraph({
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-semibold text-slate-100">Đồ thị Dòng tiền & Cụm Thiết bị</span>
           {graphData.summary_badge && (
-            <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-[11px] font-medium text-slate-200">
+            <span className="rounded-full border border-slate-700 bg-slate-800 px-2.5 py-0.5 text-xs font-medium text-slate-200">
               {graphData.summary_badge}
             </span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-3 text-[11px]">
+        <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="inline-flex items-center gap-1.5 text-red-300">
             <span className="h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden="true" />
             Rủi ro / Mule ({flaggedSet.size})
@@ -322,12 +322,12 @@ export function MoneyFlowGraph({
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <span className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-[11px] font-semibold text-slate-200">
+                  <span className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2 py-0.5 text-xs font-semibold text-slate-200">
                     {getNodeIcon(selectedNode.type)}
                     {NODE_TYPE_META[selectedNode.type].labelVi} ({selectedNode.type})
                   </span>
                   <h3 className="mt-1.5 text-sm font-bold text-white">{selectedNode.label}</h3>
-                  <p className="font-mono text-[11px] text-slate-400">ID: {selectedNode.id}</p>
+                  <p className="font-mono text-xs text-slate-400">ID: {selectedNode.id}</p>
                 </div>
                 <button
                   type="button"

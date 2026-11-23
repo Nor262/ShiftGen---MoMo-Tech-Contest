@@ -2,28 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { CAST } from "@/lib/cast";
 
 /** Guided demo (DESIGN.md "Step Bar"): the closed loop ① → ② → ③ → ④ → back to ①. */
 export const DEMO_STEPS = [
   {
     href: "/shield",
-    title: "Bác Hùng quét ảnh",
+    title: `${CAST.USER_B2C_HUNG.name} quét ảnh`,
     hint: "Chọn ảnh mẫu CASE-01 rồi bấm Quét. Sau đó bật Bảo vệ 24h và thử chuyển tiền để thấy giao dịch bị tạm giữ.",
   },
   {
     href: "/family",
     title: "Người giám hộ",
-    hint: "Chị Minh chỉ thấy thẻ đã ẩn thông tin cá nhân. Bấm Chuyển cấp để đưa giao dịch sang đội Risk.",
+    hint: `${CAST.FAMILY_MINH.name} chỉ thấy thẻ đã ẩn thông tin cá nhân. Bấm Chuyển cấp để đưa giao dịch sang đội Risk.`,
   },
   {
     href: "/warroom",
     title: "Đội Risk điều tra",
-    hint: "Chọn vụ của Bác Hùng, chạy 4 agent, rồi đề xuất chỉ báo cho tài khoản nhận tiền.",
+    hint: `Chọn vụ của ${CAST.USER_B2C_HUNG.name}, chạy 4 agent, rồi đề xuất chỉ báo cho tài khoản nhận tiền.`,
   },
   {
     href: "/checker",
     title: "Duyệt & bảo vệ người kế tiếp",
-    hint: "Anh Tuấn duyệt Kích hoạt chỉ báo. Bấm Tiếp để quay lại bước ① với một người dùng mới và thấy cảnh báo.",
+    hint: `${CAST.RISK_CHECKER_TUAN.name} duyệt Kích hoạt chỉ báo. Bấm Tiếp để quay lại bước ① với một người dùng mới và thấy cảnh báo.`,
   },
 ] as const;
 

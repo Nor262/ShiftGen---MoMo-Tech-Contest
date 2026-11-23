@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { DEMO_STEPS } from "@/components/DemoStepBar";
+import { CAST } from "@/lib/cast";
 import {
   DEMO_SIMULATION_LABEL,
   NEUTRAL_HOLD_MESSAGE,
@@ -22,7 +23,7 @@ const TIMELINE = [
 // Step titles come from the guided demo bar so home and bar never drift apart.
 const LOOP = [
   { n: 1, title: DEMO_STEPS[0].title, body: "AI đọc ảnh chat, chỉ ra dấu hiệu thao túng và tạm giữ giao dịch rủi ro theo chế độ Bác đã tự bật." },
-  { n: 2, title: DEMO_STEPS[1].title, body: "Con gái nhận thẻ đã ẩn thông tin cá nhân và có thể Chuyển cấp sang đội Risk." },
+  { n: 2, title: DEMO_STEPS[1].title, body: `${CAST.FAMILY_MINH.name} (con gái) nhận thẻ đã ẩn thông tin cá nhân và có thể Chuyển cấp sang đội Risk.` },
   { n: 3, title: DEMO_STEPS[2].title, body: "4 agent điều tra song song, có một agent chuyên phản biện để tránh khóa oan người thật." },
   { n: 4, title: DEMO_STEPS[3].title, body: "Hai người duyệt độc lập; chỉ báo đã kích hoạt cảnh báo ngay người dùng tiếp theo." },
 ] as const;
@@ -89,7 +90,7 @@ export default function HomePage() {
               onClick={() => router.push(`/shield?session=${newSessionSlug()}`)}
               className="inline-flex min-h-[48px] items-center rounded-lg bg-momo-600 px-5 py-3 text-base font-semibold text-white hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue"
             >
-              Xem demo 3 phút: Bác Hùng →
+              Xem demo 3 phút: {CAST.USER_B2C_HUNG.name} →
             </button>
             <Link
               href="/shield"
@@ -106,7 +107,7 @@ export default function HomePage() {
         {/* The one Signal surface on this page: an illustrative held transfer (DESIGN.md Hold Banner). */}
         <aside
           aria-label="Ví dụ giao dịch đang tạm giữ"
-          className="space-y-3 rounded-lg border-l-4 border-signal-500 bg-white p-5 shadow-[rgba(17,26,74,.05)_0_8px_16px,rgba(17,26,74,.05)_0_4px_8px] lg:col-span-2"
+          className="space-y-3 rounded-lg border-l-4 border-signal-700 bg-white p-5 shadow-[rgba(17,26,74,.05)_0_8px_16px,rgba(17,26,74,.05)_0_4px_8px] lg:col-span-2"
         >
           <p className="text-xs font-semibold uppercase tracking-wide text-signal-700">Đang tạm giữ · {DEMO_SIMULATION_LABEL}</p>
           <p className="font-mono text-2xl font-semibold text-slate-900">15.000.000đ</p>
