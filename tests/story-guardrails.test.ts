@@ -33,6 +33,27 @@ describe("story stage guardrails", () => {
     expect(all()).not.toMatch(/text-\[(?:[0-9]|1[0-2])px\]/);
   });
 
+  it("keeps stage text at 16px or more (spec: sân khấu ≥16px, điện thoại ≥18px)", () => {
+    expect(all()).not.toMatch(/(^|[\s"'`])text-(xs|sm)([\s"'`]|$)/m);
+  });
+
+  it("has exactly one Signal Orange surface: the hold banner on the phone", () => {
+    expect(all().match(/bg-signal-|border-signal-/g) ?? []).toHaveLength(2); // banner wash + its rule
+    expect(all()).not.toMatch(/bg-signal-700/);
+  });
+
+  it("offers Technical Mode links to the full screens and keeps focus on a busy button", () => {
+    const src = all();
+    expect(src).toContain("tech-only");
+    expect(src).toContain("Mở màn hình đầy đủ");
+    expect(src).toContain("aria-disabled");
+    expect(src).not.toMatch(/[^-]disabled=\{state\.running\}/);
+  });
+
+  it("shows why a chapter is still locked, in visible text", () => {
+    expect(all()).toMatch(/lockedReason\}<\/p>|\{nextLocked\.lockedReason\}/);
+  });
+
   it("keeps story state in memory only (refresh starts a fresh session)", () => {
     expect(all()).not.toMatch(/localStorage|sessionStorage/);
   });

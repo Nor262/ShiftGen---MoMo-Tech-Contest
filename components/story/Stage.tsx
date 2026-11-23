@@ -6,6 +6,7 @@ import { Backstage, PhoneFrame } from "@/components/story/BeatViews";
 import { CAST } from "@/lib/cast";
 import { runBeat, storyContext } from "@/lib/story/actions";
 import {
+  beatById,
   initialStoryState,
   isBeatLocked,
   STORY_BEATS,
@@ -13,26 +14,32 @@ import {
   type Chapter,
 } from "@/lib/story/machine";
 
-const CHAPTERS: { n: Chapter; title: string }[] = [
-  { n: 1, title: "Phát hiện" },
-  { n: 2, title: "Tạm giữ" },
-  { n: 3, title: "Điều tra" },
-  { n: 4, title: "Bảo vệ người khác" },
+const CHAPTERS: { n: Chapter; title: string; fullScreen: string }[] = [
+  { n: 1, title: "Phát hiện", fullScreen: "/shield" },
+  { n: 2, title: "Tạm giữ", fullScreen: "/family" },
+  { n: 3, title: "Điều tra", fullScreen: "/warroom" },
+  { n: 4, title: "Bảo vệ người khác", fullScreen: "/checker" },
 ];
 
 /** The story stage: narration, phone ↔ "Phía sau màn hình", chapter rail, one primary button. */
-export function Stage() {
+export function Stage({ session }: { session: string }) {
   const [state, dispatch] = useReducer(storyReducer, undefined, initialStoryState);
   const inFlight = useRef(false); // reducer ignores a 2nd start only after re-render; this blocks same-tick double clicks
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const current = state.current === "done" ? null : STORY_BEATS.find((b) => b.id === state.current)!;
-  const narrating = STORY_BEATS.find((b) => b.id === state.shown)!;
+  const current = state.current === "done" ? null : beatById(state.current);
+  const narrating = beatById(state.shown);
   const onCurrent = current?.id === state.shown;
 
+  const firstRender = useRef(true);
   useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false; // don't steal focus from the header nav on load
+      return;
+    }
     headingRef.current?.focus();
   }, [state.viewing]);
+  const nextLocked = STORY_BEATS.filter((b) => b.id.endsWith(".1")).find((b) => isBeatLocked(state, b.id));
 
   async function play() {
     if (!current || inFlight.current) return;
@@ -49,13 +56,21 @@ export function Stage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-xl bg-momo-primary px-4 py-3 text-white">
+    <div className="flex flex-col gap-4 pb-28 lg:pb-0">
+      <div className="flex flex-col items-start gap-2 rounded-xl bg-momo-primary px-4 py-3 text-white lg:flex-row lg:items-center lg:gap-3">
         <h2 ref={headingRef} tabIndex={-1} className="text-lg font-semibold text-white focus:outline-none">
           Chương {state.viewing}/4 · {CHAPTERS[state.viewing - 1].title}
         </h2>
         <p className="flex-1 text-base">{narrating.narration}</p>
-        <span className="rounded border border-white/40 px-2 py-0.5 text-sm">{DEMO_SIMULATION_LABEL}</span>
+        <span className="rounded-full border border-amber-300 bg-amber-50 px-3 py-0.5 text-base font-semibold text-amber-900">
+          {DEMO_SIMULATION_LABEL}
+        </span>
+        <a
+          className="tech-only text-base text-white underline"
+          href={`${CHAPTERS[state.viewing - 1].fullScreen}?session=${encodeURIComponent(session)}`}
+        >
+          Mở màn hình đầy đủ
+        </a>
       </div>
 
       <p className="text-base text-slate-700">
@@ -73,7 +88,7 @@ export function Stage() {
         <Backstage state={state} />
       </div>
 
-      <div className="sticky bottom-0 mt-auto flex flex-col gap-3 border-t border-slate-200 bg-white/95 py-3 lg:flex-row lg:items-center">
+      <div className="mt-auto flex flex-col gap-3 border-t border-slate-200 bg-white/95 py-3 lg:sticky lg:bottom-0 lg:flex-row lg:items-center">
         <nav aria-label="Các chương" className="flex-1">
           <ol className="flex flex-wrap gap-2">
             {CHAPTERS.map((c) => {
@@ -96,9 +111,14 @@ export function Stage() {
               );
             })}
           </ol>
+          {nextLocked && (
+            <p className="mt-2 text-base text-slate-600">
+              Chương {nextLocked.chapter}: {nextLocked.lockedReason}
+            </p>
+          )}
         </nav>
 
-        <div className="flex flex-col items-stretch gap-1 lg:items-end">
+        <div className="fixed inset-x-0 bottom-0 z-10 flex flex-col items-stretch gap-1 border-t border-slate-200 bg-white px-4 py-2 lg:static lg:items-end lg:border-0 lg:p-0">
           {state.error && (
             <p role="alert" className="max-w-md text-base text-red-700">
               {state.error}
@@ -108,8 +128,8 @@ export function Stage() {
             <button
               type="button"
               onClick={play}
-              disabled={state.running}
-              className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
+              aria-disabled={state.running}
+              className="min-h-[52px] rounded-lg bg-momo-primary px-6 text-lg font-semibold text-white hover:bg-shift-blue aria-disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue focus-visible:ring-offset-2"
             >
               {state.running ? "Đang chạy…" : state.error ? `Thử lại: ${current.buttonLabel}` : `${current.buttonLabel} →`}
             </button>

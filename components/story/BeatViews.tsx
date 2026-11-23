@@ -11,10 +11,11 @@ import { DEMO_PRESETS, RISK_LEVEL_META, SCAM_CATEGORY_VI } from "@/components/b2
 import { CAST, modelDisplayName } from "@/lib/cast";
 import { isReplayNotice } from "@/lib/replay-label";
 import { STORY_AMOUNT_VND, STORY_RECIPIENT_ACCOUNT } from "@/lib/story/actions";
-import { STORY_BEATS, type StoryState } from "@/lib/story/machine";
+import { beatById, type StoryState } from "@/lib/story/machine";
 
 const vnd = (n: number) => `${n.toLocaleString("vi-VN")}đ`;
 const seconds = (ms: number) => `${(ms / 1000).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} giây`;
+const vnTime = (iso: string) => new Date(iso).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
 const maskedAccount = `•••• ${STORY_RECIPIENT_ACCOUNT.slice(-4)}`;
 const CASE01_IMAGE = DEMO_PRESETS.find((p) => p.code === "CASE-01")!.imagePath;
 
@@ -26,7 +27,7 @@ interface ViewProps {
 export function PhoneFrame({ state }: ViewProps) {
   const beat = state.shown;
   const done = state.done.includes(beat);
-  const owner = STORY_BEATS.find((b) => b.id === beat)!.actor;
+  const owner = beatById(beat).actor;
   const scan = state.results["1.2"] as ShieldScanResponse | undefined;
 
   let screen: React.ReactNode;
@@ -54,18 +55,22 @@ export function PhoneFrame({ state }: ViewProps) {
             className="max-h-56 w-full rounded-lg border border-slate-200 object-cover object-top"
           />
           {scan && (
-            <p className="font-semibold text-signal-800">
+            <p className="font-semibold text-momo-primary">
               Cảnh báo: rủi ro {RISK_LEVEL_META[scan.result.risk_level].labelVi.toLowerCase()}
             </p>
           )}
         </div>
       );
       break;
-    case "2.1":
+    case "2.1": {
+      const tx = state.results["2.1"] as TransferResponse | undefined;
       screen = done ? (
         <div className="space-y-2">
           <p className="font-semibold text-slate-900">Chuyển {vnd(STORY_AMOUNT_VND)}</p>
-          <p className="rounded-lg border-l-4 border-signal-700 bg-signal-50 p-3 text-slate-900">{NEUTRAL_HOLD_MESSAGE}</p>
+          <div className="rounded-lg border-l-4 border-signal-700 bg-signal-50 p-3 text-slate-900">
+            <p>{NEUTRAL_HOLD_MESSAGE}</p>
+            {tx?.holdExpiresAt && <p className="mt-1 font-semibold">Giữ đến {vnTime(tx.holdExpiresAt)}</p>}
+          </div>
         </div>
       ) : (
         <div className="space-y-2">
@@ -75,6 +80,7 @@ export function PhoneFrame({ state }: ViewProps) {
         </div>
       );
       break;
+    }
     case "2.2":
       screen = (
         <div className="space-y-2">
@@ -88,12 +94,12 @@ export function PhoneFrame({ state }: ViewProps) {
       );
       break;
     default:
-      screen = <p>{STORY_BEATS.find((b) => b.id === beat)!.narration}</p>;
+      screen = <p>{beatById(beat).narration}</p>;
   }
 
   return (
     <figure className="w-full max-w-[340px] shrink-0 rounded-[28px] border-4 border-momo-primary bg-white p-4 shadow-sm">
-      <figcaption className="mb-3 text-center text-sm font-semibold text-slate-600">
+      <figcaption className="mb-3 text-center text-base font-semibold text-slate-600">
         Điện thoại của {CAST[owner].name}
       </figcaption>
       <div className="min-h-[280px] text-lg leading-relaxed text-slate-700">{screen}</div>
@@ -106,7 +112,6 @@ export function Backstage({ state }: ViewProps) {
   const beat = state.shown;
   const result = state.results[beat];
   let headline = "Bấm nút bên dưới để xem hệ thống phản ứng.";
-  let held = false;
   let details: string[] = [];
   let more: string[] = [];
   let meta: string | null = null;
@@ -129,12 +134,9 @@ export function Backstage({ state }: ViewProps) {
       }
       case "2.1": {
         const r = result as TransferResponse;
-        held = true;
         headline = "Tiền đang tạm giữ — chưa rời ví";
         details = [
-          r.holdExpiresAt
-            ? `Giữ đến ${new Date(r.holdExpiresAt).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}`
-            : "Đang tạm giữ",
+          r.holdExpiresAt ? `Giữ đến ${vnTime(r.holdExpiresAt)}` : "Đang tạm giữ",
           `${CAST.FAMILY_MINH.name} đã được báo, chỉ thấy thông tin đã ẩn.`,
         ];
         break;
@@ -152,23 +154,15 @@ export function Backstage({ state }: ViewProps) {
 
   return (
     <section aria-labelledby="backstage-title" className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-      <h3 id="backstage-title" className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+      <h3 id="backstage-title" className="text-base font-semibold uppercase tracking-wide text-slate-600">
         Phía sau màn hình
       </h3>
       <div aria-live="polite" className="mt-3 space-y-3">
-        <p
-          className={
-            held
-              ? "rounded-lg bg-signal-700 px-4 py-3 text-xl font-semibold text-white"
-              : "text-xl font-semibold text-momo-primary"
-          }
-        >
-          {headline}
-        </p>
+        <p className="text-xl font-semibold text-momo-primary">{headline}</p>
         {details.length > 0 && (
           <ul className="list-disc space-y-1 pl-5 text-base text-slate-700">
-            {details.map((d) => (
-              <li key={d}>{d}</li>
+            {details.map((d, i) => (
+              <li key={i}>{d}</li>
             ))}
           </ul>
         )}
@@ -176,15 +170,29 @@ export function Backstage({ state }: ViewProps) {
           <details className="text-base text-slate-700">
             <summary className="cursor-pointer font-medium text-shift-blue">Xem thêm</summary>
             <ul className="mt-2 list-disc space-y-1 pl-5">
-              {more.map((d) => (
-                <li key={d}>{d}</li>
+              {more.map((d, i) => (
+                <li key={i}>{d}</li>
               ))}
             </ul>
           </details>
         )}
-        {meta && <p className="font-mono text-sm text-emerald-800">{meta}</p>}
-        {replay && <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-900">{replay}</p>}
+        {meta && <p className="font-mono text-base text-emerald-800">{meta}</p>}
+        {replay && (
+          <p className="rounded-lg border-l-4 border-emerald-700 bg-emerald-50 px-3 py-2 font-mono text-base text-emerald-900">
+            {replay}
+          </p>
+        )}
+        {result != null && (
+          <p className="tech-only font-mono text-base text-slate-600">{JSON.stringify(techIds(result))}</p>
+        )}
       </div>
     </section>
   );
+}
+
+/** Technical Mode: the ids/enums behind the story beat. */
+function techIds(result: unknown): Record<string, unknown> {
+  const r = result as Record<string, unknown>;
+  const keys = ["scanId", "txId", "status", "caseId", "modelUsed"];
+  return Object.fromEntries(keys.filter((k) => r[k] !== undefined).map((k) => [k, r[k]]));
 }

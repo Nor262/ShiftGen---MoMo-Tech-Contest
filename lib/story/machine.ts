@@ -105,8 +105,12 @@ export function initialStoryState(): StoryState {
   return { current: "1.1", shown: "1.1", done: [], running: false, error: null, viewing: 1, results: {} };
 }
 
+export function beatById(id: BeatId): StoryBeat {
+  return STORY_BEATS.find((b) => b.id === id)!;
+}
+
 function chapterOf(id: BeatId): Chapter {
-  return STORY_BEATS.find((b) => b.id === id)!.chapter;
+  return beatById(id).chapter;
 }
 
 export function isBeatLocked(s: StoryState, id: BeatId): boolean {
