@@ -15,8 +15,8 @@ const RETRY_DELAYS_MS = [1000, 3000] as const;
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export function createGeminiAdapter(): LLMRawAdapter {
-  const visionModel = process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash";
-  const reasoningModel = process.env.GEMINI_REASONING_MODEL ?? "gemini-2.5-flash";
+  const visionModel = process.env.GEMINI_VISION_MODEL ?? "gemini-3-flash-preview";
+  const reasoningModel = process.env.GEMINI_REASONING_MODEL ?? "gemini-3.5-flash-lite";
 
   return {
     backend: "gemini",
