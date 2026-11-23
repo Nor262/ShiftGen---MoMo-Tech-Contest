@@ -1,4 +1,6 @@
-import type { CastId } from "@/lib/cast";
+import { CAST, type CastId } from "@/lib/cast";
+
+const { USER_B2C_HUNG: hung, FAMILY_MINH: minh, RISK_MAKER_HUYEN: huyen, RISK_CHECKER_TUAN: tuan } = CAST;
 
 /** The story stage (/story): 4 chapters × 2 beats, one primary action at a time (spec §5.2). */
 export type BeatId = "1.1" | "1.2" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
@@ -20,7 +22,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "USER_B2C_HUNG",
     buttonLabel: "Bật Bảo vệ 24h",
     lockedReason: "Mở ngay từ đầu",
-    narration: "Phút 00 — Bác Hùng bật Bảo vệ 24h và chọn con gái làm người giám hộ.",
+    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h và chọn con gái là ${minh.name} làm người giám hộ.`,
   },
   {
     id: "1.2",
@@ -28,7 +30,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "USER_B2C_HUNG",
     buttonLabel: "Quét tin nhắn này",
     lockedReason: "Mở sau khi bật Bảo vệ 24h",
-    narration: "Phút 00 — Bác nhận tin nhắn Zalo tự xưng công an, dọa bắt giam. Bác quét thử.",
+    narration: `Phút 00 — ${hung.name} nhận tin nhắn Zalo tự xưng công an, dọa bắt giam, và quét thử.`,
   },
   {
     id: "2.1",
@@ -36,15 +38,15 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "USER_B2C_HUNG",
     buttonLabel: "Chuyển 9.500.000đ",
     lockedReason: "Mở sau khi quét tin nhắn",
-    narration: "Phút 89 — Hoảng sợ, Bác Hùng mở app định chuyển lệnh đầu tiên 9,5 triệu.",
+    narration: `Phút 89 — Hoảng sợ, ${hung.name} mở app định chuyển lệnh đầu tiên 9,5 triệu.`,
   },
   {
     id: "2.2",
     chapter: 2,
     actor: "FAMILY_MINH",
-    buttonLabel: "Chuyển cho đội Risk",
+    buttonLabel: "Chuyển cấp cho đội Risk",
     lockedReason: "Mở sau khi tiền được tạm giữ",
-    narration: "Phút 89 — Chị Minh nhận thẻ báo (đã ẩn thông tin cá nhân) và chuyển vụ cho đội Risk.",
+    narration: `Phút 89 — ${minh.name} nhận thẻ báo (đã ẩn thông tin cá nhân) và chuyển cấp cho đội Risk.`,
   },
   {
     id: "3.1",
@@ -60,7 +62,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "RISK_MAKER_HUYEN",
     buttonLabel: "Đề xuất Kết luận rủi ro cao",
     lockedReason: "Mở sau khi War-Room chạy xong",
-    narration: "Phút 90+ — Chuyên viên Huyền đọc lập luận rồi tự quyết định đề xuất.",
+    narration: `Phút 90+ — ${huyen.name} đọc lập luận rồi tự quyết định đề xuất.`,
   },
   {
     id: "4.1",
@@ -68,7 +70,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "RISK_CHECKER_TUAN",
     buttonLabel: "Duyệt kích hoạt chỉ báo",
     lockedReason: "Mở sau khi có đề xuất",
-    narration: "Một người thứ hai, Chuyên viên Tuấn, kiểm tra lại và duyệt.",
+    narration: `Một người thứ hai, ${tuan.name}, kiểm tra lại và duyệt.`,
   },
   {
     id: "4.2",

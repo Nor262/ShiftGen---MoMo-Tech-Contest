@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ApproveImmunityRequestSchema,
   CaseDecisionRequestSchema,
@@ -20,6 +20,8 @@ import {
   buildTransfer,
   CHECKER_DRAFT_VI,
   MAKER_DRAFT_VI,
+  runBeat,
+  storyContext,
   STORY_AMOUNT_VND,
   STORY_RECIPIENT_ACCOUNT,
 } from "@/lib/story/actions";
@@ -88,5 +90,61 @@ describe("story request builders", () => {
       expect(draft.length).toBeGreaterThanOrEqual(3);
       expect(draft.toLowerCase()).not.toContain("xác nhận lừa đảo");
     }
+  });
+});
+
+describe("runBeat checks the story actually happened, not just HTTP 200", () => {
+  const reply = (body: unknown, status = 200) =>
+    vi.fn(async () => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }));
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("stops at 2.1 when the transfer was not held (a low AI score must not look like a hold)", async () => {
+    const tx = { txId: "t1", status: "COMPLETED", neutralMessage: "", holdExpiresAt: null, transaction: {} };
+    vi.stubGlobal("fetch", reply(tx));
+    await expect(runBeat("2.1", { scanId: "s1" })).rejects.toThrow(/không bị tạm giữ/);
+  });
+
+  it("stops at 4.2 when the new user gets no warning", async () => {
+    vi.stubGlobal("fetch", reply({ immunityHit: null }));
+    await expect(runBeat("4.2", {})).rejects.toThrow(/không thấy cảnh báo/);
+  });
+
+  it("shows the API's own Vietnamese error on failure", async () => {
+    vi.stubGlobal("fetch", reply({ error: "Đã đạt hạn mức lượt gọi AI trong ngày", code: "X" }, 429));
+    await expect(runBeat("1.2", {})).rejects.toThrow("Đã đạt hạn mức lượt gọi AI trong ngày");
+  });
+
+  it("refuses a Maker proposal that governance would reject, with a reason instead of a dead 400", async () => {
+    const thin = { ...debate, synthesis: { ...debate.synthesis, independent_sources: ["SIMO_A", "SIMO_B"] } };
+    const fetchSpy = reply({});
+    vi.stubGlobal("fetch", fetchSpy);
+    await expect(runBeat("3.2", { caseId: "c", debate: thin })).rejects.toThrow(/2 loại nguồn/);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("sends the Checker's own rationale, never the Maker's", async () => {
+    const fetchSpy = vi.fn(async (_url: string, init?: RequestInit) => {
+      expect(JSON.parse(String(init?.body)).rationale).toBe("checker words");
+      return new Response("not json", { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetchSpy);
+    await expect(
+      runBeat("4.1", { indicatorId: "i1", makerRationale: "maker words", checkerRationale: "checker words" }),
+    ).rejects.toThrow(/Phản hồi không hợp lệ/);
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+});
+
+describe("storyContext gathers ids from earlier beats", () => {
+  it("maps each beat's result to what the next beats need", () => {
+    const ctx = storyContext({
+      "1.2": { scanId: "s1" },
+      "2.1": { txId: "t1" },
+      "2.2": { caseId: "c1" },
+      "3.1": { debate },
+      "3.2": { indicator: { indicatorId: "i1" } },
+    });
+    expect(ctx).toEqual({ scanId: "s1", txId: "t1", caseId: "c1", debate, indicatorId: "i1" });
+    expect(storyContext({})).toEqual({});
   });
 });

@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import {
+  DEMO_SIMULATION_LABEL,
   ApproveImmunityResponseSchema,
   CaseDecisionResponseSchema,
   ConsentResponseSchema,
@@ -16,9 +17,11 @@ import {
   type TransferRequest,
   type WarRoomDebate,
 } from "@/contracts";
+import { CAST } from "@/lib/cast";
 import type { BeatId } from "@/lib/story/machine";
 
 /** CASE-01: the seeded mule account and the first of Bác Hùng's 4 × 9,5 triệu transfers. */
+// shortcut: the story sends only the first of the 4 transfers; loop the other 3 if the stage ever shows smurfing live.
 export const STORY_RECIPIENT_ACCOUNT = "990123456789";
 export const STORY_AMOUNT_VND = 9_500_000;
 export const STORY_PRESET = "CASE-01" as const;
@@ -43,10 +46,10 @@ export const buildScan = (): ShieldScanRequest => ({
 
 export const buildTransfer = (scanId: string): TransferRequest => ({
   userId: "USER_B2C_HUNG",
-  senderLabel: "Bác Hùng (62 tuổi)",
+  senderLabel: `${CAST.USER_B2C_HUNG.name} (62 tuổi)`,
   scanId,
   recipientAccount: STORY_RECIPIENT_ACCOUNT,
-  recipientBank: "Ngân hàng nhận (MẪU MÔ PHỎNG)",
+  recipientBank: `Ngân hàng nhận (${DEMO_SIMULATION_LABEL})`,
   amountVnd: STORY_AMOUNT_VND,
 });
 
@@ -91,10 +94,39 @@ export interface StoryContext {
   caseId?: string;
   debate?: WarRoomDebate;
   indicatorId?: string;
-  rationale?: string;
+  makerRationale?: string;
+  checkerRationale?: string;
 }
 
-async function call<S extends z.ZodTypeAny>(url: string, body: unknown, schema: S): Promise<z.infer<S>> {
+type Results = Partial<Record<BeatId, unknown>>;
+const field = (v: unknown, key: string): unknown =>
+  v && typeof v === "object" ? (v as Record<string, unknown>)[key] : undefined;
+
+/** Ids the next beats need, read from earlier beats' API responses. */
+export function storyContext(results: Results): StoryContext {
+  const ctx: StoryContext = {};
+  const set = <K extends keyof StoryContext>(key: K, value: unknown) => {
+    if (value !== undefined) ctx[key] = value as StoryContext[K];
+  };
+  set("scanId", field(results["1.2"], "scanId"));
+  set("txId", field(results["2.1"], "txId"));
+  set("caseId", field(results["2.2"], "caseId"));
+  set("debate", field(results["3.1"], "debate"));
+  set("indicatorId", field(field(results["3.2"], "indicator"), "indicatorId"));
+  return ctx;
+}
+
+/** Governance (Layer 2) needs ≥2 evidence sources of different TYPES (prefix before "_"). */
+function sourceTypes(sources: string[]): number {
+  return new Set(sources.map((s) => s.split("_")[0])).size;
+}
+
+async function call<S extends z.ZodTypeAny>(
+  url: string,
+  body: unknown,
+  schema: S,
+  storyCheck?: (json: Record<string, unknown>) => string | null,
+): Promise<z.infer<S>> {
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -104,7 +136,12 @@ async function call<S extends z.ZodTypeAny>(url: string, body: unknown, schema: 
   const json = await res.json().catch(() => ({}));
   // the API's own Vietnamese message (rate limit, 503 LLM_NOT_CONFIGURED, Maker≠Checker 403…) is shown as-is
   if (!res.ok) throw new Error(json.error ?? `Yêu cầu thất bại (${res.status}).`);
-  return schema.parse(json);
+  // a 200 is not enough: the story only advances when the thing it narrates actually happened
+  const storyProblem = storyCheck?.(json);
+  if (storyProblem) throw new Error(storyProblem);
+  const parsed = schema.safeParse(json);
+  if (!parsed.success) throw new Error("Phản hồi không hợp lệ từ máy chủ. Vui lòng thử lại.");
+  return parsed.data;
 }
 
 function need<T>(value: T | undefined, what: string): T {
@@ -120,7 +157,15 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
     case "1.2":
       return call("/api/shield/scan", buildScan(), ShieldScanResponseSchema);
     case "2.1":
-      return call("/api/shield/transfer", buildTransfer(need(ctx.scanId, "lượt quét")), TransferResponseSchema);
+      return call(
+        "/api/shield/transfer",
+        buildTransfer(need(ctx.scanId, "lượt quét")),
+        TransferResponseSchema,
+        (json) =>
+          json.status === "ON_HOLD_24H"
+            ? null
+            : "Giao dịch không bị tạm giữ (điểm rủi ro của lượt quét thấp hơn ngưỡng), nên câu chuyện dừng ở đây. Hãy bắt đầu phiên mới.",
+      );
     case "2.2":
       return call(
         `/api/shield/family/escalate/${encodeURIComponent(need(ctx.txId, "giao dịch"))}`,
@@ -133,19 +178,27 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
         buildInvestigate(),
         InvestigateCaseResponseSchema,
       );
-    case "3.2":
+    case "3.2": {
+      const debate = need(ctx.debate, "kết quả War-Room");
+      if (sourceTypes(debate.synthesis.independent_sources) < 2)
+        throw new Error(
+          "War-Room chưa tìm đủ bằng chứng từ 2 loại nguồn độc lập, nên chưa thể đề xuất kích hoạt chỉ báo (quy tắc quản trị).",
+        );
       return call(
         `/api/warroom/cases/${encodeURIComponent(need(ctx.caseId, "vụ điều tra"))}/decision`,
-        buildMakerDecision(need(ctx.debate, "kết quả War-Room"), ctx.rationale ?? MAKER_DRAFT_VI),
+        buildMakerDecision(debate, ctx.makerRationale ?? MAKER_DRAFT_VI),
         CaseDecisionResponseSchema,
       );
+    }
     case "4.1":
       return call(
         `/api/immunity/${encodeURIComponent(need(ctx.indicatorId, "chỉ báo"))}/approve`,
-        buildApprove(ctx.rationale ?? CHECKER_DRAFT_VI),
+        buildApprove(ctx.checkerRationale ?? CHECKER_DRAFT_VI),
         ApproveImmunityResponseSchema,
       );
     case "4.2":
-      return call("/api/shield/scan", buildNewUserProbe(), ShieldScanResponseSchema);
+      return call("/api/shield/scan", buildNewUserProbe(), ShieldScanResponseSchema, (json) =>
+        json.immunityHit ? null : "Người dùng mới không thấy cảnh báo: chỉ báo chưa có hiệu lực.",
+      );
   }
 }
