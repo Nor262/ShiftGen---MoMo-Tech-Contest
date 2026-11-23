@@ -13,11 +13,16 @@ export interface StoryBeat {
   buttonLabel: string;
   lockedReason: string;
   narration: string;
+  /** Whose phone the stage shows (Risk staff work elsewhere; the victim's phone stays on screen). */
+  phoneOwner: CastId;
+  /** The actor must write a reason (Maker / Checker). */
+  needsRationale?: true;
 }
 
 export const STORY_BEATS: readonly StoryBeat[] = [
   {
     id: "1.1",
+    phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
     buttonLabel: "Bật Bảo vệ 24h",
@@ -26,6 +31,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "1.2",
+    phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
     buttonLabel: "Quét tin nhắn này",
@@ -34,6 +40,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "2.1",
+    phoneOwner: "USER_B2C_HUNG",
     chapter: 2,
     actor: "USER_B2C_HUNG",
     buttonLabel: "Chuyển 9.500.000đ",
@@ -42,6 +49,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "2.2",
+    phoneOwner: "FAMILY_MINH",
     chapter: 2,
     actor: "FAMILY_MINH",
     buttonLabel: "Chuyển cấp cho đội Risk",
@@ -50,6 +58,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "3.1",
+    phoneOwner: "USER_B2C_HUNG",
     chapter: 3,
     actor: "RISK_MAKER_HUYEN",
     buttonLabel: "Chạy War-Room 4 agent",
@@ -58,6 +67,8 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "3.2",
+    phoneOwner: "USER_B2C_HUNG",
+    needsRationale: true,
     chapter: 3,
     actor: "RISK_MAKER_HUYEN",
     buttonLabel: "Đề xuất Kết luận rủi ro cao",
@@ -66,6 +77,8 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "4.1",
+    phoneOwner: "USER_B2C_HUNG",
+    needsRationale: true,
     chapter: 4,
     actor: "RISK_CHECKER_TUAN",
     buttonLabel: "Duyệt kích hoạt chỉ báo",
@@ -74,11 +87,13 @@ export const STORY_BEATS: readonly StoryBeat[] = [
   },
   {
     id: "4.2",
+    phoneOwner: "USER_B2C_NEW",
     chapter: 4,
     actor: "USER_B2C_NEW",
     buttonLabel: "Thử với người dùng mới",
     lockedReason: "Mở sau khi chỉ báo được duyệt",
-    narration: "Hôm sau, một người khác nhận đúng tài khoản lừa đảo đó và tra cứu.",
+    narration:
+      "Hôm sau, một người khác định chuyển tiền tới đúng tài khoản đã bị kết luận rủi ro cao và tra cứu trước.",
   },
 ];
 

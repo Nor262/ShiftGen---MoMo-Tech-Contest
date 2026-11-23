@@ -148,3 +148,47 @@ describe("storyContext gathers ids from earlier beats", () => {
     expect(storyContext({})).toEqual({});
   });
 });
+
+describe("4.1 reports the held transfer's real status after approval", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("reads the transaction back instead of assuming it was cancelled", async () => {
+    const indicator = {
+      indicatorId: "i1",
+      demoSessionId: "d",
+      caseId: "c",
+      indicatorType: "BANK_ACCOUNT",
+      indicatorValue: "990123456789",
+      severity: "HIGH_RISK",
+      status: "ACTIVE",
+      evidenceSources: ["A_1", "B_1"],
+      makerId: "RISK_MAKER_HUYEN",
+      checkerId: "RISK_CHECKER_TUAN",
+      ttlHours: 720,
+      expiresAt: "2026-12-24T00:00:00.000Z",
+      rollbackReason: null,
+      createdAt: "2026-11-24T00:00:00.000Z",
+      updatedAt: "2026-11-24T00:00:00.000Z",
+    };
+    const fetchSpy = vi.fn(async (url: string) =>
+      url.includes("/approve")
+        ? new Response(JSON.stringify({ indicator }), { status: 200 })
+        : new Response(JSON.stringify({ holds: [{ txId: "t1", status: "CANCELLED_BY_B2E" }] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchSpy);
+    const out = (await runBeat("4.1", { indicatorId: "i1", txId: "t1", checkerRationale: "đã kiểm tra" })) as {
+      txStatus?: string;
+    };
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(String(fetchSpy.mock.calls[1][0])).toContain("/api/shield/family/holds");
+    expect(out.txStatus).toBe("CANCELLED_BY_B2E");
+  });
+
+  it("refuses a blank or too-short reason before calling the API", async () => {
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+    await expect(runBeat("4.1", { indicatorId: "i1", txId: "t1", checkerRationale: "  " })).rejects.toThrow(/lý do/i);
+    await expect(runBeat("3.2", { caseId: "c", debate, makerRationale: "ab" })).rejects.toThrow(/lý do/i);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});

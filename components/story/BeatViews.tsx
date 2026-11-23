@@ -3,21 +3,32 @@
 import Image from "next/image";
 import {
   NEUTRAL_HOLD_MESSAGE,
+  type ApproveImmunityResponse,
+  type CaseDecisionResponse,
   type FamilyEscalateResponse,
+  type InvestigateCaseResponse,
   type ShieldScanResponse,
   type TransferResponse,
 } from "@/contracts";
 import { DEMO_PRESETS, RISK_LEVEL_META, SCAM_CATEGORY_VI } from "@/components/b2c/labels";
 import { CAST, modelDisplayName } from "@/lib/cast";
-import { isReplayNotice } from "@/lib/replay-label";
+import { isReplayModel, isReplayNotice } from "@/lib/replay-label";
 import { STORY_AMOUNT_VND, STORY_RECIPIENT_ACCOUNT } from "@/lib/story/actions";
 import { beatById, type StoryState } from "@/lib/story/machine";
 
-const vnd = (n: number) => `${n.toLocaleString("vi-VN")}đ`;
-const seconds = (ms: number) => `${(ms / 1000).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} giây`;
-const vnTime = (iso: string) => new Date(iso).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+import { duration as seconds, vnd, vnTime } from "@/lib/story/format";
 const maskedAccount = `•••• ${STORY_RECIPIENT_ACCOUNT.slice(-4)}`;
 const CASE01_IMAGE = DEMO_PRESETS.find((p) => p.code === "CASE-01")!.imagePath;
+
+/** DESIGN.md Hold Banner: the page's single Signal Orange surface. */
+function HoldBanner({ holdExpiresAt }: { holdExpiresAt: string | null }) {
+  return (
+    <div className="rounded-lg border-l-4 border-signal-700 bg-signal-50 p-3 text-slate-900">
+      <p>{NEUTRAL_HOLD_MESSAGE}</p>
+      {holdExpiresAt && <p className="mt-1 font-semibold">Giữ đến {vnTime(holdExpiresAt)}</p>}
+    </div>
+  );
+}
 
 interface ViewProps {
   state: StoryState;
@@ -27,7 +38,9 @@ interface ViewProps {
 export function PhoneFrame({ state }: ViewProps) {
   const beat = state.shown;
   const done = state.done.includes(beat);
-  const owner = beatById(beat).actor;
+  const owner = beatById(beat).phoneOwner;
+  const approval = state.results["4.1"] as { txStatus?: string } | undefined;
+  const tx = state.results["2.1"] as TransferResponse | undefined;
   const scan = state.results["1.2"] as ShieldScanResponse | undefined;
 
   let screen: React.ReactNode;
@@ -63,14 +76,10 @@ export function PhoneFrame({ state }: ViewProps) {
       );
       break;
     case "2.1": {
-      const tx = state.results["2.1"] as TransferResponse | undefined;
       screen = done ? (
         <div className="space-y-2">
           <p className="font-semibold text-slate-900">Chuyển {vnd(STORY_AMOUNT_VND)}</p>
-          <div className="rounded-lg border-l-4 border-signal-700 bg-signal-50 p-3 text-slate-900">
-            <p>{NEUTRAL_HOLD_MESSAGE}</p>
-            {tx?.holdExpiresAt && <p className="mt-1 font-semibold">Giữ đến {vnTime(tx.holdExpiresAt)}</p>}
-          </div>
+          <HoldBanner holdExpiresAt={tx?.holdExpiresAt ?? null} />
         </div>
       ) : (
         <div className="space-y-2">
@@ -93,8 +102,39 @@ export function PhoneFrame({ state }: ViewProps) {
         </div>
       );
       break;
-    default:
-      screen = <p>{beatById(beat).narration}</p>;
+    case "3.1":
+    case "3.2":
+    case "4.1": {
+      const cancelled = approval?.txStatus === "CANCELLED_BY_B2E";
+      screen = cancelled ? (
+        <div className="space-y-2">
+          <p className="font-semibold text-slate-900">Giao dịch {vnd(STORY_AMOUNT_VND)}</p>
+          <p className="font-semibold text-emerald-800">Đội Risk đã hủy giao dịch. Tiền vẫn ở trong ví của Bác.</p>
+          <p>Bác không cần làm gì thêm.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <p className="font-semibold text-slate-900">Chuyển {vnd(STORY_AMOUNT_VND)}</p>
+          <HoldBanner holdExpiresAt={tx?.holdExpiresAt ?? null} />
+        </div>
+      );
+      break;
+    }
+    case "4.2": {
+      const probe = state.results["4.2"] as ShieldScanResponse | undefined;
+      screen = (
+        <div className="space-y-2">
+          <p className="font-semibold text-slate-900">Tra cứu trước khi chuyển</p>
+          <p>Tài khoản nhận: {maskedAccount}</p>
+          {probe?.immunityHit && (
+            <p className="font-semibold text-momo-primary">
+              Tài khoản này đã bị đội Risk kết luận rủi ro cao. Đừng chuyển tiền.
+            </p>
+          )}
+        </div>
+      );
+      break;
+    }
   }
 
   return (
@@ -121,13 +161,19 @@ export function Backstage({ state }: ViewProps) {
     switch (beat) {
       case "1.1":
         headline = "Đã bật Bảo vệ 24h";
-        details = [`Người giám hộ: ${CAST.FAMILY_MINH.name}`, "Đồng ý được ghi vào nhật ký, Bác có thể tắt bất kỳ lúc nào."];
+        details = [
+          `Người giám hộ: ${CAST.FAMILY_MINH.name}`,
+          "Đồng ý được ghi vào nhật ký, Bác có thể tắt bất kỳ lúc nào.",
+        ];
         break;
       case "1.2": {
         const r = result as ShieldScanResponse;
         headline = `Rủi ro ${RISK_LEVEL_META[r.result.risk_level].labelVi.toLowerCase()} · ${r.result.risk_score}/100 · ${SCAM_CATEGORY_VI[r.result.scam_category]}`;
         details = r.result.psych_manipulation_cues.slice(0, 3).map((c) => c.explanation_vi);
-        more = [...r.result.visual_tampering_flags, ...r.result.psych_manipulation_cues.slice(3).map((c) => c.explanation_vi)];
+        more = [
+          ...r.result.visual_tampering_flags,
+          ...r.result.psych_manipulation_cues.slice(3).map((c) => c.explanation_vi),
+        ];
         meta = `${modelDisplayName(r.modelUsed)} · ${seconds(r.measuredLatencyMs)}`;
         replay = r.fallbackNoticeVi && isReplayNotice(r.fallbackNoticeVi) ? r.fallbackNoticeVi : null;
         break;
@@ -144,11 +190,64 @@ export function Backstage({ state }: ViewProps) {
       case "2.2": {
         const r = result as FamilyEscalateResponse;
         headline = "Đã chuyển cấp cho đội Risk";
-        details = [`Vụ việc "${r.caseRecord.title}" vào hàng đợi điều tra.`, "Tiền vẫn đang tạm giữ trong lúc đội Risk xem xét."];
+        details = [
+          `Vụ việc "${r.caseRecord.title}" vào hàng đợi điều tra.`,
+          "Tiền vẫn đang tạm giữ trong lúc đội Risk xem xét.",
+        ];
         break;
       }
-      default:
-        headline = "Đã xong bước này.";
+      case "3.1": {
+        const r = result as InvestigateCaseResponse;
+        const a = r.debate.agents;
+        headline =
+          r.debate.synthesis.recommendation === "RECOMMEND_DISMISS_FP"
+            ? "4 agent đề nghị Minh oan"
+            : "4 agent đề nghị giữ tạm và cảnh báo tài khoản nhận";
+        // one conclusion line per agent (4 — the one place the 3-line rule yields, per plan Task 6)
+        details = [
+          `Dòng tiền: ${a.graph_tracer.key_findings[0] ?? "không có phát hiện"}`,
+          `Bằng chứng: ${a.evidence_correlator.independent_sources.length} nguồn độc lập khớp nhau`,
+          `Quy định: ${a.compliance_rag.policy_notes_vi[0] ?? "không có trích dẫn"}`,
+          `Phản biện: ${a.false_positive_defender.recommend_dismiss ? "đề nghị Minh oan" : "không tìm thấy dấu hiệu khách hàng thật"}`,
+        ];
+        more = [
+          ...a.compliance_rag.policy_notes_vi.slice(1),
+          ...a.compliance_rag.cited_chunks.map((c) => c.document_code),
+        ];
+        meta = `${modelDisplayName(r.debate.model_used)} · ${seconds(r.debate.total_latency_ms)}`;
+        replay = isReplayModel(r.debate.model_used)
+          ? "Kết quả phát lại từ một lần chạy thật đã ghi (thời điểm và model ghi ở trên)."
+          : null;
+        break;
+      }
+      case "3.2": {
+        const r = result as CaseDecisionResponse;
+        headline = "Đã đề xuất bật Chỉ báo — chờ người thứ hai duyệt";
+        details = [
+          `Tài khoản ${maskedAccount}`,
+          `${r.indicator?.evidenceSources.length ?? 0} nguồn bằng chứng; người duyệt phải là người khác ${CAST.RISK_MAKER_HUYEN.name}.`,
+        ];
+        break;
+      }
+      case "4.1": {
+        const r = result as ApproveImmunityResponse & { txStatus?: string };
+        headline =
+          r.txStatus === "CANCELLED_BY_B2E"
+            ? `Chỉ báo đã bật · đội Risk đã hủy giao dịch của ${CAST.USER_B2C_HUNG.name}`
+            : "Chỉ báo đã bật";
+        details = [
+          `Hiệu lực đến ${vnTime(r.indicator.expiresAt)}`,
+          `${CAST.RISK_CHECKER_TUAN.name} duyệt độc lập với ${CAST.RISK_MAKER_HUYEN.name}.`,
+        ];
+        break;
+      }
+      case "4.2": {
+        const r = result as ShieldScanResponse;
+        headline = r.immunityHit ? "Người dùng mới được cảnh báo ngay" : "Không có cảnh báo";
+        details = ["Tra trong Kho Miễn dịch, chưa cần AI đọc ảnh."];
+        meta = `${modelDisplayName(r.modelUsed)} · ${seconds(r.measuredLatencyMs)}`;
+        break;
+      }
     }
   }
 
