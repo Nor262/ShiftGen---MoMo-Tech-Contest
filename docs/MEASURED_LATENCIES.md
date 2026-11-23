@@ -16,38 +16,54 @@
 
 ---
 
-## 2. Mẫu Bảng Đo 10 Lần Chạy Thực tế Live LLM (Dành cho Slide 9 PDF)
+## 2. Độ trễ thật của 2 luồng AI trên bản deploy (Slide 9)
 
-> **Trạng thái hiện tại trong môi trường build:** `GEMINI_API_KEY` chưa được nạp (`UNSET`), do đó phần độ trễ gọi LLM mạng ngoài **chưa đo** và được để trống có chủ đích. Khi cấu hình `GEMINI_API_KEY` (hoặc AWS Bedrock), chạy 10 lượt trên Live UI / `curl` và điền đúng giá trị `measured_latency_ms` & `model_used` trả về từ API trước khi xuất PDF Slide 9.
+Đo trên `https://momo-trustloop.vercel.app` (Vercel, region `sin1`; LLM: FPT AI Factory), **10 lượt mỗi luồng**, mỗi lượt một phiên mới, từ 2026-11-23T18:46:56.035Z đến 2026-11-23T18:48:47.204Z (UTC).
+Chỉ tính lượt chạy thật: lượt phát lại (`model_used` chứa "(phát lại") và lượt lỗi bị loại — lần đo này loại **0** lượt phát lại, **0** lượt lỗi.
 
-### 2.1. Endpoint `POST /api/shield/scan` (`gemini-2.5-flash` Vision)
+| Luồng | `model_used` | Lượt hợp lệ | min | median | max | Thời gian phía client (min / median / max) |
+| :--- | :--- | :---: | ---: | ---: | ---: | :--- |
+| Lượt quét ảnh CASE-01 (`POST /api/shield/scan`) | `gemma-4-31B-it` | 10/10 | **3.332 ms** | **3.466 ms** | **3.682 ms** | 3.529 ms / 3.741 ms / 4.497 ms |
+| War-Room 4 agent CASE-01 (`POST …/investigate`) | `Qwen3.8-27B` | 10/10 | **6.477 ms** | **6.899 ms** | **9.691 ms** | 6.975 ms / 7.384 ms / 9.947 ms |
 
-| Lượt đo | Kịch bản | `model_used` | `measured_latency_ms` | `risk_score` | Ghi chú |
-| :---: | :--- | :--- | :---: | :---: | :--- |
-| 1 | `CASE-01` (Bác Hùng) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 2 | `CASE-01` (Bác Hùng) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 3 | `CASE-01` (Bác Hùng) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 4 | `CASE-02` (Minh Anh APK) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 5 | `CASE-02` (Minh Anh APK) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 6 | `CASE-02` (Minh Anh APK) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 7 | `CASE-03` (Chị Hoa) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 8 | `CASE-03` (Chị Hoa) | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 9 | Ảnh tự tải lên #1 | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| 10 | Ảnh tự tải lên #2 | `[Điền từ API]` | `[Chờ đo]` | `[Chờ đo]` | |
-| **Trung bình / P95** | — | — | **`[Chờ đo]`** | — | Tính sau khi đủ 10 lượt |
+* Cột min/median/max là `measured_latency_ms` (quét) và `debate.total_latency_ms` (War-Room) do máy chủ đo bằng `performance.now()`.
+* Cột client là thời gian một lần gọi HTTP đo từ máy chạy script (gồm mạng tới Vercel), chỉ để tham khảo.
+* Đây là số đo của một lần chạy, không phải cam kết hiệu năng. Model, region và tải của nhà cung cấp đổi thì số đổi; đo lại trước khi xuất slide.
 
-### 2.2. Endpoint `POST /api/warroom/cases/:caseId/investigate` (4+1 Agents Parallel + SSE)
+### 2.1. Từng lượt — Lượt quét
 
-| Lượt đo | Kịch bản | `GraphTracer` (ms) | `EvidenceCorrelator` (ms) | `ComplianceRAG` (ms) | `FP_Defender` (ms) | `Synthesizer` (ms) | `Total War-Room` (ms) |
-| :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| 1 | `CASE-01` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 2 | `CASE-01` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 3 | `CASE-01` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 4 | `CASE-02` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 5 | `CASE-02` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 6 | `CASE-03` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 7 | `CASE-03` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 8 | `CASE-03` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 9 | `CASE-01` (SSE) | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| 10 | `CASE-03` (SSE) | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` | `[Chờ đo]` |
-| **Trung bình / P95** | — | **`[Chờ đo]`** | **`[Chờ đo]`** | **`[Chờ đo]`** | **`[Chờ đo]`** | **`[Chờ đo]`** | **`[Chờ đo]`** |
+| # | Thời điểm (UTC) | `model_used` | measured_latency_ms | Client | Mức rủi ro |
+| :---: | :--- | :--- | ---: | ---: | :--- |
+| 1 | 2026-11-23T18:46:56.035Z | `gemma-4-31B-it` | 3.332 ms | 4.496 ms | CRITICAL |
+| 2 | 2026-11-23T18:47:08.806Z | `gemma-4-31B-it` | 3.485 ms | 3.746 ms | CRITICAL |
+| 3 | 2026-11-23T18:47:20.338Z | `gemma-4-31B-it` | 3.682 ms | 4.497 ms | CRITICAL |
+| 4 | 2026-11-23T18:47:31.613Z | `gemma-4-31B-it` | 3.580 ms | 3.763 ms | CRITICAL |
+| 5 | 2026-11-23T18:47:42.603Z | `gemma-4-31B-it` | 3.554 ms | 3.735 ms | CRITICAL |
+| 6 | 2026-11-23T18:47:53.402Z | `gemma-4-31B-it` | 3.605 ms | 3.798 ms | CRITICAL |
+| 7 | 2026-11-23T18:48:03.907Z | `gemma-4-31B-it` | 3.345 ms | 3.529 ms | CRITICAL |
+| 8 | 2026-11-23T18:48:15.328Z | `gemma-4-31B-it` | 3.412 ms | 3.637 ms | CRITICAL |
+| 9 | 2026-11-23T18:48:28.805Z | `gemma-4-31B-it` | 3.358 ms | 3.530 ms | CRITICAL |
+| 10 | 2026-11-23T18:48:40.093Z | `gemma-4-31B-it` | 3.447 ms | 3.656 ms | CRITICAL |
+
+### 2.2. Từng lượt — War-Room
+
+| # | Thời điểm (UTC) | `model_used` | total_latency_ms | Client |
+| :---: | :--- | :--- | ---: | ---: |
+| 1 | 2026-11-23T18:47:05.060Z | `Qwen3.8-27B` | 7.964 ms | 9.024 ms |
+| 2 | 2026-11-23T18:47:15.840Z | `Qwen3.8-27B` | 6.477 ms | 7.034 ms |
+| 3 | 2026-11-23T18:47:27.849Z | `Qwen3.8-27B` | 6.661 ms | 7.511 ms |
+| 4 | 2026-11-23T18:47:38.868Z | `Qwen3.8-27B` | 6.975 ms | 7.256 ms |
+| 5 | 2026-11-23T18:47:49.598Z | `Qwen3.8-27B` | 6.727 ms | 6.995 ms |
+| 6 | 2026-11-23T18:48:00.376Z | `Qwen3.8-27B` | 6.658 ms | 6.975 ms |
+| 7 | 2026-11-23T18:48:11.691Z | `Qwen3.8-27B` | 7.502 ms | 7.784 ms |
+| 8 | 2026-11-23T18:48:25.275Z | `Qwen3.8-27B` | 9.691 ms | 9.947 ms |
+| 9 | 2026-11-23T18:48:36.436Z | `Qwen3.8-27B` | 7.356 ms | 7.630 ms |
+| 10 | 2026-11-23T18:48:47.204Z | `Qwen3.8-27B` | 6.822 ms | 7.110 ms |
+
+## 3. Cách đo lại
+
+```bash
+node scripts/measure-latency.mjs https://momo-trustloop.vercel.app 10 > latency.json
+```
+
+Script gọi đúng 2 API mà giao diện dùng, mỗi lượt một `?session=` mới (dữ liệu seed), rồi tính min/median/max bằng `scripts/latency-stats.mjs` (có test `tests/latency-stats.test.ts`). Lượt phát lại, lượt lỗi, và lượt War-Room có agent `AGENT_DEGRADED` không được tính. Mỗi lượt tốn 1 lượt gọi AI cho bước quét và 1 cho War-Room trong hạn mức `DAILY_LLM_CALL_LIMIT`.
