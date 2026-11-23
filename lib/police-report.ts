@@ -1,4 +1,5 @@
 import { DEMO_SIMULATION_LABEL, type HeldTxStatus, type RiskLevel, type ScanResult } from "@/contracts";
+import { RISK_LEVEL_META, SCAM_CATEGORY_VI } from "@/components/b2c/labels";
 import { redactText } from "@/lib/pii/redactor";
 
 /**
@@ -53,8 +54,8 @@ export function buildEvidencePack(input: {
     `Kết quả do AI tạo (model ${input.modelUsed}); cần người thật kiểm tra lại.`,
     `Thời điểm phân tích: ${input.scannedAt}`,
     "",
-    `Mức rủi ro: ${result.risk_level} (${result.risk_score}/100)`,
-    `Loại lừa đảo nghi ngờ: ${result.scam_category}`,
+    `Mức rủi ro: ${RISK_LEVEL_META[result.risk_level].labelVi} (${result.risk_score}/100)`,
+    `Loại lừa đảo nghi ngờ: ${SCAM_CATEGORY_VI[result.scam_category]}`,
     e.recipient_account ? `Tài khoản nhận (đã che): ${mask(e.recipient_account)}` : null,
     e.amount_vnd ? `Số tiền được yêu cầu: ${e.amount_vnd.toLocaleString("vi-VN")}đ` : null,
     input.txStatus && TX_STATUS_VI[input.txStatus] ? `Tình trạng giao dịch: ${TX_STATUS_VI[input.txStatus]}` : null,

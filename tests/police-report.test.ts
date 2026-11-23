@@ -27,8 +27,11 @@ describe("evidence pack", () => {
     expect(pack).toContain("•••• 6789");
   });
 
-  it("states what happened to the transfer in plain words", () => {
+  it("states what happened in plain words, not enum codes", () => {
     expect(pack).toMatch(/đội Risk đã hủy/i);
+    expect(pack).toMatch(/NGHIÊM TRỌNG/);
+    expect(pack).toMatch(/Giả danh cơ quan chức năng/);
+    expect(pack).not.toMatch(/POLICE_IMPERSONATION|CRITICAL/);
   });
 
   it("never includes an image or raw message, only the analysis", () => {
