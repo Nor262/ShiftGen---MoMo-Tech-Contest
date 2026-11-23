@@ -9,6 +9,11 @@ interface GeminiResponse {
   error?: { message?: string };
 }
 
+// Google documents 503 UNAVAILABLE ("high demand") as temporary; 429 (quota) is not retried.
+// shortcut: fixed 1s/3s backoff for the demo, add jitter + Retry-After if traffic grows.
+const RETRY_DELAYS_MS = [1000, 3000] as const;
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export function createGeminiAdapter(): LLMRawAdapter {
   const visionModel = process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash";
   const reasoningModel = process.env.GEMINI_REASONING_MODEL ?? "gemini-2.5-flash";
@@ -41,24 +46,33 @@ export function createGeminiAdapter(): LLMRawAdapter {
         params.model,
       )}:generateContent`;
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
+      const body = JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: params.systemPrompt }],
         },
-        body: JSON.stringify({
-          systemInstruction: {
-            parts: [{ text: params.systemPrompt }],
-          },
-          contents: [{ role: "user", parts }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            temperature: 0.1,
-          },
-        }),
-        signal: params.signal,
+        contents: [{ role: "user", parts }],
+        generationConfig: {
+          responseMimeType: "application/json",
+          temperature: 0.1,
+        },
       });
+      const send = () =>
+        fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": apiKey,
+          },
+          body,
+          signal: params.signal,
+        });
+
+      let res = await send();
+      for (const delay of RETRY_DELAYS_MS) {
+        if (res.status !== 503) break;
+        await sleep(delay);
+        res = await send();
+      }
 
       if (!res.ok) {
         const errText = await res.text().catch(() => "");
