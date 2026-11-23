@@ -15,6 +15,13 @@ export function formatReplayNoticeVi(record: { recordedAt: string; modelUsed: st
   return `${REPLAY_NOTICE_PREFIX} ${time} ${date} · model ${record.modelUsed} · phát lại`;
 }
 
+/** Stored/returned model name for a replayed result, so DB rows and audit logs never read as live. */
+export function replayModelLabel(modelUsed: string): string {
+  return `${modelUsed} (phát lại)`;
+}
+
+// shortcut: replay is detected from the notice prefix because contracts are frozen (no boolean field);
+// add an explicit `replay` flag to ShieldScanResponse when the Orchestrator reopens contracts.
 export function isReplayNotice(notice: string | undefined): boolean {
   return Boolean(notice?.startsWith(REPLAY_NOTICE_PREFIX));
 }

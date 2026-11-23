@@ -408,8 +408,8 @@ export function DebateAndDecisionPanel({
             </p>
           </div>
 
-          <span className="rounded-md border border-slate-700 bg-slate-950 px-2.5 py-1 font-mono text-xs text-slate-300">
-            <span className="tech-only">Actor: RISK_MAKER_HUYEN</span>
+          <span className="tech-only rounded-md border border-slate-700 bg-slate-950 px-2.5 py-1 font-mono text-xs text-slate-300">
+            <span>Actor: RISK_MAKER_HUYEN</span>
           </span>
         </div>
 
@@ -602,8 +602,8 @@ export function DebateAndDecisionPanel({
                 <p className="font-bold text-white">
                   {decisionResult
                     ? decisionResult.caseStatus === "DISMISSED_FP"
-                      ? "Đã ghi nhận: Minh oan (DISMISSED_FP)"
-                      : `Đã ghi nhận đề xuất Miễn dịch (${decisionResult.indicator?.status ?? "IMMUNITY_PROPOSED"})`
+                      ? "Đã ghi nhận: Minh oan"
+                      : "Đã ghi nhận đề xuất Chỉ báo Miễn dịch — chờ Checker duyệt"
                     : "Hồ sơ đã được đề xuất vào Kho Miễn dịch"}
                 </p>
                 {decisionResult?.indicator && (

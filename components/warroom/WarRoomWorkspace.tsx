@@ -141,7 +141,10 @@ export function WarRoomWorkspace() {
       setCases(loadedCases);
       setSelectedCaseId((prev) => {
         if (prev && loadedCases.some((c) => c.caseId === prev)) return prev;
-        return loadedCases[0]?.caseId ?? null;
+        const escalated = loadedCases
+          .filter((c) => typeof c.caseContext.escalatedAt === "string")
+          .sort((a, b) => String(b.caseContext.escalatedAt).localeCompare(String(a.caseContext.escalatedAt)));
+        return (escalated[0] ?? loadedCases[0])?.caseId ?? null;
       });
     } catch {
       setLoadError("Không thể tải hàng đợi hồ sơ FinCrime War-Room.");

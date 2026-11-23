@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ScanResultSchema, type ScanResult } from "@/contracts";
+import { ScanResultSchema, ShieldScanRequestSchema, type ScanResult } from "@/contracts";
 import case01 from "@/data/replays/scan-CASE-01.json";
 import { formatReplayNoticeVi } from "@/lib/replay-label";
 import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/session/shield";
@@ -13,7 +13,7 @@ const NON_LLM_MODELS: string[] = [DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MOD
 
 const ScanReplayRecordSchema = z.object({
   kind: z.literal("scan"),
-  presetCode: z.enum(["CASE-01", "CASE-02", "CASE-03"]),
+  presetCode: ShieldScanRequestSchema.innerType().shape.presetCode.unwrap(),
   recordedAt: z.string().datetime(),
   modelUsed: z
     .string()
@@ -29,6 +29,7 @@ export function parseScanReplayRecord(raw: unknown): ScanReplayRecord {
 }
 
 /** Recorded with `node scripts/record-scan-replay.mjs <CASE>` against a live LLM. */
+// shortcut: each new recording needs its JSON imported here by hand; switch to a generated index if presets grow.
 export const SCAN_REPLAY_RECORDS: Partial<Record<ScanReplayRecord["presetCode"], ScanReplayRecord>> = {
   "CASE-01": parseScanReplayRecord(case01),
 };

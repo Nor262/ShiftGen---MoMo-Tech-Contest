@@ -89,7 +89,7 @@ describe("scan route uses the labelled replay only on runtime LLM failure", () =
     const body = await res.json();
     expect(body.fallbackMode).toBe(true);
     expect(body.fallbackNoticeVi).toMatch(/· phát lại$/);
-    expect(body.modelUsed).toBe(SCAN_REPLAY_RECORDS["CASE-01"]!.modelUsed);
+    expect(body.modelUsed).toBe(`${SCAN_REPLAY_RECORDS["CASE-01"]!.modelUsed} (phát lại)`);
     expect(body.sanitizedEvidence.contains_raw_image).toBe(false);
   });
 

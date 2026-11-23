@@ -21,6 +21,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import {
+  DEMO_SIMULATION_LABEL,
   PSYCH_CUE_TYPES,
   type AppealDto,
   type PersonaId,
@@ -174,15 +175,20 @@ export function ScanResultPanel({
           className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-emerald-900"
         >
           <div className="space-y-1">
-            <p className="font-semibold">Phát lại kết quả AI đã chạy thật</p>
+            <p className="font-semibold">
+              Phát lại kết quả AI đã chạy thật{" "}
+              <span className="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800">
+                {DEMO_SIMULATION_LABEL}
+              </span>
+            </p>
             <p className="font-mono text-sm">{scan.fallbackNoticeVi}</p>
-            <p className="text-sm">AI đang quá tải hoặc hết hạn mức nên hệ thống hiển thị lại lần chạy thật gần nhất.</p>
+            <p className="text-sm">Không gọi được AI lúc này nên hệ thống hiển thị lại lần chạy thật gần nhất của kịch bản này.</p>
           </div>
           {onRunLive && (
             <button
               type="button"
               onClick={onRunLive}
-              className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-600 bg-white px-5 py-2 font-semibold text-momo-600 hover:bg-momo-50"
+              className="inline-flex min-h-[48px] items-center rounded-lg border border-momo-600 bg-white px-5 py-2 font-semibold text-momo-600 hover:bg-momo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue"
             >
               Chạy lại trực tiếp
             </button>
@@ -229,7 +235,7 @@ export function ScanResultPanel({
                     ? "Cấp độ: Cảnh báo rủi ro cao (Đã duyệt 2 cấp Maker–Checker)"
                     : immunityHit.status === "SOFT_WARNING"
                       ? "Cấp độ: Cảnh báo mềm (1 nguồn · tham khảo không chặn cứng)"
-                      : `Trạng thái chỉ báo: ${immunityHit.status}`}
+                      : "Cấp độ: Chỉ báo không còn hiệu lực"}
                 </p>
               </div>
             </div>
@@ -322,8 +328,9 @@ export function ScanResultPanel({
                   role="status"
                   className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm font-medium text-emerald-900"
                 >
-                  Đã tiếp nhận khiếu nại <code>{submittedAppeal.appealId}</code> (Trạng thái:{" "}
-                  <strong>{submittedAppeal.status}</strong>). Checker sẽ trực tiếp rà soát tại tab{" "}
+                  Đã tiếp nhận khiếu nại: <strong>chờ người thật xem xét</strong>
+                  <span className="tech-only"> (<code>{submittedAppeal.appealId}</code> · {submittedAppeal.status})</span>.
+                  Checker sẽ trực tiếp rà soát tại tab{" "}
                   <Link href="/checker" className="underline">
                     Checker &amp; Miễn dịch
                   </Link>

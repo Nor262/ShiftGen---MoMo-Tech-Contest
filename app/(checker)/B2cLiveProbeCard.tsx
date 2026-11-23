@@ -225,7 +225,7 @@ export function B2cLiveProbeCard({
                     />
                     <div>
                       <p className="font-bold">
-                        KHỚP MIỄN DỊCH CỘNG ĐỒNG ({outcome.scan.immunityHit.status}) —{" "}
+                        KHỚP MIỄN DỊCH CỘNG ĐỒNG<span className="tech-only"> ({outcome.scan.immunityHit.status})</span> —{" "}
                         <code className="font-mono">{outcome.scan.immunityHit.indicatorValue}</code>
                       </p>
                       <p className="mt-0.5 text-sm">

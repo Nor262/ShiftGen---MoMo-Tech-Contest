@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { DEMO_STEPS } from "@/components/DemoStepBar";
 import {
   DEMO_SIMULATION_LABEL,
   NEUTRAL_HOLD_MESSAGE,
@@ -18,11 +19,12 @@ const TIMELINE = [
   { at: "Phút 90+", label: "Tiền đã rời ví và bị tẩu tán", tone: "muted" },
 ] as const;
 
+// Step titles come from the guided demo bar so home and bar never drift apart.
 const LOOP = [
-  { n: 1, title: "Bác Hùng quét ảnh", body: "AI đọc ảnh chat, chỉ ra dấu hiệu thao túng và tạm giữ giao dịch rủi ro theo chế độ Bác đã tự bật." },
-  { n: 2, title: "Người giám hộ", body: "Con gái nhận thẻ đã ẩn thông tin cá nhân và có thể Chuyển cấp sang đội Risk." },
-  { n: 3, title: "Đội Risk điều tra", body: "4 agent điều tra song song, có một agent chuyên phản biện để tránh khóa oan người thật." },
-  { n: 4, title: "Duyệt & bảo vệ người kế tiếp", body: "Hai người duyệt độc lập; chỉ báo đã kích hoạt cảnh báo ngay người dùng tiếp theo." },
+  { n: 1, title: DEMO_STEPS[0].title, body: "AI đọc ảnh chat, chỉ ra dấu hiệu thao túng và tạm giữ giao dịch rủi ro theo chế độ Bác đã tự bật." },
+  { n: 2, title: DEMO_STEPS[1].title, body: "Con gái nhận thẻ đã ẩn thông tin cá nhân và có thể Chuyển cấp sang đội Risk." },
+  { n: 3, title: DEMO_STEPS[2].title, body: "4 agent điều tra song song, có một agent chuyên phản biện để tránh khóa oan người thật." },
+  { n: 4, title: DEMO_STEPS[3].title, body: "Hai người duyệt độc lập; chỉ báo đã kích hoạt cảnh báo ngay người dùng tiếp theo." },
 ] as const;
 
 function newSessionSlug(): string {

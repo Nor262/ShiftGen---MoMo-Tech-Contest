@@ -891,7 +891,7 @@ export function CheckerWorkspace() {
                 >
                   {appealableIndicators.map((i) => (
                     <option key={i.indicatorId} value={i.indicatorId}>
-                      {i.indicatorValue} ({i.status})
+                      {i.indicatorValue}<span className="tech-only"> ({i.status})</span>
                     </option>
                   ))}
                 </select>
@@ -963,7 +963,7 @@ export function CheckerWorkspace() {
                         </span>
                         {linked && (
                           <span className="rounded border border-slate-200 bg-white px-2 py-0.5 font-mono text-xs font-semibold text-slate-800">
-                            Chỉ báo: {linked.indicatorValue} ({linked.status})
+                            Chỉ báo: {linked.indicatorValue}<span className="tech-only"> ({linked.status})</span>
                           </span>
                         )}
                       </div>

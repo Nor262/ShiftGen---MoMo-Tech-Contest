@@ -307,7 +307,7 @@ export function FamilyCoSignView() {
                         ? "Đã chuyển MoMo Risk"
                         : isCancelled
                           ? "Người thân đã tự hủy giao dịch"
-                          : "Xác nhận tạm giữ 24h & Chuyển MoMo Risk"}
+                          : "Chuyển cấp sang đội Risk"}
                   </button>
 
                   <button

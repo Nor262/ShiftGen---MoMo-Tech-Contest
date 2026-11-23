@@ -16,6 +16,7 @@ import {
 import {
   DEMO_SIMULATION_LABEL,
   type SessionResponse,
+  type ShieldScanRequest,
   type ShieldScanResponse,
 } from "@/contracts";
 import {
@@ -85,7 +86,7 @@ export function B2CShieldWorkspace() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [scanResponse, setScanResponse] = useState<ShieldScanResponse | null>(null);
-  const [lastPresetCode, setLastPresetCode] = useState<"CASE-01" | "CASE-02" | "CASE-03" | null>(null);
+  const [lastPresetCode, setLastPresetCode] = useState<NonNullable<ShieldScanRequest["presetCode"]> | null>(null);
 
   const activePersona =
     B2C_PERSONAS.find((p) => p.key === activePersonaKey) ?? B2C_PERSONAS[0];
