@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CAST } from "@/lib/cast";
+import { CAST, castName, modelDisplayName } from "@/lib/cast";
 import { addWorkingDays, ESCALATION_DECISION_WORKING_DAYS } from "@/lib/working-days";
 import {
   AlertCircle,
@@ -536,7 +536,7 @@ export function WarRoomWorkspace() {
                             Tổng thời gian thực: {Math.round(activeDebate.total_latency_ms)} ms
                           </span>
                           <span className="rounded border border-slate-700 bg-slate-950 px-2 py-0.5 text-xs text-slate-300">
-                            Model: {activeDebate.model_used}
+                            Model: {modelDisplayName(activeDebate.model_used)}
                           </span>
                         </>
                       ) : (
@@ -723,7 +723,7 @@ export function WarRoomWorkspace() {
                           </code>
                         </td>
                         <td className="whitespace-nowrap py-2 pr-3 font-mono text-xs">
-                          {log.actorId}
+                          {castName(log.actorId)}<span className="tech-only font-mono"> · {log.actorId}</span>
                         </td>
                         <td className="whitespace-nowrap py-2 pr-3 font-mono text-xs text-slate-300">
                           {log.targetId}

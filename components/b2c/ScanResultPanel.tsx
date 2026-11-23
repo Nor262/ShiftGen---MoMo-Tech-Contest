@@ -243,8 +243,8 @@ export function ScanResultPanel({
 
             <span className="rounded-full border border-current/30 bg-white/80 px-3 py-1 text-xs font-bold">
               {scan.immunityTierMatched === "TIER_1_PRE_VISION"
-                ? "Khớp danh sách cảnh báo — chưa cần AI đọc ảnh"
-                : "Khớp danh sách cảnh báo sau khi AI đọc ảnh"}
+                ? "Khớp Kho Miễn dịch — chưa cần AI đọc ảnh"
+                : "Khớp Kho Miễn dịch sau khi AI đọc ảnh"}
             </span>
           </div>
 
@@ -263,7 +263,7 @@ export function ScanResultPanel({
               </strong>
             </div>
             <div>
-              <span className="block text-xs text-slate-500">Hiệu lực TTL đến</span>
+              <span className="block text-xs text-slate-500">Hiệu lực đến</span>
               <strong className="text-slate-900">
                 {formatDateTimeVi(immunityHit.expiresAt)}
               </strong>
@@ -401,7 +401,7 @@ export function ScanResultPanel({
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 font-medium">
               <Cpu className="h-3.5 w-3.5 text-momo-600" aria-hidden="true" />
-              Model: <strong className="font-mono text-slate-900">{modelDisplayName(scan.modelUsed)}</strong>
+              Model: <strong className="text-slate-900">{modelDisplayName(scan.modelUsed)}</strong><span className="tech-only font-mono"> · {scan.modelUsed}</span>
             </span>
           </div>
         </div>

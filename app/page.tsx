@@ -90,7 +90,7 @@ export default function HomePage() {
               onClick={() => router.push(`/shield?session=${newSessionSlug()}`)}
               className="inline-flex min-h-[48px] items-center rounded-lg bg-momo-600 px-5 py-3 text-base font-semibold text-white hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue"
             >
-              Xem demo 3 phút: Bác Hùng →
+              Xem demo 3 phút: {CAST.USER_B2C_HUNG.name} →
             </button>
             <Link
               href="/shield"

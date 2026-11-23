@@ -6,6 +6,7 @@ import {
   type RiskLevel,
   type ScamCategory,
 } from "@/contracts";
+import { CAST } from "@/lib/cast";
 
 export const PRIVACY_LLM_NOTICE =
   "Lưu ý quyền riêng tư: Ảnh tải lên được gửi tới nhà cung cấp LLM đang cấu hình (Gemini API / AWS Bedrock) để phân tích và sẽ bị xóa sau phiên/vài giờ (không lưu ảnh gốc trong CSDL, không chuyển ảnh sang Family/B2E). Khi chạy trên gói Gemini API miễn phí, vui lòng không tải ảnh chứa CCCD/giấy tờ/sao kê thật." as const;
@@ -24,9 +25,9 @@ export const B2C_PERSONAS: readonly B2CPersonaOption[] = [
   {
     key: "HUNG",
     apiUserId: "USER_B2C_HUNG",
-    shortLabel: "Bác Hùng (62t)",
+    shortLabel: `${CAST.USER_B2C_HUNG.name} (62t)`,
     badgeLabel: "USER_B2C_HUNG",
-    senderLabel: "Bác Hùng (62 tuổi)",
+    senderLabel: `${CAST.USER_B2C_HUNG.name} (62 tuổi)`,
     description: "Tình huống chính: Zalo giả cán bộ điều tra, thúc ép chuyển 4×9,5 triệu.",
   },
   {
@@ -57,7 +58,7 @@ export interface DemoPresetOption {
 export const DEMO_PRESETS: readonly DemoPresetOption[] = [
   {
     code: "CASE-01",
-    label: "CASE-01: Zalo giả Công an — Bác Hùng",
+    label: `CASE-01: Zalo giả Công an — ${CAST.USER_B2C_HUNG.name}`,
     imagePath: "/demo-images/zalo-fake-police.png",
     hint: "Ảnh chat đòi chuyển 4×9,5M sang TK 990123456789",
   },

@@ -277,7 +277,7 @@ export function DebateAndDecisionPanel({
 
               <div className="rounded-lg border border-slate-800 bg-slate-950/75 p-3 text-xs text-slate-200">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="font-semibold text-white">Đánh giá điều kiện Miễn dịch Lớp 2:</span>
+                  <span className="font-semibold text-white">Đủ điều kiện kích hoạt chỉ báo?</span>
                   <span
                     className={`rounded px-2 py-0.5 font-semibold ${
                       synthesis.eligible_for_active_immunity
@@ -287,7 +287,7 @@ export function DebateAndDecisionPanel({
                   >
                     {synthesis.eligible_for_active_immunity
                       ? "Đủ điều kiện (≥ 2 nguồn độc lập)"
-                      : "Chưa đủ điều kiện Lớp 2"}
+                      : "Chưa đủ điều kiện kích hoạt"}
                   </span>
                 </div>
                 <p className="mt-1.5 leading-relaxed text-slate-300">
@@ -510,11 +510,11 @@ export function DebateAndDecisionPanel({
               <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-950/35 px-3 py-2 text-xs text-amber-100">
                 <Lock className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" aria-hidden="true" />
                 <span>
-                  <strong>Khóa Lớp 2 (Active Immunity):</strong> Hiện có{" "}
+                  <strong>Chưa thể kích hoạt chỉ báo:</strong> Hiện có{" "}
                   <strong>{independentSources.length}</strong> nguồn độc lập (yêu cầu{" "}
                   <strong>≥ 2 nguồn</strong>). Bạn chỉ nên phát hành{" "}
-                  <strong>Cảnh báo mềm 72h (Lớp 1)</strong> hoặc đóng cảnh báo giả; gửi đề xuất Lớp
-                  2 sẽ bị hệ thống từ chối.
+                  <strong>Cảnh báo mềm 72h</strong> hoặc đóng cảnh báo giả; đề xuất kích hoạt
+                  sẽ bị hệ thống từ chối.
                 </span>
               </div>
             )}
@@ -552,7 +552,7 @@ export function DebateAndDecisionPanel({
             onClick={() => void submitDecision("SOFT_WARNING")}
             className="flex flex-col items-start gap-1 rounded-xl border border-amber-500/50 bg-amber-950/35 px-4 py-3 text-left text-amber-100 transition hover:bg-amber-950/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 disabled:opacity-60"
           >
-            <span className="text-xs font-bold">Phát hành Cảnh báo mềm (72h — Lớp 1)</span>
+            <span className="text-xs font-bold">Phát hành Cảnh báo mềm (72h)</span>
             <span className="text-xs text-amber-200/85">
               Hiệu lực tức thì 72h với 1+ nguồn; không tự chặn giao dịch.
             </span>
@@ -569,7 +569,7 @@ export function DebateAndDecisionPanel({
             }`}
           >
             <span className="flex w-full items-center justify-between gap-2 text-xs font-bold">
-              <span>Đề xuất Cảnh báo Rủi ro Cao (Chuyển Checker — Lớp 2)</span>
+              <span>Đề xuất Kết luận rủi ro cao (chuyển người duyệt)</span>
               {!canActiveImmunity && (
                 <Lock className="h-3.5 w-3.5 shrink-0 text-amber-300" aria-hidden="true" />
               )}
@@ -608,7 +608,7 @@ export function DebateAndDecisionPanel({
                 </p>
                 {decisionResult?.indicator && (
                   <p className="mt-0.5 font-mono text-xs text-emerald-200">
-                    Indicator: {decisionResult.indicator.indicatorValue} · TTL{" "}
+                    Chỉ báo: {decisionResult.indicator.indicatorValue} · Thời hạn{" "}
                     {decisionResult.indicator.ttlHours}h
                   </p>
                 )}

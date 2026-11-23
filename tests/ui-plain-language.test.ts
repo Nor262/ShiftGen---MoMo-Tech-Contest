@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { CAST, modelDisplayName } from "@/lib/cast";
+import tailwindConfig from "@/tailwind.config";
 import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/session";
 
 /** Seam: what a judge reads in normal mode (ticket #18). Internal codes live only in `.tech-only`. */
@@ -49,8 +50,31 @@ describe("normal mode speaks plain Vietnamese", () => {
     expect(offenders).toEqual([]);
   });
 
-  it("uses no text smaller than 12px (projector and elderly readers)", () => {
-    const offenders = UI_FILES.filter((f) => /text-\[1[01]px\]/.test(readFileSync(f, "utf8")));
+  it("uses no text smaller than 13px (DESIGN.md minimum; projector and elderly readers)", () => {
+    const offenders = UI_FILES.filter((f) => /text-\[(?:[0-9]|1[0-2])px\]/.test(readFileSync(f, "utf8")));
+    expect(offenders).toEqual([]);
+    const xs = (tailwindConfig.theme?.extend?.fontSize as Record<string, [string, unknown]> | undefined)?.xs;
+    expect(xs && parseFloat(xs[0]) * 16).toBeGreaterThanOrEqual(13);
+  });
+
+  it("says Thu hồi / thời hạn / plain names instead of Rollback, TTL, layer numbers in copy", () => {
+    const pattern = /(^|[^A-Za-z_])(Rollback|TTL)([^A-Za-z_]|$)|Lớp [1-4] (—|\()|\(Lớp [1-4]\)/;
+    const offenders: string[] = [];
+    for (const file of UI_FILES) {
+      readFileSync(file, "utf8")
+        .split("\n")
+        .forEach((line, i) => {
+          const trimmed = line.trim();
+          if (line.includes("tech-only") || trimmed.startsWith("//") || trimmed.startsWith("{/*")) return;
+          if (pattern.test(line)) offenders.push(`${file}:${i + 1}`);
+        });
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("takes persona names from the cast list, never hardcoded", () => {
+    const files = [...UI_FILES, "components/b2c/labels.ts"];
+    const offenders = files.filter((f) => /Chị Minh|Bác Hùng|Anh Tuấn|Chị Huyền|Chị Lan/.test(readFileSync(f, "utf8")));
     expect(offenders).toEqual([]);
   });
 });
