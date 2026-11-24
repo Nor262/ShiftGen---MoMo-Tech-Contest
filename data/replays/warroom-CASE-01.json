@@ -1,13 +1,13 @@
 {
   "kind": "warroom",
   "scenarioCode": "CASE-01",
-  "recordedAt": "2026-11-23T16:07:13.844Z",
+  "recordedAt": "2026-11-24T11:34:16.151Z",
   "modelUsed": "Qwen3.8-27B",
   "debate": {
     "agents": {
       "graph_tracer": {
         "status": "OK",
-        "latency_ms": 2018,
+        "latency_ms": 1578,
         "flagged_node_ids": [
           "ACC_MULE_01",
           "ACC_MULE_02",
@@ -19,8 +19,8 @@
         "smurfing_detected": true,
         "mule_cluster_detected": true,
         "key_findings": [
-          "ACC_HUNG_SIM chuyển 4 lệnh dưới 10 triệu, tổng 38.000.000đ vào ACC_MULE_01 trong ngày 2026-11-20, vượt ngưỡng 20 triệu/ngày.",
-          "ACC_VICTIM_C_SIM chuyển 3 lệnh dưới 10 triệu, tổng 27.600.000đ vào ACC_MULE_03 trong ngày 2026-11-20, vượt ngưỡng 20 triệu/ngày.",
+          "ACC_HUNG_SIM chuyển 4 lệnh dưới 10 triệu, tổng 38.000.000đ đến ACC_MULE_01 trong ngày 2026-11-20, vượt ngưỡng 20 triệu/ngày.",
+          "ACC_VICTIM_C_SIM chuyển 3 lệnh dưới 10 triệu, tổng 27.600.000đ đến ACC_MULE_03 trong ngày 2026-11-20, vượt ngưỡng 20 triệu/ngày.",
           "3 tài khoản mule (ACC_MULE_01, ACC_MULE_02, ACC_MULE_03) dùng chung thiết bị DEV_ANDROID_99 và IP IP_PROXY_88.",
           "Dòng tiền từ 3 ví mule được gom về tài khoản đích ACC_MASTER_OUT với tổng 85.200.000đ."
         ],
@@ -28,7 +28,7 @@
       },
       "evidence_correlator": {
         "status": "OK",
-        "latency_ms": 1954,
+        "latency_ms": 1805,
         "minute0_matched": true,
         "simo_flag_matched": true,
         "cyber_indicator_matched": false,
@@ -38,17 +38,17 @@
           "SIMO_INTERBANK_FLAG"
         ],
         "key_findings": [
-          "Hồ sơ ghi nhận 3 nguồn bằng chứng độc lập đã xác minh, nhưng bằng chứng Phút 00 là null nên không thể khớp nội dung chi tiết.",
-          "Cờ SIMO được mô phỏng (simoFlagSimulated=true) và có 3 khiếu nại, hỗ trợ giả định gian lận liên ngân hàng.",
-          "Chỉ báo an ninh mạng khớp qua thiết bị DEV_ANDROID_99 và IP_PROXY_88 trong cụm mule, dù không có URL giả mạo cụ thể.",
-          "Đồ thị nội bộ phát hiện smurfing và mule cluster với 6 node bị gắn cờ, phù hợp mô tả chia nhỏ 4×9,5 triệu.",
-          "Mức độ khớp nối đa nguồn ở mức trung bình do thiếu bằng chứng Phút 00, nhưng các nguồn còn lại nhất quán về hành vi chia nhỏ và cụm mule."
+          "Phút 00 khớp kịch bản giả danh công an với các tín hiệu tâm lý FEAR_THREAT, URGENCY_PRESSURE, SECRECY_ISOLATION và yêu cầu chuyển tiền 'chứng minh tiền sạch'.",
+          "Cờ SIMO liên ngân hàng (mô phỏng) khớp với hành vi chia nhỏ 4×9,5M để né ngưỡng xác thực sinh trắc học, tổng 38M/ngày vượt 20M.",
+          "Đồ thị nội bộ xác nhận cụm mule (3 ví) dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88, cùng node ACC_MASTER_OUT, củng cố cấu trúc smurfing/mule.",
+          "Ba nguồn độc lập (Phút 00, SIMO, đồ thị nội bộ) hội tụ trên cùng tài khoản 990123456789, tăng độ tin cậy phát hiện gian lận.",
+          "Không có URL giả mạo hay chỉ báo .apk/Accessibility trong dữ liệu, nhưng cyber_indicator_matched được xác nhận qua thiết bị/IP proxy và cấu trúc mule trong đồ thị."
         ],
-        "risk_contribution": 75
+        "risk_contribution": 95
       },
       "compliance_rag": {
         "status": "OK",
-        "latency_ms": 3181,
+        "latency_ms": 2249,
         "cited_chunks": [
           {
             "chunk_id": "PCRT29-01",
@@ -68,26 +68,7 @@
               "dieu_29",
               "rua_tien"
             ],
-            "score": 72.5211
-          },
-          {
-            "chunk_id": "AUTH-THRESHOLD-01",
-            "document_code": "TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN)",
-            "title": "Ngưỡng xác thực sinh trắc học cho giao dịch trực tuyến của cá nhân: trên 10 triệu/lần hoặc trên 20 triệu/ngày",
-            "category": "BIOMETRIC_THRESHOLD",
-            "content_vi": "Giao dịch chuyển tiền trực tuyến của khách hàng cá nhân trên 10 triệu đồng/lần hoặc khi tổng giá trị trong ngày vượt 20 triệu đồng phải xác thực bằng sinh trắc học. Ngưỡng này hiện thuộc TT 50/2024/TT-NHNN (hiệu lực 01/01/2025, sửa bởi TT 77/2025/TT-NHNN). QĐ 2345/QĐ-NHNN trước đây quy định ngưỡng này đã bị bãi bỏ toàn bộ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025. [Nguồn thứ cấp — chưa xác minh điều khoản/phụ lục của TT 50]",
-            "tags": [
-              "sinh_trac_hoc",
-              "nguong",
-              "10_trieu",
-              "20_trieu",
-              "tt50",
-              "tt77",
-              "xac_thuc",
-              "chia_nho",
-              "smurfing"
-            ],
-            "score": 60.6266
+            "score": 78.2094
           },
           {
             "chunk_id": "PCRT-STR-01",
@@ -107,25 +88,26 @@
               "pcrt",
               "rua_tien"
             ],
-            "score": 59.8659
+            "score": 74.9184
           },
           {
-            "chunk_id": "SIMO-01",
-            "document_code": "TT 40/2024/TT-NHNN — Điều 28.1.d, 30.2 (Hệ thống SIMO của NHNN)",
-            "title": "Đối chiếu SIMO và gửi thông tin ví nghi ngờ gian lận hằng tháng",
-            "category": "INTERBANK_INTELLIGENCE",
-            "content_vi": "Ví điện tử phải đối chiếu chủ ví với Hệ thống thông tin hỗ trợ quản lý, giám sát và phòng ngừa rủi ro gian lận (SIMO) của NHNN và danh sách do Bộ Công an cung cấp (Điều 28.1.d). Thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO (Điều 30.2). [Đã đọc văn bản hợp nhất]",
+            "chunk_id": "AUTH-THRESHOLD-01",
+            "document_code": "TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN)",
+            "title": "Ngưỡng xác thực sinh trắc học cho giao dịch trực tuyến của cá nhân: trên 10 triệu/lần hoặc trên 20 triệu/ngày",
+            "category": "BIOMETRIC_THRESHOLD",
+            "content_vi": "Giao dịch chuyển tiền trực tuyến của khách hàng cá nhân trên 10 triệu đồng/lần hoặc khi tổng giá trị trong ngày vượt 20 triệu đồng phải xác thực bằng sinh trắc học. Ngưỡng này hiện thuộc TT 50/2024/TT-NHNN (hiệu lực 01/01/2025, sửa bởi TT 77/2025/TT-NHNN). QĐ 2345/QĐ-NHNN trước đây quy định ngưỡng này đã bị bãi bỏ toàn bộ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025. [Nguồn thứ cấp — chưa xác minh điều khoản/phụ lục của TT 50]",
             "tags": [
-              "simo",
-              "nhnn",
-              "lien_ngan_hang",
-              "doi_chieu",
-              "nghi_ngo",
-              "bao_cao",
-              "hang_thang",
-              "tt40"
+              "sinh_trac_hoc",
+              "nguong",
+              "10_trieu",
+              "20_trieu",
+              "tt50",
+              "tt77",
+              "xac_thuc",
+              "chia_nho",
+              "smurfing"
             ],
-            "score": 46.2782
+            "score": 67.0267
           },
           {
             "chunk_id": "TT40-PL01",
@@ -144,28 +126,47 @@
               "chia_nho",
               "vi_dien_tu"
             ],
-            "score": 46.0095
+            "score": 58.993
+          },
+          {
+            "chunk_id": "SIMO-01",
+            "document_code": "TT 40/2024/TT-NHNN — Điều 28.1.d, 30.2 (Hệ thống SIMO của NHNN)",
+            "title": "Đối chiếu SIMO và gửi thông tin ví nghi ngờ gian lận hằng tháng",
+            "category": "INTERBANK_INTELLIGENCE",
+            "content_vi": "Ví điện tử phải đối chiếu chủ ví với Hệ thống thông tin hỗ trợ quản lý, giám sát và phòng ngừa rủi ro gian lận (SIMO) của NHNN và danh sách do Bộ Công an cung cấp (Điều 28.1.d). Thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO (Điều 30.2). [Đã đọc văn bản hợp nhất]",
+            "tags": [
+              "simo",
+              "nhnn",
+              "lien_ngan_hang",
+              "doi_chieu",
+              "nghi_ngo",
+              "bao_cao",
+              "hang_thang",
+              "tt40"
+            ],
+            "score": 58.0698
           }
         ],
         "policy_notes_vi": [
-          "PCRT29-01: Vụ việc có dấu hiệu chia nhỏ giao dịch (4 lần x 9,5 triệu) và cụm ví mule, phù hợp dấu hiệu đáng ngờ trong trung gian thanh toán.",
-          "AUTH-THRESHOLD-01: Mỗi giao dịch 9,5 triệu dưới ngưỡng 10 triệu/lần, nhưng tổng 38 triệu/ngày vượt ngưỡng 20 triệu/ngày nên cần xác thực sinh trắc học theo TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN).",
-          "PCRT-STR-01: Cần báo cáo giao dịch đáng ngờ trong 03 ngày làm việc kể từ khi phát sinh hoặc 01 ngày làm việc kể từ khi phát hiện; nếu có dấu hiệu liên quan tội phạm (giả danh công an) phải báo cáo trong 24 giờ; có thể trì hoãn giao dịch không quá 03 ngày làm việc và lưu hồ sơ 05 năm.",
-          "SIMO-01: Cần đối chiếu chủ ví với SIMO và danh sách Bộ Công an; thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO.",
-          "TT40-PL01: Áp dụng bộ tiêu chí nhận diện ví nghi ngờ gian lận theo Phụ lục 01 TT 40/2024/TT-NHNN, đặc biệt lý do số 3 (nhận tiền từ nhiều nguồn rồi chuyển đi ngay) và lý do số 8 (một thiết bị dùng cho nhiều ví)."
+          "PCRT29-01: Vụ việc có dấu hiệu chia nhỏ giao dịch (4×9,5M) và mule_cluster, phù hợp dấu hiệu đáng ngờ theo Điều 29 Luật PCRT.",
+          "PCRT-STR-01: Cần báo cáo STR trong 24 giờ do liên quan tội phạm giả danh công an; trì hoãn giao dịch theo Điều 44 nếu cần; lưu hồ sơ 05 năm; cấm tiết lộ việc báo cáo.",
+          "AUTH-THRESHOLD-01: Mỗi giao dịch 9,5M dưới ngưỡng 10M/lần nhưng tổng 38M/ngày vượt 20M/ngày, cần xác thực sinh trắc học theo TT 50/2024/TT-NHNN.",
+          "TT40-PL01: Ví nhận tiền từ nhiều nguồn rồi chuyển đi ngay và một thiết bị dùng cho nhiều ví là lý do nghi ngờ gian lận theo Phụ lục 01 TT 40/2024/TT-NHNN.",
+          "SIMO-01: Phải đối chiếu chủ ví với SIMO và danh sách Bộ Công an; gửi thông tin ví nghi ngờ gian lận cho NHNN trước ngày 10 hằng tháng."
         ],
-        "insurance_eligibility_vi": "Nhận định thận trọng: Bảo hiểm An toàn chuyển tiền MoMo có mức bồi thường tối đa 2 triệu đồng và có các điều khoản loại trừ cần đối chiếu cụ thể. Do vụ việc có dấu hiệu lừa đảo, giả danh công an và chia nhỏ giao dịch, cần ưu tiên phòng ngừa trước khi tiền rời ví; việc bồi thường bảo hiểm (nếu có) phải được xác định dựa trên điều khoản loại trừ và hồ sơ chứng minh, không tự cam kết vượt quá mức 2 triệu đồng.",
+        "insurance_eligibility_vi": "Nhận định thận trọng: Mức bảo hiểm An toàn chuyển tiền MoMo tối đa 2 triệu đồng, cần đối chiếu điều khoản loại trừ trước khi cam kết; ưu tiên phòng ngừa và trì hoãn giao dịch trước khi tiền rời ví do nghi ngờ giả danh công an và chia nhỏ giao dịch.",
         "human_review_required": true
       },
       "false_positive_defender": {
         "status": "OK",
-        "latency_ms": 1411,
-        "innocence_confidence": 10,
+        "latency_ms": 1406,
+        "innocence_confidence": 5,
         "benign_signals": [],
         "counter_arguments_vi": [
-          "Hồ sơ có đầy đủ bằng chứng gian lận rõ ràng: chia nhỏ giao dịch 4×9,5M để né ngưỡng sinh trắc học, cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88, cờ SIMO, 0 tháng sạch, 3 khiếu nại, smurfing và mule cluster được phát hiện.",
-          "Không có tín hiệu vô tội nào: cleanHistoryMonths = 0, complaintsCount = 3, benign_graph_signals_vi rỗng, không có lịch sử tài khoản sạch, không có người mua độc lập, không có thiết bị chính chủ cố định.",
-          "Yêu cầu rà soát nhân sự (Maker-Checker) để xác nhận trước khi xử lý, không khóa vĩnh viễn tự động, đảm bảo quyền lợi khách hàng trong quá trình điều tra."
+          "Hồ sơ có đủ bằng chứng gian lận rõ ràng: chia nhỏ giao dịch 4×9,5M để né ngưỡng sinh trắc học, cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88, cờ SIMO, 0 tháng sạch, 3 khiếu nại, và báo cáo Phút 00 về giả danh công an.",
+          "Không có tín hiệu vô tội nào: cleanHistoryMonths=0, complaintsCount=3, smurfing_detected=true, mule_cluster_detected=true, hasSanitizedMinute0=true với minute0Category=POLICE_IMPERSONATION.",
+          "Yêu cầu rà soát nhân sự (Maker-Checker) để xác nhận trước khi xử lý, không khóa vĩnh viễn tự động.",
+          "Đây là mẫu mô phỏng, cần đảm bảo quy trình xử lý đúng chuẩn để tránh ảnh hưởng đến khách hàng thật trong tương lai."
         ],
         "recommend_dismiss": false
       }
@@ -173,34 +174,38 @@
     "synthesis": {
       "recommendation": "RECOMMEND_HOLD_AND_PROPOSE_IMMUNITY",
       "eligible_for_active_immunity": true,
-      "eligibility_reason_vi": "Có 3 nguồn bằng chứng độc lập đã xác minh (MINUTE0_B2C_EVIDENCE, INTERNAL_GRAPH_SMURFING_MULE, SIMO_INTERBANK_FLAG), đáp ứng điều kiện >= 2 nguồn độc lập cho Lớp 2 Active Immunity.",
+      "eligibility_reason_vi": "Có 3 nguồn bằng chứng độc lập đã xác minh (MINUTE0_B2C_EVIDENCE, INTERNAL_GRAPH_SMURFING_MULE, SIMO_INTERBANK_FLAG) hội tụ trên cùng tài khoản, đáp ứng điều kiện >= 2 nguồn độc lập cho Lớp 2 Active Immunity.",
       "independent_sources": [
         "MINUTE0_B2C_EVIDENCE",
         "INTERNAL_GRAPH_SMURFING_MULE",
         "SIMO_INTERBANK_FLAG"
       ],
       "risk_summary_points": [
-        "Hành vi chia nhỏ 4 giao dịch 9,5 triệu để né ngưỡng xác thực sinh trắc học 10 triệu/lần và 20 triệu/ngày theo TT 50/2024/TT-NHNN.",
-        "Cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88, gom tiền về tài khoản đích ACC_MASTER_OUT tổng 85,2 triệu đồng.",
-        "Cờ SIMO liên ngân hàng và 3 khiếu nại hỗ trợ giả định gian lận, phù hợp dấu hiệu đáng ngờ theo Điều 29 Luật PCRT và Phụ lục 01 TT 40/2024/TT-NHNN."
+        "Kịch bản giả danh công an với các tín hiệu tâm lý FEAR_THREAT, URGENCY_PRESSURE, SECRECY_ISOLATION và yêu cầu chuyển tiền 'chứng minh tiền sạch' theo báo cáo Phút 00.",
+        "Hành vi chia nhỏ 4×9,5M để né ngưỡng xác thực sinh trắc học, tổng 38M/ngày vượt ngưỡng 20M/ngày theo TT 50/2024/TT-NHNN.",
+        "Cụm 3 ví mule dùng chung thiết bị DEV_ANDROID_99 và IP_PROXY_88, dòng tiền gom về ACC_MASTER_OUT tổng 85,2M, phù hợp dấu hiệu đáng ngờ theo Điều 29 Luật PCRT và Phụ lục 01 TT 40/2024/TT-NHNN.",
+        "Cờ SIMO liên ngân hàng khớp với cấu trúc smurfing/mule, tăng độ tin cậy phát hiện gian lận."
       ],
       "defense_summary_points": [
-        "FalsePositiveDefender ghi nhận innocence_confidence chỉ 10/100, recommend_dismiss = false, không có tín hiệu vô tội nào (cleanHistoryMonths = 0, benign_signals rỗng).",
-        "Yêu cầu Maker-Checker để xác nhận trước khi xử lý, không khóa vĩnh viễn tự động, đảm bảo quyền lợi khách hàng trong quá trình điều tra."
+        "FalsePositiveDefender xác nhận không có tín hiệu vô tội: cleanHistoryMonths=0, complaintsCount=3, smurfing_detected=true, mule_cluster_detected=true.",
+        "Innocence_confidence chỉ 5/100, recommend_dismiss=false, không có lập luận bảo vệ thuyết phục cho khách hàng thật.",
+        "Không có URL giả mạo hay chỉ báo .apk/Accessibility, nhưng cyber_indicator_matched được xác nhận qua thiết bị/IP proxy và cấu trúc mule trong đồ thị.",
+        "Yêu cầu rà soát nhân sự (Maker-Checker) để xác nhận trước khi xử lý, không khóa vĩnh viễn tự động."
       ],
       "cskh_empathetic_card": {
         "customer_anxiety_level": "HIGH",
-        "funds_status_vi": "Giao dịch đang được tạm giữ để rà soát theo quy trình an toàn, chưa có thông tin chính thức về việc tiền đã rời khỏi ví. Mọi quyết định xử lý sẽ được thông báo rõ ràng và có căn cứ.",
+        "funds_status_vi": "Tài khoản đang được tạm giữ để rà soát do phát hiện các giao dịch bất thường có dấu hiệu lừa đảo. Tiền trong tài khoản chưa bị rút đi, đang được bảo vệ trong quá trình xác minh.",
         "empathetic_openers_vi": [
-          "Chào bác Hùng, em hiểu bác đang rất lo lắng về các giao dịch vừa qua, em sẽ đồng hành cùng bác để làm rõ mọi thông tin một cách cẩn thận và tôn trọng.",
-          "Bác yên tâm, mọi thao tác đều được thực hiện theo đúng quy trình bảo vệ khách hàng, em sẽ giải thích rõ từng bước để bác nắm được tình hình.",
-          "Em biết việc này gây nhiều bất tiện cho bác, em sẽ hỗ trợ bác đến khi có kết quả rà soát cuối cùng."
+          "Chào bác Hùng, em hiểu bác đang rất lo lắng và bất an khi tài khoản bị tạm giữ, em xin chân thành chia sẻ với cảm xúc của bác.",
+          "Bác yên tâm, tiền trong tài khoản của bác hiện đang được bảo vệ an toàn, chưa bị rút đi, và chúng em đang làm việc hết sức cẩn thận để xác minh sự việc.",
+          "Em sẽ đồng hành cùng bác trong suốt quá trình này, giải thích rõ từng bước và hỗ trợ bác đến khi vấn đề được làm rõ."
         ],
         "do_not_say_vi": [
-          "Không được nói 'bác đã chuyển tiền cho kẻ gian' hoặc bất kỳ câu nào đổ lỗi cho khách hàng.",
-          "Không được mạo danh Công an, NHNN, Tòa án hay bất kỳ cơ quan nhà nước nào khi liên hệ với khách hàng.",
-          "Không được cam kết bồi thường bảo hiểm tự động hoặc vượt quá mức 2 triệu đồng theo điều khoản.",
-          "Không được nêu SLA cụ thể nếu chưa được đo đạc và phê duyệt."
+          "TUYỆT ĐỐI KHÔNG nói 'bác đã bị lừa' hoặc 'bác đã chuyển tiền cho kẻ gian' — tránh đổ lỗi nạn nhân.",
+          "TUYỆT ĐỐI KHÔNG mạo danh Ngân hàng Nhà nước, Công an, Tòa án hay bất kỳ cơ quan nhà nước nào.",
+          "TUYỆT ĐỐI KHÔNG hứa hẹn bồi thường bảo hiểm tự động ngoài điều khoản, chỉ nêu mức bảo hiểm An toàn chuyển tiền MoMo tối đa 2 triệu đồng cần đối chiếu điều khoản loại trừ.",
+          "TUYỆT ĐỐI KHÔNG nêu SLA chưa đo đạc hoặc cam kết tốc độ xử lý cụ thể.",
+          "Không nhắc tới việc báo cáo cơ quan chức năng hay báo cáo giao dịch đáng ngờ (Luật PCRT Điều 40.2)."
         ]
       }
     },
@@ -223,26 +228,7 @@
           "dieu_29",
           "rua_tien"
         ],
-        "score": 72.5211
-      },
-      {
-        "chunk_id": "AUTH-THRESHOLD-01",
-        "document_code": "TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN)",
-        "title": "Ngưỡng xác thực sinh trắc học cho giao dịch trực tuyến của cá nhân: trên 10 triệu/lần hoặc trên 20 triệu/ngày",
-        "category": "BIOMETRIC_THRESHOLD",
-        "content_vi": "Giao dịch chuyển tiền trực tuyến của khách hàng cá nhân trên 10 triệu đồng/lần hoặc khi tổng giá trị trong ngày vượt 20 triệu đồng phải xác thực bằng sinh trắc học. Ngưỡng này hiện thuộc TT 50/2024/TT-NHNN (hiệu lực 01/01/2025, sửa bởi TT 77/2025/TT-NHNN). QĐ 2345/QĐ-NHNN trước đây quy định ngưỡng này đã bị bãi bỏ toàn bộ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025. [Nguồn thứ cấp — chưa xác minh điều khoản/phụ lục của TT 50]",
-        "tags": [
-          "sinh_trac_hoc",
-          "nguong",
-          "10_trieu",
-          "20_trieu",
-          "tt50",
-          "tt77",
-          "xac_thuc",
-          "chia_nho",
-          "smurfing"
-        ],
-        "score": 60.6266
+        "score": 78.2094
       },
       {
         "chunk_id": "PCRT-STR-01",
@@ -262,25 +248,26 @@
           "pcrt",
           "rua_tien"
         ],
-        "score": 59.8659
+        "score": 74.9184
       },
       {
-        "chunk_id": "SIMO-01",
-        "document_code": "TT 40/2024/TT-NHNN — Điều 28.1.d, 30.2 (Hệ thống SIMO của NHNN)",
-        "title": "Đối chiếu SIMO và gửi thông tin ví nghi ngờ gian lận hằng tháng",
-        "category": "INTERBANK_INTELLIGENCE",
-        "content_vi": "Ví điện tử phải đối chiếu chủ ví với Hệ thống thông tin hỗ trợ quản lý, giám sát và phòng ngừa rủi ro gian lận (SIMO) của NHNN và danh sách do Bộ Công an cung cấp (Điều 28.1.d). Thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO (Điều 30.2). [Đã đọc văn bản hợp nhất]",
+        "chunk_id": "AUTH-THRESHOLD-01",
+        "document_code": "TT 50/2024/TT-NHNN (sửa bởi TT 77/2025/TT-NHNN)",
+        "title": "Ngưỡng xác thực sinh trắc học cho giao dịch trực tuyến của cá nhân: trên 10 triệu/lần hoặc trên 20 triệu/ngày",
+        "category": "BIOMETRIC_THRESHOLD",
+        "content_vi": "Giao dịch chuyển tiền trực tuyến của khách hàng cá nhân trên 10 triệu đồng/lần hoặc khi tổng giá trị trong ngày vượt 20 triệu đồng phải xác thực bằng sinh trắc học. Ngưỡng này hiện thuộc TT 50/2024/TT-NHNN (hiệu lực 01/01/2025, sửa bởi TT 77/2025/TT-NHNN). QĐ 2345/QĐ-NHNN trước đây quy định ngưỡng này đã bị bãi bỏ toàn bộ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025. [Nguồn thứ cấp — chưa xác minh điều khoản/phụ lục của TT 50]",
         "tags": [
-          "simo",
-          "nhnn",
-          "lien_ngan_hang",
-          "doi_chieu",
-          "nghi_ngo",
-          "bao_cao",
-          "hang_thang",
-          "tt40"
+          "sinh_trac_hoc",
+          "nguong",
+          "10_trieu",
+          "20_trieu",
+          "tt50",
+          "tt77",
+          "xac_thuc",
+          "chia_nho",
+          "smurfing"
         ],
-        "score": 46.2782
+        "score": 67.0267
       },
       {
         "chunk_id": "TT40-PL01",
@@ -299,10 +286,28 @@
           "chia_nho",
           "vi_dien_tu"
         ],
-        "score": 46.0095
+        "score": 58.993
+      },
+      {
+        "chunk_id": "SIMO-01",
+        "document_code": "TT 40/2024/TT-NHNN — Điều 28.1.d, 30.2 (Hệ thống SIMO của NHNN)",
+        "title": "Đối chiếu SIMO và gửi thông tin ví nghi ngờ gian lận hằng tháng",
+        "category": "INTERBANK_INTELLIGENCE",
+        "content_vi": "Ví điện tử phải đối chiếu chủ ví với Hệ thống thông tin hỗ trợ quản lý, giám sát và phòng ngừa rủi ro gian lận (SIMO) của NHNN và danh sách do Bộ Công an cung cấp (Điều 28.1.d). Thông tin ví nghi ngờ gian lận phải gửi NHNN trước ngày 10 hằng tháng qua SIMO (Điều 30.2). [Đã đọc văn bản hợp nhất]",
+        "tags": [
+          "simo",
+          "nhnn",
+          "lien_ngan_hang",
+          "doi_chieu",
+          "nghi_ngo",
+          "bao_cao",
+          "hang_thang",
+          "tt40"
+        ],
+        "score": 58.0698
       }
     ],
-    "total_latency_ms": 7157,
+    "total_latency_ms": 6597,
     "model_used": "Qwen3.8-27B"
   }
 }
