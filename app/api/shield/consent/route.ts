@@ -23,46 +23,69 @@ export async function POST(request: Request) {
     const demoSessionId = getSessionId(request);
     await ensureSessionSeeded(demoSessionId);
 
-    const { userId, optIn24hHold, guardianId, consentVersion } = parsed.data;
+    const { userId, optIn24hHold, optInScan, guardianId, consentVersion } = parsed.data;
     const normalizedGuardianId = guardianId ?? null;
+    // #5: only the purposes sent are changed; the other keeps its stored value (default off).
+    const changes = {
+      ...(optIn24hHold !== undefined && { optIn24hHold, guardianId: normalizedGuardianId }),
+      ...(optInScan !== undefined && { optInScan }),
+    };
 
-    const consent = await prisma.userConsent.upsert({
-      where: {
-        demoSessionId_userId: { demoSessionId, userId },
-      },
-      create: {
-        demoSessionId,
-        userId,
-        optIn24hHold,
-        guardianId: normalizedGuardianId,
-        consentVersion,
-        consentedAt: new Date(),
-      },
-      update: {
-        optIn24hHold,
-        guardianId: normalizedGuardianId,
-        consentVersion,
-        consentedAt: new Date(),
-      },
-    });
-
-    await prisma.auditLog.create({
-      data: {
-        demoSessionId,
-        actorId: userId,
-        actorRole: "USER_B2C",
-        action: "CONSENT_UPDATED",
-        targetId: consent.id,
-        rationale: optIn24hHold
-          ? `Kích hoạt chế độ Bảo vệ 24h (phiên bản ${consentVersion}).`
-          : `Tắt chế độ Bảo vệ 24h (phiên bản ${consentVersion}).`,
-        metadataJson: JSON.stringify({
-          optIn24hHold,
-          guardianId: normalizedGuardianId,
+    const result = await prisma.$transaction(async (tx) => {
+      const consent = await tx.userConsent.upsert({
+        where: {
+          demoSessionId_userId: { demoSessionId, userId },
+        },
+        create: {
+          demoSessionId,
+          userId,
+          optIn24hHold: false,
+          optInScan: false,
+          guardianId: null,
+          ...changes,
           consentVersion,
-        }),
-      },
+          consentedAt: new Date(),
+        },
+        update: {
+          ...changes,
+          consentVersion,
+          consentedAt: new Date(),
+        },
+      });
+
+      // one audit entry per purpose changed, with what was agreed to and when (createdAt)
+      type AuditEntry = { rationale: string; metadata: Record<string, unknown> };
+      const entries: AuditEntry[] = [];
+      if (optIn24hHold !== undefined)
+        entries.push({
+          rationale: optIn24hHold
+            ? `Kích hoạt chế độ Bảo vệ 24h (phiên bản ${consentVersion}).`
+            : `Tắt chế độ Bảo vệ 24h (phiên bản ${consentVersion}).`,
+          metadata: { purpose: "HOLD_24H", optIn24hHold, guardianId: normalizedGuardianId, consentVersion },
+        });
+      if (optInScan !== undefined)
+        entries.push({
+          rationale: optInScan
+            ? `Đồng ý cho AI phân tích nội dung khi quét (phiên bản ${consentVersion}).`
+            : `Rút lại đồng ý cho AI phân tích nội dung khi quét (phiên bản ${consentVersion}).`,
+          metadata: { purpose: "SCAN", optInScan, consentVersion },
+        });
+      for (const e of entries) {
+        await tx.auditLog.create({
+          data: {
+            demoSessionId,
+            actorId: userId,
+            actorRole: "USER_B2C",
+            action: "CONSENT_UPDATED",
+            targetId: consent.id,
+            rationale: e.rationale,
+            metadataJson: JSON.stringify(e.metadata),
+          },
+        });
+      }
+      return consent;
     });
+    const consent = result;
 
     const payload = ConsentResponseSchema.parse({
       consent: toUserConsentDto(consent),

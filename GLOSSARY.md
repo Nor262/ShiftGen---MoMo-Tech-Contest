@@ -35,6 +35,14 @@ _Tránh dùng_: che, mask
 Chế độ người dùng tự bật từ trước, cho phép hệ thống tạm giữ giao dịch rủi ro cao của chính họ.
 _Tránh dùng_: khóa giao dịch, phong tỏa
 
+**Đồng ý quét** (`optInScan`):
+Sự đồng ý riêng cho mục đích gửi ảnh hoặc nội dung tới AI khi quét. Mặc định tắt, tách khỏi Bảo vệ 24h, rút lại được bất kỳ lúc nào. Tra cứu Kho Miễn dịch không gọi AI nên không cần mục này.
+_Tránh dùng_: điều khoản sử dụng, đồng ý chung
+
+**Nhờ người thật xem xét** (`SCAN_REVIEW_REQUESTED`):
+Yêu cầu của người dùng để một chuyên viên xem lại kết quả quét do AI tạo.
+_Tránh dùng_: khiếu nại (dành cho Chỉ báo Miễn dịch)
+
 **Tạm giữ** (`ON_HOLD_24H`):
 Trạng thái một giao dịch bị giữ lại để xác minh. Chỉ xảy ra khi người dùng đã bật Bảo vệ 24h **và** giao dịch có rủi ro cao hoặc khớp một Chỉ báo Miễn dịch đang hiệu lực. Khớp Cảnh báo mềm thì không dẫn tới Tạm giữ.
 _Tránh dùng_: đóng băng, chặn

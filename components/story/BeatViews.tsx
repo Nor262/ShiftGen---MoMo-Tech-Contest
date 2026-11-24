@@ -11,6 +11,7 @@ import {
   type TransferResponse,
 } from "@/contracts";
 import { DEMO_PRESETS, RISK_LEVEL_META, SCAM_CATEGORY_VI } from "@/components/b2c/labels";
+import { AiResultNotice } from "@/components/b2c/AiResultNotice";
 import { CAST, modelDisplayName } from "@/lib/cast";
 import { isReplayModel, isReplayNotice } from "@/lib/replay-label";
 import { STORY_AMOUNT_VND, STORY_RECIPIENT_ACCOUNT } from "@/lib/story/actions";
@@ -41,7 +42,7 @@ export function PhoneFrame({ state }: ViewProps) {
   const owner = beatById(beat).phoneOwner;
   const approval = state.results["4.1"] as { txStatus?: string } | undefined;
   const tx = state.results["2.1"] as TransferResponse | undefined;
-  const scan = state.results["1.2"] as ShieldScanResponse | undefined;
+  const scan = state.results["1.3"] as ShieldScanResponse | undefined;
 
   let screen: React.ReactNode;
   switch (beat) {
@@ -49,7 +50,7 @@ export function PhoneFrame({ state }: ViewProps) {
       screen = (
         <div className="space-y-3">
           <p className="font-semibold text-slate-900">Bảo vệ 24h</p>
-          <p>Giao dịch rủi ro cao sẽ được tạm giữ tối đa 24 giờ và báo cho người thân.</p>
+          <p>Giao dịch rủi ro cao được tạm giữ tối đa 24 giờ và báo cho người thân.</p>
           <p className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
             {done ? `Đã bật · Người giám hộ: ${CAST.FAMILY_MINH.name}` : "Chưa bật"}
           </p>
@@ -57,6 +58,19 @@ export function PhoneFrame({ state }: ViewProps) {
       );
       break;
     case "1.2":
+      screen = (
+        <div className="space-y-3">
+          <p className="font-semibold text-slate-900">Cho AI phân tích khi quét</p>
+          <p>
+            Ảnh tin nhắn được gửi tới AI để tìm dấu hiệu lừa đảo, rồi xóa sau phiên. Không liên quan tới Bảo vệ 24h.
+          </p>
+          <p className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
+            {done ? "Đã đồng ý · rút lại được bất kỳ lúc nào" : "Chưa đồng ý"}
+          </p>
+        </div>
+      );
+      break;
+    case "1.3":
       screen = (
         <div className="space-y-2">
           <p className="font-semibold text-slate-900">Tin nhắn Zalo vừa nhận</p>
@@ -156,17 +170,19 @@ export function Backstage({ state }: ViewProps) {
   let more: string[] = [];
   let meta: string | null = null;
   let replay: string | null = null;
+  let scanForNotice: ShieldScanResponse | null = null;
 
   if (result) {
     switch (beat) {
       case "1.1":
         headline = "Đã bật Bảo vệ 24h";
-        details = [
-          `Người giám hộ: ${CAST.FAMILY_MINH.name}`,
-          "Đồng ý được ghi vào nhật ký, Bác có thể tắt bất kỳ lúc nào.",
-        ];
+        details = [`Người giám hộ: ${CAST.FAMILY_MINH.name}`, "Đồng ý được ghi nhật ký; Bác tắt được bất kỳ lúc nào."];
         break;
-      case "1.2": {
+      case "1.2":
+        headline = "Đã ghi nhận đồng ý cho AI phân tích khi quét";
+        details = ["Một mục đồng ý riêng, ghi nhật ký riêng.", "Chưa đồng ý thì hệ thống không quét."];
+        break;
+      case "1.3": {
         const r = result as ShieldScanResponse;
         headline = `Rủi ro ${RISK_LEVEL_META[r.result.risk_level].labelVi.toLowerCase()} · ${r.result.risk_score}/100 · ${SCAM_CATEGORY_VI[r.result.scam_category]}`;
         details = r.result.psych_manipulation_cues.slice(0, 3).map((c) => c.explanation_vi);
@@ -176,6 +192,7 @@ export function Backstage({ state }: ViewProps) {
         ];
         meta = `${modelDisplayName(r.modelUsed)} · ${seconds(r.measuredLatencyMs)}`;
         replay = r.fallbackNoticeVi && isReplayNotice(r.fallbackNoticeVi) ? r.fallbackNoticeVi : null;
+        scanForNotice = r;
         break;
       }
       case "2.1": {
@@ -276,6 +293,7 @@ export function Backstage({ state }: ViewProps) {
           </details>
         )}
         {meta && <p className="font-mono text-base text-emerald-800">{meta}</p>}
+        {scanForNotice && <AiResultNotice scan={scanForNotice} userId="USER_B2C_HUNG" large />}
         {replay && (
           <p className="rounded-lg border-l-4 border-emerald-700 bg-emerald-50 px-3 py-2 font-mono text-base text-emerald-900">
             {replay}

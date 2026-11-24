@@ -11,9 +11,10 @@ function play(s: StoryState): StoryState {
 }
 
 describe("story beats", () => {
-  it("are the 8 beats of the spec, in order, each with an actor and copy", () => {
-    expect(STORY_BEATS.map((b) => b.id)).toEqual(["1.1", "1.2", "2.1", "2.2", "3.1", "3.2", "4.1", "4.2"]);
+  it("are the 9 beats of the spec (chapter 1 asks for each consent separately), each with an actor and copy", () => {
+    expect(STORY_BEATS.map((b) => b.id)).toEqual(["1.1", "1.2", "1.3", "2.1", "2.2", "3.1", "3.2", "4.1", "4.2"]);
     expect(STORY_BEATS.map((b) => b.actor)).toEqual([
+      "USER_B2C_HUNG",
       "USER_B2C_HUNG",
       "USER_B2C_HUNG",
       "USER_B2C_HUNG",
@@ -53,8 +54,9 @@ describe("story state machine", () => {
   it("holds the stage on the finished beat so its effect can be shown, then moves on with 'next'", () => {
     let s = succeed(initialStoryState()); // 1.1 done
     s = storyReducer(s, { type: "next" });
-    s = succeed(s); // 1.2 (scan) done → next beat is in chapter 2
-    expect(s.shown).toBe("1.2");
+    s = storyReducer(succeed(s), { type: "next" }); // 1.2 scan consent
+    s = succeed(s); // 1.3 (scan) done → next beat is in chapter 2
+    expect(s.shown).toBe("1.3");
     expect(s.viewing).toBe(1);
     const moved = storyReducer(s, { type: "next" });
     expect(moved.shown).toBe("2.1");
@@ -92,7 +94,7 @@ describe("story state machine", () => {
     let s = initialStoryState();
     for (let i = 0; i < STORY_BEATS.length; i++) s = play(s);
     expect(s.current).toBe("done");
-    expect(s.done).toHaveLength(8);
+    expect(s.done).toHaveLength(STORY_BEATS.length);
     expect(s.shown).toBe("4.2");
     expect(storyReducer(s, { type: "beatStarted" })).toBe(s);
     expect(storyReducer(s, { type: "next" })).toBe(s);
@@ -101,15 +103,23 @@ describe("story state machine", () => {
   it("lets the presenter look back at a chapter without rerunning, then return", () => {
     let s = initialStoryState();
     expect(s.viewing).toBe(1);
-    for (let i = 0; i < 4; i++) s = play(s); // on stage: 3.1
+    for (let i = 0; i < 5; i++) s = play(s); // on stage: 3.1
     expect(s.viewing).toBe(3);
     const back = storyReducer(s, { type: "viewChapter", chapter: 1 });
     expect(back.viewing).toBe(1);
-    expect(back.shown).toBe("1.2");
+    expect(back.shown).toBe("1.3");
     expect(back.current).toBe("3.1");
     expect(storyReducer(back, { type: "beatStarted" })).toBe(back); // looking back never reruns
     const returned = storyReducer(back, { type: "viewChapter", chapter: 3 });
     expect(returned.shown).toBe("3.1");
     expect(storyReducer(s, { type: "viewChapter", chapter: 4 })).toBe(s); // not reached yet
+  });
+});
+
+describe("chapter 1 asks for each consent on its own (#5, Luật 91/2025 Điều 9.4.a)", () => {
+  it("has a 24h-protection beat, then a separate scan-consent beat, then the scan", () => {
+    expect(STORY_BEATS.filter((b) => b.chapter === 1).map((b) => b.id)).toEqual(["1.1", "1.2", "1.3"]);
+    expect(STORY_BEATS.find((b) => b.id === "1.1")!.buttonLabel).toMatch(/Bảo vệ 24h/);
+    expect(STORY_BEATS.find((b) => b.id === "1.2")!.buttonLabel).toMatch(/AI phân tích/);
   });
 });

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { modelDisplayName } from "@/lib/cast";
 import { shouldOfferPoliceGuide } from "@/lib/police-report";
 import { PoliceReportGuide } from "./PoliceReportGuide";
+import { AiResultNotice } from "./AiResultNotice";
 import {
   AlertOctagon,
   AlertTriangle,
@@ -172,6 +173,7 @@ export function ScanResultPanel({
 
   return (
     <div className="space-y-4">
+      <AiResultNotice scan={scan} userId={activeUserId} />
       {scan.fallbackMode && isReplayNotice(scan.fallbackNoticeVi) && (
         <div
           role="status"

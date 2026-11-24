@@ -67,7 +67,7 @@ import { POST as postConsent } from "@/app/api/shield/consent/route";
 import { POST as postFamilyEscalate } from "@/app/api/shield/family/escalate/[txId]/route";
 import { GET as getFamilyHolds } from "@/app/api/shield/family/holds/route";
 import { POST as postReportCyber } from "@/app/api/shield/report-cyber/route";
-import { POST as postScan } from "@/app/api/shield/scan/route";
+import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { POST as postTransfer } from "@/app/api/shield/transfer/route";
 import { POST as postDecision } from "@/app/api/warroom/cases/[caseId]/decision/route";
 import { POST as postInvestigate } from "@/app/api/warroom/cases/[caseId]/investigate/route";

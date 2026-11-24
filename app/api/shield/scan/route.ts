@@ -149,6 +149,24 @@ export async function POST(request: Request) {
     await ensureSessionSeeded(demoSessionId);
 
     const { req, image: uploadedImage } = await parseScanInput(request);
+
+    // #5: scan consent is checked before the image is loaded, hashed or analysed. Only a text lookup
+    // can end in the immunity registry without AI, so only that path may continue without consent.
+    const scanConsent = await prisma.userConsent.findUnique({
+      where: { demoSessionId_userId: { demoSessionId, userId: req.userId } },
+      select: { optInScan: true },
+    });
+    const hasScanConsent = scanConsent?.optInScan === true;
+    const scanConsentRequired = () =>
+      NextResponse.json(
+        {
+          error: "Bạn cần đồng ý cho AI phân tích nội dung trước khi quét. Bạn có thể rút lại bất kỳ lúc nào.",
+          code: "SCAN_CONSENT_REQUIRED",
+        },
+        { status: 403 },
+      );
+    if (!hasScanConsent && (req.inputType !== "TEXT_LOOKUP" || uploadedImage)) return scanConsentRequired();
+
     let activeImage = uploadedImage;
 
     // Resolve DEMO_PRESET PNG if no inline imageBase64 was provided.
@@ -236,6 +254,8 @@ export async function POST(request: Request) {
       });
       modelUsed = TIER1_IMMUNITY_MODEL;
     } else {
+      // a text lookup that missed the registry would now be analysed: same consent rule
+      if (!hasScanConsent) return scanConsentRequired();
       const currentUsage = await getDailyLlmUsage();
       if (!currentUsage.allowed) {
         const fb = makeFallbackOutcome();

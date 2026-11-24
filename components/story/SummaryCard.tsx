@@ -12,7 +12,7 @@ import type { StoryState } from "@/lib/story/machine";
 
 /** End of the story: what was kept, and how long each AI step actually took in this run. */
 export function SummaryCard({ state }: { state: StoryState }) {
-  const scan = state.results["1.2"] as ShieldScanResponse | undefined;
+  const scan = state.results["1.3"] as ShieldScanResponse | undefined;
   const warroom = state.results["3.1"] as InvestigateCaseResponse | undefined;
   const probe = state.results["4.2"] as ShieldScanResponse | undefined;
   const kept = (state.results["4.1"] as { txStatus?: string } | undefined)?.txStatus === "CANCELLED_BY_B2E";

@@ -45,6 +45,8 @@ export const UserConsentDtoSchema = z.object({
   demoSessionId: z.string(),
   userId: z.string(),
   optIn24hHold: z.boolean(),
+  /** #5: consent for the scan purpose (sending content to AI), separate from 24h protection. */
+  optInScan: z.boolean(),
   guardianId: z.string().nullable(),
   consentVersion: z.string(),
   consentedAt: z.string(),
@@ -201,12 +203,18 @@ export type DemoResetResponse = z.infer<typeof DemoResetResponseSchema>;
 // === Wave 1: /api/shield/* ===
 
 // POST /api/shield/consent
-export const ConsentRequestSchema = z.object({
-  userId: PersonaIdSchema.default("USER_B2C_HUNG"),
-  optIn24hHold: z.boolean(),
-  guardianId: z.string().min(1).nullable().optional(),
-  consentVersion: z.string().min(1).default("v1.0-law91-2025"),
-});
+// #5: each purpose is set on its own; a field left out keeps its stored value (Luật 91/2025 Điều 9).
+export const ConsentRequestSchema = z
+  .object({
+    userId: PersonaIdSchema.default("USER_B2C_HUNG"),
+    optIn24hHold: z.boolean().optional(),
+    optInScan: z.boolean().optional(),
+    guardianId: z.string().min(1).nullable().optional(),
+    consentVersion: z.string().min(1).default("v1.0-law91-2025"),
+  })
+  .refine((v) => v.optIn24hHold !== undefined || v.optInScan !== undefined, {
+    message: "Chọn ít nhất một mục đồng ý để thay đổi.",
+  });
 export type ConsentRequest = z.infer<typeof ConsentRequestSchema>;
 
 export const ConsentResponseSchema = z.object({
@@ -246,6 +254,20 @@ export const ShieldScanResponseSchema = z.object({
   fallbackNoticeVi: z.string().optional(),
 });
 export type ShieldScanResponse = z.infer<typeof ShieldScanResponseSchema>;
+
+// POST /api/shield/scan/[scanId]/review — #5 "Nhờ người thật xem xét" (Luật 134/2025 Điều 4.2)
+export const ScanReviewRequestSchema = z.object({
+  userId: PersonaIdSchema.default("USER_B2C_HUNG"),
+  note: z.string().max(500).optional(),
+});
+export type ScanReviewRequest = z.infer<typeof ScanReviewRequestSchema>;
+
+export const ScanReviewResponseSchema = z.object({
+  scanId: z.string(),
+  status: z.literal("REVIEW_REQUESTED"),
+  requestedAt: z.string(),
+});
+export type ScanReviewResponse = z.infer<typeof ScanReviewResponseSchema>;
 
 // POST /api/shield/transfer
 export const TransferRequestSchema = z.object({

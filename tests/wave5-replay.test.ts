@@ -1,5 +1,5 @@
 import { afterAll, afterEach, describe, expect, it } from "vitest";
-import { POST as postScan } from "@/app/api/shield/scan/route";
+import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { LLMTimeoutError, setLLMProviderForTest, type LLMProvider } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { redactText } from "@/lib/pii";
