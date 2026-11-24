@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join, normalize } from "node:path";
 import { describe, expect, it } from "vitest";
 
 /** Seam: nothing a browser component imports may reach the Prisma client (ticket #36). */
@@ -10,34 +10,46 @@ function files(dir: string): string[] {
   });
 }
 
-function resolve(spec: string): string | null {
-  const base = spec.replace(/^@\//, "");
-  for (const c of [`${base}.ts`, `${base}.tsx`, join(base, "index.ts")]) if (existsSync(c)) return c;
+function resolve(spec: string, fromFile: string): string | null {
+  const base = spec.startsWith("@/") ? spec.slice(2) : spec.startsWith(".") ? join(dirname(fromFile), spec) : null;
+  if (base === null) return null; // a package, not our source
+  for (const c of [`${base}.ts`, `${base}.tsx`, join(base, "index.ts")]) if (existsSync(c)) return normalize(c);
   return null;
 }
 
-/** Every "@/..." module reachable from `file`, following value and type imports alike. */
+// one match per import/export statement, so "import type" is judged per statement
+const STATEMENT = /^\s*(import|export)\s+(type\s+)?[^;]*?from\s+["']([^"']+)["']/gm;
+const DYNAMIC = /import\(\s*["']([^"']+)["']\s*\)/g;
+
+/** Every source module reachable from `file` through value imports, re-exports and dynamic imports. */
 function reachable(file: string, seen = new Set<string>()): Set<string> {
-  if (seen.has(file)) return seen;
-  seen.add(file);
+  const key = normalize(file);
+  if (seen.has(key)) return seen;
+  seen.add(key);
   const src = readFileSync(file, "utf8");
-  for (const m of src.matchAll(/from\s+["'](@\/[^"']+)["']/g)) {
-    // type-only imports are erased at build time and cannot pull Prisma into a bundle
-    const stmt = src.slice(src.lastIndexOf("import", m.index), m.index);
-    if (/^import\s+type\b/.test(stmt)) continue;
-    const r = resolve(m[1]);
+  const specs = [
+    ...[...src.matchAll(STATEMENT)].filter((m) => !m[2]).map((m) => m[3]), // type-only is erased at build time
+    ...[...src.matchAll(DYNAMIC)].map((m) => m[1]),
+  ];
+  for (const spec of specs) {
+    const r = resolve(spec, file);
     if (r) reachable(r, seen);
   }
   return seen;
 }
 
+const reachesPrisma = (f: string) => [...reachable(f)].some((m) => /lib[\\/]prisma\.ts$/.test(m));
+
 describe("client bundle boundary", () => {
+  it("the walker does see Prisma through relative imports (positive control)", () => {
+    expect(reachesPrisma("lib/session/index.ts")).toBe(true); // index.ts → "./shield" → "@/lib/prisma"
+  });
+
   it("no 'use client' module can reach @/lib/prisma", () => {
     const clientFiles = [...files("app"), ...files("components")].filter((f) =>
-      readFileSync(f, "utf8").trimStart().startsWith('"use client"'),
+      /^\s*["']use client["']/.test(readFileSync(f, "utf8")),
     );
     expect(clientFiles.length).toBeGreaterThan(5);
-    const offenders = clientFiles.filter((f) => [...reachable(f)].some((m) => /lib[\\/]prisma\.ts$/.test(m)));
-    expect(offenders).toEqual([]);
+    expect(clientFiles.filter(reachesPrisma)).toEqual([]);
   });
 });
