@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { StrStatusResponse } from "@/contracts";
+import { DEMO_SIMULATION_LABEL, type StrStatusResponse } from "@/contracts";
 import { CAST } from "@/lib/cast";
 
 /**
@@ -49,9 +49,14 @@ export function StrDraftCard({ caseId }: { caseId: string }) {
 
   return (
     <section aria-labelledby={`str-${caseId}`} className="space-y-3 rounded-xl border border-slate-700 bg-slate-900 p-5">
-      <h3 id={`str-${caseId}`} className="text-base font-bold text-white">
-        Báo cáo giao dịch đáng ngờ (bản nháp)
-      </h3>
+      <div className="flex flex-wrap items-center gap-2">
+        <h3 id={`str-${caseId}`} className="text-base font-bold text-white">
+          Báo cáo giao dịch đáng ngờ (bản nháp)
+        </h3>
+        <span className="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-900">
+          {DEMO_SIMULATION_LABEL}
+        </span>
+      </div>
       {str.confirmedAt ? (
         <p role="status" className="text-sm font-semibold text-emerald-300">
           Đã xác nhận gửi lúc{" "}

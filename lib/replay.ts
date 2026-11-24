@@ -9,6 +9,7 @@ import {
 import case01 from "@/data/replays/scan-CASE-01.json";
 import warroomCase01 from "@/data/replays/warroom-CASE-01.json";
 import { formatReplayNoticeVi, replayModelLabelAt } from "@/lib/replay-label";
+import { scrubTippingOff } from "@/lib/str";
 import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/session/shield";
 
 /**
@@ -84,5 +85,13 @@ export function loadWarRoomReplay(scenarioCode: string): { debate: WarRoomDebate
   const parsed = PresetCodeSchema.safeParse(scenarioCode);
   const record = parsed.success ? WARROOM_REPLAY_RECORDS[parsed.data] : undefined;
   if (!record) return null;
-  return { debate: { ...record.debate, model_used: replayModelLabelAt(record) } };
+  const debate = record.debate;
+  return {
+    debate: {
+      ...debate,
+      model_used: replayModelLabelAt(record),
+      // #7: replays never pass the live synthesis guardrail, so scrub the CSKH card here too
+      synthesis: { ...debate.synthesis, cskh_empathetic_card: scrubTippingOff(debate.synthesis.cskh_empathetic_card) },
+    },
+  };
 }

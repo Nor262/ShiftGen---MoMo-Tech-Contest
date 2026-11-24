@@ -54,6 +54,17 @@ describe("no tipping-off (Luật PCRT Điều 40.2)", () => {
     expect(mentionsReporting("Tiền của bác vẫn an toàn trong ví")).toBe(false);
   });
 
+  it("catches other ways of saying it, including English", () => {
+    for (const t of ["Đã chuyển hồ sơ sang Cục PCRT", "Bên em đã thông báo cơ quan chức năng", "We reported this to the AML unit", "a suspicious transaction report was filed"]) {
+      expect(mentionsReporting(t), t).toBe(true);
+    }
+  });
+
+  it("does not strip ordinary care lines that use 'báo cáo' in another sense", () => {
+    expect(mentionsReporting("Em sẽ báo cáo cho bác kết quả kiểm tra ngay khi có.")).toBe(false);
+    expect(mentionsReporting("Bác có thể trình báo ở Công an xã/phường gần nhất.")).toBe(false);
+  });
+
   it("removes such lines from the CSKH card and tells agents not to say it", () => {
     const card = scrubTippingOff({
       customer_anxiety_level: "HIGH",
@@ -87,6 +98,12 @@ describe("customer-facing surfaces never reveal reporting", () => {
     const surfaces = [...files("components/b2c"), ...files("components/story"), ...files("app/(b2c)"), ...files("app/(family)"), ...files("lib/story")];
     const offenders = surfaces.filter((f) => mentionsReporting(readFileSync(f, "utf8")));
     expect(offenders).toEqual([]);
+  });
+
+  it("a replayed War-Room result gets the same scrub (it never passes the live guardrail)", () => {
+    const card = loadWarRoomReplay("CASE-01")!.debate.synthesis.cskh_empathetic_card;
+    expect(card.do_not_say_vi.some((x) => /Điều 40\.2/.test(x))).toBe(true);
+    expect(card.empathetic_openers_vi.some(mentionsReporting)).toBe(false);
   });
 
   it("the CSKH card of a War-Room result is scrubbed by the synthesis guardrail", async () => {

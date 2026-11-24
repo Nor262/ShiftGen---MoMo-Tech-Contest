@@ -14,8 +14,8 @@ export const dynamic = "force-dynamic";
  * GET: draft + legal deadline. POST: a B2E person confirms the (simulated) submission. Nothing is
  * ever sent automatically and nothing leaves the demo.
  */
-// shortcut: "phát hiện" = when the case was concluded (case.updatedAt at CLOSED); store an explicit
-// detectedAt if cases can be edited after closing.
+// "phát hiện" = when the Checker approved the Kết luận rủi ro cao (IMMUNITY_APPROVED audit for this
+// case's indicator); falls back to case.updatedAt only when no approval row exists.
 const B2E_ROLES = new Set(["RISK_MAKER", "RISK_CHECKER"]);
 const FRAUD_CATEGORIES = new Set([
   "POLICE_IMPERSONATION",
@@ -62,7 +62,17 @@ async function loadStatus(demoSessionId: string, caseId: string) {
   })();
   // Lừa đảo chiếm đoạt tài sản is itself a criminal sign (Điều 37.3); a legit/unknown category is not.
   const criminalSigns = FRAUD_CATEGORIES.has(minute0?.scam_category ?? "");
-  const detectedAt = c.updatedAt;
+  const indicator = await prisma.immunityIndicator.findFirst({
+    where: { demoSessionId, caseId },
+    select: { indicatorId: true },
+  });
+  const approval = indicator
+    ? await prisma.auditLog.findFirst({
+        where: { demoSessionId, action: "IMMUNITY_APPROVED", targetId: indicator.indicatorId },
+        orderBy: { createdAt: "asc" },
+      })
+    : null;
+  const detectedAt = approval?.createdAt ?? c.updatedAt;
   const occurredAt = tx?.createdAt ?? c.createdAt;
   const d = computeStrDeadline({ detectedAt, occurredAt, criminalSigns });
   const draftVi = [
@@ -166,21 +176,33 @@ export async function POST(request: Request, context: { params: Promise<{ caseId
       );
     }
 
-    await prisma.auditLog.create({
-      data: {
-        demoSessionId,
-        actorId: parsed.data.actorId,
-        actorRole: parsed.data.actorRole,
-        action: "STR_SUBMISSION_CONFIRMED",
-        targetId: caseId,
-        rationale: `Xác nhận gửi báo cáo giao dịch đáng ngờ (${DEMO_SIMULATION_LABEL} — không gửi thật). Hạn: ${loaded.status.basisVi}.`,
-        metadataJson: JSON.stringify({
-          deadline: loaded.status.deadline,
-          basis: loaded.status.basis,
-          overdueAtConfirmation: loaded.status.overdue,
-        }),
-      },
-    });
+    try {
+      await prisma.auditLog.create({
+        data: {
+          // one confirmation per case, even under simultaneous clicks: a fixed id makes the 2nd insert fail
+          logId: `str-confirm-${demoSessionId}-${caseId}`,
+          demoSessionId,
+          actorId: parsed.data.actorId,
+          actorRole: parsed.data.actorRole,
+          action: "STR_SUBMISSION_CONFIRMED",
+          targetId: caseId,
+          rationale: `Xác nhận gửi báo cáo giao dịch đáng ngờ (${DEMO_SIMULATION_LABEL} — không gửi thật). Hạn: ${loaded.status.basisVi}.`,
+          metadataJson: JSON.stringify({
+            deadline: loaded.status.deadline,
+            basis: loaded.status.basis,
+            overdueAtConfirmation: loaded.status.overdue,
+          }),
+        },
+      });
+    } catch (e) {
+      if ((e as { code?: string }).code === "P2002") {
+        return NextResponse.json(
+          { error: "Báo cáo của vụ này đã được xác nhận gửi.", code: "ALREADY_CONFIRMED" },
+          { status: 409 },
+        );
+      }
+      throw e;
+    }
     const after = await loadStatus(demoSessionId, caseId);
     return NextResponse.json(StrStatusResponseSchema.parse(after!.status));
   } catch (err) {

@@ -82,6 +82,25 @@ describe("STR draft and deadline", () => {
     expect(log?.targetId).toBe(closedCaseId);
   });
 
+  it("two simultaneous confirmations record exactly one submission", async () => {
+    const tx2 = await prisma.investigationCase.create({
+      data: {
+        demoSessionId: sessionId,
+        scenarioCode: "CASE-01",
+        title: "t2",
+        subtitle: "s",
+        status: "CLOSED",
+        graphDataJson: JSON.stringify({ nodes: [], edges: [] }),
+        caseContextJson: "{}",
+      },
+    });
+    const body = { actorId: "RISK_CHECKER_TUAN", actorRole: "RISK_CHECKER" };
+    const [a, b] = await Promise.all([postStr(req(tx2.caseId, body), ctx(tx2.caseId)), postStr(req(tx2.caseId, body), ctx(tx2.caseId))]);
+    expect([a.status, b.status].sort()).toEqual([200, 409]);
+    const rows = await prisma.auditLog.count({ where: { demoSessionId: sessionId, action: "STR_SUBMISSION_CONFIRMED", targetId: tx2.caseId } });
+    expect(rows).toBe(1);
+  });
+
   it("refuses to confirm a case without a Kết luận rủi ro cao", async () => {
     const res = await postStr(req(openCaseId, { actorId: "RISK_MAKER_HUYEN", actorRole: "RISK_MAKER" }), ctx(openCaseId));
     expect(res.status).toBe(409);

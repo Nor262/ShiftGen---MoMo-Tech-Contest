@@ -261,7 +261,7 @@ export function ScanResultPanel({
             </div>
             <div>
               <span className="block text-xs text-slate-500">Nguồn xác minh độc lập</span>
-              {/* Q37: B2C sees only the count — source names are internal (nothing that reveals reporting, AML Art. 40.2). */}
+              {/* Q37: B2C sees only the count — source names are internal (nothing that reveals reporting, Luật PCRT Điều 40.2). */}
               <strong className="text-slate-900">
                 Dấu hiệu rủi ro cao · {immunityHit.evidenceSources.length} nguồn
               </strong>

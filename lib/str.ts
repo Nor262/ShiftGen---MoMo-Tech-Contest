@@ -33,8 +33,21 @@ export function computeStrDeadline(input: { detectedAt: Date; occurredAt: Date; 
 }
 
 // Điều 40.2: nothing shown to the customer or CSKH may reveal that a report was (or will be) filed.
-const REPORTING_PATTERN =
-  /báo cáo (giao dịch )?(đáng ngờ|lên|cho|tới) ?(nhnn|ngân hàng nhà nước|cơ quan|cục)?|giao dịch đáng ngờ|cục phòng,? chống rửa tiền|\bSTR\b|đã báo cáo|rửa tiền/i;
+// Matches reporting to an authority, not every "báo cáo" (e.g. "báo cáo cho bác kết quả" is fine)
+// and not the victim's own police report ("trình báo"), which is their right.
+const AUTHORITY = "(nhnn|ngân hàng nhà nước|cơ quan chức năng|cơ quan có thẩm quyền|cục (pcrt|phòng,? chống rửa tiền))";
+const REPORTING_PATTERN = new RegExp(
+  [
+    "giao dịch đáng ngờ",
+    "\\bSTR\\b",
+    "rửa tiền",
+    "cục pcrt",
+    `(báo cáo|thông báo|chuyển (hồ sơ|vụ)|gửi (hồ sơ|báo cáo))[^.\\n]{0,40}${AUTHORITY}`,
+    `${AUTHORITY}[^.\\n]{0,20}(đã|được) (nhận|báo cáo|thông báo)`,
+    "\\b(reported|filed a report|suspicious (activity|transaction)|aml)\\b",
+  ].join("|"),
+  "i",
+);
 
 export function mentionsReporting(text: string): boolean {
   return REPORTING_PATTERN.test(text);
