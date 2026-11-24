@@ -26,10 +26,10 @@ TrustLoop **không làm lại** những gì NHNN và MoMo đã vận hành. Ngu�
 | :--- | :--- |
 | **SIMO (NHNN):** chia sẻ, tra cứu, cảnh báo tài khoản/ví nghi ngờ gian lận liên ngân hàng tại bước chuyển tiền. | **Phút 00:** bắt kịch bản thao túng ngay từ ảnh chat, khi tài khoản nhận tiền còn "sạch" và chưa nằm trong danh sách nào. |
 | **MoMo:** cảnh báo tài khoản nhận tiền bằng AI (3 mức màu), phân tích >1.000 tín hiệu/giao dịch, ~29.000 giao dịch bất thường/ngày, 99,5% người nhận cảnh báo "dừng lại suy nghĩ" (không phải tỷ lệ hủy), Graph Network tài khoản–thiết bị–IP, phản ánh của người dùng. | **Bảo vệ 24h** do người dùng tự bật, có Thông báo trung tính và quyền tự hủy. |
-| **MoMo:** "Bảo hiểm An toàn chuyển tiền" bồi thường tối đa 2 triệu đồng *(điều khoản sản phẩm, chưa có URL chính thức trong repo)*. | **Quy trình Khiếu nại và người thật xem lại minh bạch** (Lớp 4, Yêu cầu xét lại tạm giữ) — phần SIMO chưa công khai. |
+| **MoMo:** "Bảo hiểm An toàn chuyển tiền" bồi thường tối đa 2.000.000đ/giao dịch, chỉ cho giao dịch từ 10.000đ đến 2.000.000đ, sau khi đã mất (https://www.momo.vn/tin-tuc/thong-bao/momo-ra-mat-bao-hiem-an-toan-chuyen-tien-boi-9119 · MoMo · 09/11/2026). | **Quy trình Khiếu nại và người thật xem lại minh bạch** (Lớp 4, Yêu cầu xét lại tạm giữ) — phần SIMO chưa công khai. |
 | Báo cáo người dùng, phân tích đồ thị ví trung gian (MoMo, nTrust, chongluadao.vn). | **Người giám hộ** nhận thẻ đã Ẩn PII **trước** khi tiền đi — là **giả thuyết** cần đo trong pilot (xem [mục 10](#10-lộ-trình)). |
 
-> **Câu chốt pitch (slide Giải pháp):** *"Bảo hiểm bù 2 triệu sau khi mất, TrustLoop giữ lại 15 triệu trước khi mất."*
+> **Câu chốt pitch (slide Giải pháp):** *"Bảo hiểm bù tối đa 2 triệu sau khi mất. TrustLoop giữ lệnh 9,5 triệu trước khi mất."* (Lệnh 9,5 triệu của CASE-01 vượt mức giao dịch được bảo hiểm.)
 
 **Dòng thời gian một vụ lừa:**
 - **Phút 00** — người dùng bắt đầu nghi ngờ một tin nhắn/đường link, trước khi chuyển tiền.
@@ -149,7 +149,7 @@ Bốn lớp dưới đây là **thiết kế quản trị của TrustLoop**, kh�
 | 4 AI Agent + `False-Positive Defender` + Validate JSON Schema | **Chạy thật online** | Đo `latency_ms` từng Agent. |
 | Đồ thị dòng tiền + Maker → Checker + TTL + Khiếu nại/Thu hồi + Giải phóng khi hết hạn/Minh oan | **Chạy thật online** | Lưu trạng thái thật vào CSDL theo phiên demo. |
 | Cổng thanh toán, API SIMO thật, lịch sử giao dịch 3 nhân vật | **Mô phỏng (`MẪU MÔ PHỎNG`)** | Dữ liệu tổng hợp, khai báo trong `README`. |
-| Hạ tầng & mô hình AI | **Độc lập nhà cung cấp** qua `LLMProvider` (`bedrock` / `gemini` / `openai`) | Hiện chạy Vercel + Gemini. *Kế hoạch (bắt buộc cho cuộc thi):* chuyển sang **AWS Sandbox** — `LLM_BACKEND=bedrock`, Docker trên EC2/Amplify `ap-southeast-1`; giữ Vercel làm bản dự phòng. |
+| Hạ tầng & mô hình AI | **Độc lập nhà cung cấp** qua `LLMProvider` (`bedrock` / `gemini` / `openai`) | Hiện chạy Vercel + FPT AI Factory (`gemma-4-31B-it`, `Qwen3.8-27B`). *Kế hoạch (bắt buộc cho cuộc thi, chờ BTC cấp quyền, #17):* chuyển sang **AWS Sandbox** — `LLM_BACKEND=bedrock`, Docker trên EC2/Amplify `ap-southeast-1`; giữ Vercel làm bản dự phòng. |
 
 ---
 
@@ -218,15 +218,17 @@ Người giám hộ là **giả thuyết**. Đề xuất đo trong pilot: (1) t�
 
 ## 11. Dàn ý Slide 10 Trang (PDF cố định cho cả Sơ khảo & Chung kết)
 
+> **Bản đã xuất:** [pitch/TrustLoop-pitch.pdf](./pitch/TrustLoop-pitch.pdf), nguồn HTML [pitch/trustloop-pitch.html](./pitch/trustloop-pitch.html), xuất lại bằng `node scripts/export-pitch.mjs`.
+>
 > *Nguyên tắc: tối đa 10 trang PDF (không sửa sau hạn 03/12/2026), mỗi trang 1 câu chốt, câu chuyện **Bác Hùng** xuyên suốt Slide 2–9, mọi số liệu có dòng nguồn ở chân trang và lấy từ mục 3.1.*
 
 1. **Slide 1 — Trang bìa MoMo TrustLoop:** *Khép kín vòng phòng vệ niềm tin số: từ ảnh chat Zalo Phút 00 đến đội điều tra 4 Agent và Miễn dịch Cộng đồng có kiểm soát.*
 2. **Slide 2 — Điểm mù Phút 00–88 qua câu chuyện Bác Hùng:** *Sinh trắc học chứng minh đúng người đang thao tác, nhưng không chứng minh người đó không bị thao túng: Bác Hùng tự quét mặt chuyển tiền ở Phút 89 sau 88 phút bị thao túng trên Zalo.* *(Nguồn: MoMo 05/2026; NCA 01/2026; Bộ Công an qua SGGP 12/2025 và NCA 12/2024 — ghi rõ hai phương pháp).*
 3. **Slide 3 — Đã có gì và còn thiếu gì:** *SIMO và MoMo đã cảnh báo tài khoản nhận tiền rất tốt; khoảng trống còn lại là Phút 00 khi tài khoản còn "sạch" và một quy trình khiếu nại minh bạch.* *(Nguồn: CafeF/NHNN 10/2026; MoMo 05/2026; NCA 01/2026 — 32,12% trình báo).*
-4. **Slide 4 — Giải pháp: Vòng lặp 4 Nhịp MoMo TrustLoop:** *"Bảo hiểm bù 2 triệu sau khi mất, TrustLoop giữ lại 15 triệu trước khi mất."*
+4. **Slide 4 — Giải pháp: Vòng lặp 4 Nhịp MoMo TrustLoop:** *"Bảo hiểm bù tối đa 2 triệu sau khi mất. TrustLoop giữ lệnh 9,5 triệu trước khi mất."*
 5. **Slide 5 — Trụ cột 1 (B2C): Quét Ảnh Phút 00 & Bảo vệ 24h:** *AI chỉ ra lệnh giả ngay trước khi Bác Hùng chuyển tiền; Tạm giữ chỉ xảy ra vì chính Bác đã bật Bảo vệ 24h, và Bác luôn tự hủy được.*
 6. **Slide 6 — Trụ cột 2 (B2E): Phòng Tác chiến 4 Agent có Tranh biện:** *4 AI Agent gom Bằng chứng Phút 00, vẽ đồ thị chia nhỏ lệnh 9,5 triệu và tranh biện hai chiều để Chuyên viên con người ra phán quyết.*
 7. **Slide 7 — AI Không Chỉ Biết Chặn: 3 Kịch bản:** *Độ tin cậy của AI được đo bằng khả năng Minh oan cho Chị Hoa ngang bằng khả năng bắt đường dây lừa Bác Hùng và APK giả.*
 8. **Slide 8 — Trụ cột 3: Miễn dịch Cộng đồng có trách nhiệm:** *Thiết kế quản trị 4 lớp của TrustLoop: Cảnh báo mềm → ≥2 nguồn khác loại & Maker–Checker → TTL → Khiếu nại do người thật xét & Thu hồi.* *(Căn cứ khiếu nại: Luật 91 Điều 19.2; TT 53/2026 — người thật xem xét lại quyết định tự động bị khiếu nại [nguồn báo chí, chưa xác minh điều khoản]).*
-9. **Slide 9 — Kiến trúc, Ranh giới Thật/Mô phỏng & Số đo Thực tế:** *Kiến trúc độc lập hạ tầng, chạy trên AWS, minh bạch phần chạy thật và chỉ báo cáo thời gian phản hồi đo trực tiếp.* *(Điền số đo thật trước khi xuất PDF).*
+9. **Slide 9 — Kiến trúc, Ranh giới Thật/Mô phỏng & Số đo Thực tế:** *Kiến trúc độc lập nhà cung cấp, hiện chạy trên Vercel + FPT AI Factory (Bedrock chờ BTC), minh bạch phần chạy thật và chỉ báo cáo thời gian phản hồi đo trực tiếp.* *(Số đo từ [MEASURED_LATENCIES.md](./MEASURED_LATENCIES.md).)*
 10. **Slide 10 — Tác động, Tuân thủ & Lộ trình:** *Thu hẹp điểm mù Phút 00–88, nâng năng suất Risk/CSKH, căn cứ pháp lý đã đối chiếu (TT 40/2024, Luật PCRT 2022, Luật 91/2025, Luật 134/2025), pilot Người giám hộ với KPI đo được.*

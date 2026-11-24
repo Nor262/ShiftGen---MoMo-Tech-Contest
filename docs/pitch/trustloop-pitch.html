@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>MoMo TrustLoop — Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap&subset=vietnamese" rel="stylesheet">
+<style>
+  /* Tokens from DESIGN.md */
+  :root {
+    --navy:#111a4a; --ink:#3b3e47; --steel:#5b5e68; --line:#e3e4e8; --canvas:#f6f6f8; --surface:#fff;
+    --blue:#0b57d0; --cyan:#00d8f8; --sea:#13705f; --sea-wash:#e8f6f1;
+    --signal:#c2410c; --signal-bright:#ec652b; --signal-wash:#fdf0e9; --amber:#8a5a00; --amber-wash:#fdf6e3;
+    --midnight:#011821;
+    --sans:"Be Vietnam Pro",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #d9dae0; }
+  body { font-family: var(--sans); color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .slide {
+    width: 1280px; height: 720px; margin: 0 auto 24px; background: var(--canvas); position: relative; overflow: hidden;
+    padding: 48px 64px 0; display: flex; flex-direction: column; page-break-after: always; break-after: page;
+  }
+  @media print { html, body { background: none; } .slide { margin: 0; } }
+  .kicker { font-size: 15px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--blue); margin: 0 0 10px; }
+  h1 { font-size: 40px; line-height: 1.2; font-weight: 600; letter-spacing: -.02em; color: var(--navy); margin: 0; }
+  h2 { font-size: 22px; line-height: 1.3; font-weight: 600; color: var(--navy); margin: 0 0 8px; }
+  p { margin: 0; }
+  .lead { font-size: 21px; line-height: 1.5; margin-top: 14px; max-width: 1080px; }
+  .body { flex: 1; display: flex; gap: 28px; margin-top: 28px; min-height: 0; }
+  .col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .card { background: var(--surface); border-radius: 8px; padding: 20px 22px;
+    box-shadow: rgba(18,22,30,.05) 0 1px 0, rgba(18,22,30,.024) 0 0 0 1px, rgba(18,22,30,.024) 0 1px 4px; }
+  .card p, .card li { font-size: 17px; line-height: 1.5; }
+  ul { margin: 0; padding-left: 20px; } li + li { margin-top: 6px; }
+  .num { font-family: var(--mono); color: var(--sea); font-weight: 500; }
+  .card .big, .big { font-size: 34px; font-weight: 600; color: var(--navy); line-height: 1.2; letter-spacing: -.01em; }
+  .card .big.sea, .big.sea { color: var(--sea); font-family: var(--mono); font-weight: 500; font-size: 30px; }
+  .tight .card { padding: 14px 18px; } .tight .col { gap: 12px; } .tight .card p, .tight .card li { font-size: 16px; }
+  .metric { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .metric .big.sea { font-size: 26px; }
+  td.m { font-family: var(--mono); font-size: 14px; white-space: nowrap; }
+  .signal { background: var(--signal-wash); border-left: 4px solid var(--signal); }
+  .signal .big { color: var(--signal); }
+  .tag { display: inline-block; border-radius: 9999px; padding: 3px 12px; font-size: 14px; font-weight: 600; }
+  .tag.demo { background: var(--amber-wash); color: var(--amber); border: 1px solid #e8c77a; }
+  .tag.real { background: var(--sea-wash); color: var(--sea); }
+  .tag.sim { background: var(--amber-wash); color: var(--amber); }
+  .shot { width: 100%; border-radius: 8px; border: 1px solid var(--line); display: block; }
+  .foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
+    border-top: 1px solid var(--line); margin-top: 20px; padding: 10px 0 16px; font-size: 13px; line-height: 1.45; color: var(--steel); }
+  .foot .src { flex: 1; }
+  .foot .pg { font-family: var(--mono); white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 16px; }
+  th { text-align: left; font-weight: 600; color: var(--navy); font-size: 14px; padding: 8px 10px; border-bottom: 2px solid var(--line); }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.4; }
+  td.r { text-align: right; }
+  .quote { font-size: 24px; line-height: 1.45; font-weight: 500; color: var(--navy); }
+  /* timeline */
+  .tl { display: grid; grid-template-columns: 1fr 1.6fr 1fr 1fr; gap: 0; margin-top: 6px; }
+  .tl div { padding: 16px 18px; border-top: 6px solid var(--line); }
+  .tl b { display: block; font-family: var(--mono); font-size: 20px; color: var(--navy); margin-bottom: 6px; }
+  .tl span { font-size: 16px; line-height: 1.45; }
+  .tl .on { border-top-color: var(--blue); } .tl .hot { border-top-color: var(--signal-bright); }
+  /* loop */
+  .loop { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .step { background: var(--surface); border-radius: 8px; padding: 18px; border-top: 4px solid var(--navy);
+    box-shadow: rgba(18,22,30,.05) 0 1px 0, rgba(18,22,30,.024) 0 0 0 1px; }
+  .step .n { font-family: var(--mono); font-size: 14px; color: var(--blue); }
+  .step h2 { font-size: 20px; margin: 4px 0 6px; }
+  .step p { font-size: 15.5px; line-height: 1.45; }
+  .step .who { font-size: 14px; color: var(--steel); margin-top: 8px; }
+  .layers { display: flex; flex-direction: column; gap: 10px; }
+  .layer { display: flex; gap: 14px; align-items: baseline; background: var(--surface); border-radius: 8px; padding: 14px 18px;
+    box-shadow: rgba(18,22,30,.05) 0 1px 0, rgba(18,22,30,.024) 0 0 0 1px; }
+  .layer b { font-family: var(--mono); color: var(--blue); font-size: 15px; min-width: 64px; }
+  .layer span { font-size: 17px; line-height: 1.45; }
+  /* cover */
+  .cover { background: var(--navy); color: #fff; padding: 64px 72px 0; }
+  .cover h1 { color: #fff; font-size: 64px; font-weight: 700; line-height: 1.15; }
+  .cover .lead { color: #d7dbef; font-size: 24px; max-width: 980px; }
+  .cover .foot { border-top-color: rgba(255,255,255,.18); color: #b8bdd8; }
+  .cover .stripe { position: absolute; right: -80px; top: -80px; width: 420px; height: 420px; border-radius: 50%;
+    border: 2px solid var(--cyan); opacity: .35; }
+  .cover .mark { display: flex; align-items: center; gap: 14px; }
+  .cover .mark img { height: 48px; border-radius: 8px; }
+  .dark { background: var(--midnight); color: #e6e8ef; }
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="slide cover">
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="mark"><img src="../brand/shiftgen-logo.jpg" alt="ShiftGen"><span style="font-size:18px;font-weight:500">ShiftGen · MoMo Tech Contest 2026</span></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center">
+    <p class="kicker" style="color:var(--cyan)">Human Centered. AI Powered.</p>
+    <h1>MoMo TrustLoop</h1>
+    <p class="lead">Khép kín vòng phòng vệ niềm tin số: từ ảnh chat Zalo ở Phút 00 đến đội điều tra 4 Agent và Miễn dịch Cộng đồng có kiểm soát.</p>
+    <p style="margin-top:28px;font-size:18px;color:#d7dbef">Demo trực tuyến: <span style="font-family:var(--mono);color:#fff">momo-trustloop.vercel.app/story</span></p>
+  </div>
+  <div class="foot"><span class="src">Bài dự thi, không phải sản phẩm chính thức của MoMo. Mọi nhân vật, tài khoản và kịch bản là MẪU MÔ PHỎNG.</span><span class="pg">01 / 10</span></div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <p class="kicker">Vấn đề · câu chuyện Bác Hùng</p>
+  <h1>Sinh trắc học chứng minh đúng người, không chứng minh người đó không bị thao túng</h1>
+  <p class="lead">Bác Hùng, 62 tuổi, bị giả danh công an trên Zalo. Sau 88 phút bị dọa, Bác tự quét mặt và chuyển tiền ở Phút 89: mọi lớp xác thực đều “đúng”.</p>
+  <div class="body" style="flex-direction:column;gap:22px">
+    <div class="tl">
+      <div class="on"><b>Phút 00</b><span>Bác bắt đầu nghi ngờ một tin nhắn, chưa mở ví</span></div>
+      <div><b>Phút 00–88</b><span>Điểm mù: Zalo, mạng xã hội, cuộc gọi. Ứng dụng ví không thấy gì</span></div>
+      <div><b>Phút 89</b><span>Mở ví chuyển tiền: khoảnh khắc duy nhất ví quan sát được</span></div>
+      <div class="hot"><b>Phút 90+</b><span>Tiền rời ví, bị tẩu tán qua tài khoản trung gian</span></div>
+    </div>
+    <div style="display:flex;gap:16px">
+      <div class="card" style="flex:1"><p class="big">&gt;6.000 tỷ đ</p><p>thiệt hại 11 tháng 2025, theo số vụ Bộ Công an thụ lý</p></div>
+      <div class="card" style="flex:1"><p class="big">18.900 tỷ đ</p><p>ước tính năm 2024 từ khảo sát NCA (~59.000 người). Hai phương pháp khác nhau, không cộng dồn</p></div>
+      <div class="card" style="flex:1"><p class="big">#1 · 32,12%</p><p>Mạo danh công an là thủ đoạn phổ biến nhất 2025; chỉ 32,12% nạn nhân trình báo</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Nguồn: SGGP trích Bộ Công an, 12/2025 · Tuổi Trẻ trích NCA, 16/12/2024 · VietNamNet trích khảo sát NCA (n = 60.300), 07/01/2026. Chi tiết: docs/RESEARCH_PROBLEM.md.</span><span class="pg">02 / 10</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <p class="kicker">Đã có gì, còn thiếu gì</p>
+  <h1>SIMO và MoMo đã cảnh báo tốt ở Phút 89. Khoảng trống là Phút 00</h1>
+  <div class="body tight">
+    <div class="col">
+      <h2>Đã có, TrustLoop không làm lại</h2>
+      <div class="card"><p><b>SIMO (NHNN):</b> đến 28/9/2026 <span class="num">&gt;5,6 triệu</span> lượt cảnh báo, <span class="num">&gt;1,9 triệu</span> lượt dừng/hủy giao dịch. “Dừng/hủy” chưa phải “đã chặn lừa đảo thật”.</p></div>
+      <div class="card"><p><b>MoMo:</b> AI phát hiện <span class="num">~29.000</span> giao dịch bất thường/ngày; <span class="num">99,5%</span> người nhận cảnh báo “dừng lại suy nghĩ”.</p></div>
+      <div class="card"><p><b>Bảo hiểm An toàn chuyển tiền (MoMo):</b> bồi thường tối đa <span class="num">2.000.000đ</span>/giao dịch, cho giao dịch từ 10.000đ đến 2.000.000đ, sau khi đã mất.</p></div>
+    </div>
+    <div class="col">
+      <h2>TrustLoop bổ sung</h2>
+      <div class="card signal"><p><b>Phút 00:</b> đọc ảnh chat ngay khi tài khoản nhận tiền còn “sạch”, chưa nằm trong danh sách nào.</p></div>
+      <div class="card"><p><b>Bảo vệ 24h do chính người dùng bật:</b> Tạm giữ giao dịch rủi ro cao, thông báo trung tính, luôn tự hủy được.</p></div>
+      <div class="card"><p><b>Người giám hộ</b> thấy thẻ đã Ẩn PII <i>trước</i> khi tiền đi. Đây là giả thuyết, cần đo trong pilot.</p></div>
+      <div class="card"><p><b>Khiếu nại có người thật xem lại</b> và quản trị Chỉ báo minh bạch, phần SIMO chưa công khai.</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Nguồn: CafeF trích họp báo NHNN, 07/10/2026 · Thông cáo MoMo, 14/05/2026 · momo.vn/tin-tuc/thong-bao/momo-ra-mat-bao-hiem-an-toan-chuyen-tien-boi-9119 (MoMo, 09/11/2026).</span><span class="pg">03 / 10</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <p class="kicker">Giải pháp · Vòng lặp 4 nhịp</p>
+  <h1>Bảo hiểm bù tối đa 2 triệu sau khi mất. TrustLoop giữ lệnh 9,5 triệu trước khi mất</h1>
+  <p class="lead">Lệnh 9,5 triệu của Bác Hùng vượt mức giao dịch được bảo hiểm. Kẻ gian bắt Bác chia 38 triệu thành 4 lệnh 9,5 triệu để né ngưỡng xác thực sinh trắc học; TrustLoop Tạm giữ ngay lệnh đầu tiên.</p>
+  <div class="body" style="flex-direction:column;justify-content:center">
+    <div class="loop">
+      <div class="step"><span class="n">01 · Phút 00</span><h2>Phát hiện</h2><p>AI đọc ảnh chat, chỉ ra đòn thao túng tâm lý và link APK giả.</p><p class="who">Người dùng · B2C</p></div>
+      <div class="step" style="border-top-color:var(--signal-bright)"><span class="n">02 · Phút 89</span><h2>Tạm giữ</h2><p>Bảo vệ 24h giữ lệnh rủi ro cao; Người giám hộ nhận thẻ đã Ẩn PII và Chuyển cấp.</p><p class="who">Người dùng · Người giám hộ</p></div>
+      <div class="step"><span class="n">03 · Phút 90+</span><h2>Điều tra</h2><p>4 Agent truy vết, đối chiếu và tranh biện; con người ra phán quyết.</p><p class="who">Đội Risk · CSKH · B2E</p></div>
+      <div class="step"><span class="n">04 · Hôm sau</span><h2>Bảo vệ người khác</h2><p>Maker → Checker bật Chỉ báo có TTL; người khác nhập trúng tài khoản được cảnh báo.</p><p class="who">Cộng đồng</p></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Phạm vi bảo hiểm: momo.vn/tin-tuc/thong-bao/momo-ra-mat-bao-hiem-an-toan-chuyen-tien-boi-9119 (MoMo, 09/11/2026). Số tiền CASE-01 là MẪU MÔ PHỎNG.</span><span class="pg">04 / 10</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <p class="kicker">Trụ cột 1 · B2C</p>
+  <h1>AI chỉ ra lệnh bắt giả trước khi Bác chuyển tiền, và Bác luôn tự hủy được</h1>
+  <div class="body tight">
+    <div class="col" style="flex:1.35">
+      <img class="shot" src="../screenshots/ticket-5/story-scan-ai-label.jpeg" alt="Chương 1: quét ảnh Zalo, rủi ro nghiêm trọng, nhãn Kết quả do AI tạo">
+    </div>
+    <div class="col">
+      <div class="card"><ul>
+        <li>Đồng ý quét tách riêng, mặc định tắt, rút lại được.</li>
+        <li>Tạm giữ chỉ xảy ra vì Bác đã tự bật Bảo vệ 24h.</li>
+        <li>Mọi kết quả có nhãn “Kết quả do AI tạo” và nút “Nhờ người thật xem xét”.</li>
+      </ul></div>
+      <div class="card signal"><p style="font-size:16px;color:var(--steel)">Thông báo trung tính, không nhân danh cơ quan nào:</p><p style="font-size:18px;font-weight:500;color:var(--navy);margin-top:6px">“Giao dịch đang được xác minh bảo mật (theo chế độ Bảo vệ 24h bạn đã thiết lập).”</p></div>
+      <div class="card"><p style="font-size:15px;color:var(--steel)">Lượt quét CASE-01, median 10 lượt</p><div class="metric"><p class="big sea">3516 ms</p><p style="font-size:15px;font-family:var(--mono);color:var(--steel)">gemma-4-31B-it</p></div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Ảnh chụp từ bản demo /story, chương 1. Số đo: docs/MEASURED_LATENCIES.md (23/11/2026).</span><span class="pg">05 / 10</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <p class="kicker">Trụ cột 2 · B2E</p>
+  <h1>4 Agent gom bằng chứng và tranh biện hai chiều; Chuyên viên con người ra phán quyết</h1>
+  <div class="body tight">
+    <div class="col" style="flex:1.35">
+      <img class="shot" src="../screenshots/ticket-21/beat-3.1.jpeg" alt="Chương 3: 4 agent đề nghị giữ tạm và cảnh báo tài khoản nhận">
+    </div>
+    <div class="col">
+      <div class="card"><ul style="font-family:var(--mono);font-size:15px">
+        <li style="margin:0 0 6px">Graph &amp; Smurfing Tracer</li><li style="margin:0 0 6px">Pre-App Evidence Correlator</li><li style="margin:0 0 6px">Compliance RAG</li><li style="margin:0 0 6px">False-Positive Defender</li>
+      </ul><p style="font-size:15px;margin-top:10px">Agent chỉ khuyến nghị (Luật 134/2025 Điều 4.2).</p></div>
+      <div class="card"><ul>
+        <li>Thẻ bàn giao CSKH trên cùng màn hình, đã lọc mọi nhắc tới việc báo cáo (Luật PCRT Điều 40.2).</li>
+        <li>Bản nháp báo cáo giao dịch đáng ngờ kèm hạn chót luật định; người có thẩm quyền xác nhận (mô phỏng).</li>
+      </ul></div>
+      <div class="card"><p style="font-size:15px;color:var(--steel)">War-Room 4 Agent CASE-01, median 10 lượt</p><div class="metric"><p class="big sea">7357 ms</p><p style="font-size:15px;font-family:var(--mono);color:var(--steel)">Qwen3.8-27B</p></div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Ảnh chụp từ bản demo /story, chương 3. Số đo: docs/MEASURED_LATENCIES.md (23/11/2026). Hạn báo cáo: Luật PCRT 2022 Điều 26, 37.</span><span class="pg">06 / 10</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <p class="kicker">Ba kịch bản · MẪU MÔ PHỎNG</p>
+  <h1>Độ tin cậy của AI đo bằng việc Minh oan đúng người, không chỉ chặn đúng người</h1>
+  <div class="body">
+    <div class="col card">
+      <span class="tag demo" style="align-self:flex-start">CASE-01 · ca chính</span>
+      <h2>Bác Hùng · giả danh công an</h2>
+      <p>“Lệnh bắt tạm giam” giả qua Zalo; 38 triệu chia thành 4 lệnh 9,5 triệu vào cụm ví trung gian dùng chung một máy Android.</p>
+      <p style="margin-top:auto;color:var(--navy);font-weight:600">→ Tạm giữ, Chuyển cấp, Maker → Checker bật Chỉ báo.</p>
+    </div>
+    <div class="col card">
+      <span class="tag demo" style="align-self:flex-start">CASE-02 · an ninh mạng</span>
+      <h2>Minh Anh · VNeID giả (.apk)</h2>
+      <p>Tin nhắn dụ cài “bản cập nhật” có quyền điều khiển từ xa và bật Accessibility Services. Tên miền hư cấu <span style="font-family:var(--mono)">.example</span>.</p>
+      <p style="margin-top:auto;color:var(--navy);font-weight:600">→ Cảnh báo bảo vệ thiết bị; 1 nguồn nên chỉ là Cảnh báo mềm.</p>
+    </div>
+    <div class="col card" style="border-top:4px solid var(--sea)">
+      <span class="tag real" style="align-self:flex-start">CASE-03 · chống chặn oan</span>
+      <h2>Chị Hoa · tiểu thương livestream</h2>
+      <p>Luật cứng gắn cờ vì 35 giao dịch nhỏ trong 1 giờ. False-Positive Defender chỉ ra 14 tháng bán hàng sạch, thiết bị chính chủ, không có Bằng chứng Phút 00.</p>
+      <p style="margin-top:auto;color:var(--sea);font-weight:600">→ Khuyến nghị Minh oan.</p>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Dữ liệu tổng hợp, không có CCCD, số điện thoại hay tài khoản thật. Thủ đoạn VNeID giả: VietnamPlus trích Bộ Công an, 2025.</span><span class="pg">07 / 10</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <p class="kicker">Trụ cột 3 · Miễn dịch Cộng đồng</p>
+  <h1>Cảnh báo người khác có kiểm soát: 4 lớp quản trị, không bao giờ công bố danh sách</h1>
+  <div class="body">
+    <div class="col layers">
+      <div class="layer"><b>Lớp 1</b><span><strong>Cảnh báo mềm</strong> khi mới có 1 nguồn bằng chứng.</span></div>
+      <div class="layer"><b>Lớp 2</b><span><strong>≥2 nguồn độc lập khác loại</strong> và <strong>Maker ≠ Checker</strong>: người đề xuất không tự duyệt.</span></div>
+      <div class="layer"><b>Lớp 3</b><span><strong>Hạn hiệu lực (TTL)</strong>: Chỉ báo tự hết hạn, không treo mãi.</span></div>
+      <div class="layer"><b>Lớp 4</b><span><strong>Khiếu nại</strong> do một Checker khác xét, rồi <strong>Thu hồi</strong>; hồ sơ vẫn lưu 05 năm (Luật PCRT Điều 38.2).</span></div>
+      <p style="font-size:15px;line-height:1.5;color:var(--steel)">Chỉ báo chỉ hiện khi giá trị người dùng nhập trùng đúng. 4 lớp là thiết kế của TrustLoop: TT 53/2026 chỉ được trích cho việc con người xem xét lại quyết định tự động bị khiếu nại.</p>
+    </div>
+    <div class="col" style="flex:1.1">
+      <img class="shot" src="../screenshots/ticket-21/beat-4.2.jpeg" alt="Chương 4: người dùng mới tra cứu tài khoản và được cảnh báo rủi ro cao">
+    </div>
+  </div>
+  <div class="foot"><span class="src">Căn cứ: Luật 91/2025 Điều 19.1.b, 19.2 · TT 40/2024 Điều 37.1.e · TT 53/2026/TT-NHNN (nguồn báo chí, chưa xác minh điều khoản). Chi tiết: docs/RESEARCH_LEGAL.md.</span><span class="pg">08 / 10</span></div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <p class="kicker">Kiến trúc · ranh giới thật/mô phỏng · số đo</p>
+  <h1>Độc lập nhà cung cấp, hiện chạy trên Vercel + FPT AI Factory, chỉ báo cáo số đo thật</h1>
+  <div class="body">
+    <div class="col" style="flex:1.05">
+      <div class="card" style="padding:14px 18px">
+        <table>
+          <tr><th>CASE-01 · 10/10 lượt</th><th><code>model_used</code></th><th class="r">min</th><th class="r">median</th><th class="r">max</th></tr>
+          <tr><td>Lượt quét ảnh</td><td class="m">gemma-4-31B-it</td><td class="r num">3387</td><td class="r num">3516</td><td class="r num">3689</td></tr>
+          <tr><td>War-Room 4 Agent</td><td class="m">Qwen3.8-27B</td><td class="r num">6261</td><td class="r num">7357</td><td class="r num">8551</td></tr>
+        </table>
+        <p style="font-size:14px;color:var(--steel);margin-top:10px;line-height:1.5">Đơn vị ms, đo bằng <code>performance.now()</code> trên máy chủ. Vercel region sin1, 23/11/2026 18:51–18:53 UTC. Số đo một lần chạy, không phải cam kết hiệu năng.</p>
+      </div>
+      <div class="card"><ul style="font-size:16px">
+        <li>Next.js trên Vercel · PostgreSQL · LLM qua lớp <code>LLMProvider</code> (bedrock / gemini / openai).</li>
+        <li>Thiếu khóa LLM thì trả <code>503 LLM_NOT_CONFIGURED</code>, không bao giờ giả kết quả AI.</li>
+        <li>Chuyển sang AWS Bedrock: đang chờ ban tổ chức cấp quyền.</li>
+      </ul></div>
+    </div>
+    <div class="col">
+      <div class="card" style="padding:14px 18px">
+        <table>
+          <tr><th>Thành phần</th><th>Trạng thái</th></tr>
+          <tr><td>Quét ảnh chat bằng Vision LLM</td><td><span class="tag real">Chạy thật</span></td></tr>
+          <tr><td>Ẩn PII trước khi tới Người giám hộ &amp; B2E</td><td><span class="tag real">Chạy thật</span></td></tr>
+          <tr><td>4 Agent + kiểm tra JSON Schema</td><td><span class="tag real">Chạy thật</span></td></tr>
+          <tr><td>Maker–Checker, TTL, Khiếu nại, audit log</td><td><span class="tag real">Chạy thật</span></td></tr>
+          <tr><td>Cổng thanh toán, API SIMO, lịch sử giao dịch</td><td><span class="tag sim">Mô phỏng</span></td></tr>
+          <tr><td>Gửi báo cáo giao dịch đáng ngờ</td><td><span class="tag sim">Mô phỏng</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Số đo và từng lượt chạy: docs/MEASURED_LATENCIES.md, tái hiện bằng scripts/measure-latency.mjs.</span><span class="pg">09 / 10</span></div>
+</section>
+
+<!-- 10 -->
+<section class="slide">
+  <p class="kicker">Tác động · tuân thủ · lộ trình</p>
+  <h1>Thu hẹp điểm mù Phút 00–88, với căn cứ pháp lý đã đối chiếu và KPI đo được</h1>
+  <div class="body">
+    <div class="col">
+      <h2>Căn cứ pháp lý</h2>
+      <div class="card"><ul style="font-size:15.5px">
+        <li><b>TT 40/2024/TT-NHNN</b> Điều 19.1.l, 28.1.c.(iii): Bảo vệ 24h trong thỏa thuận ví.</li>
+        <li><b>Luật PCRT 2022</b> Điều 26, 29, 37, 40.2: chia nhỏ giao dịch, hạn báo cáo, không tiết lộ.</li>
+        <li><b>Luật 91/2025</b> (dữ liệu cá nhân): đồng ý từng mục đích, Ẩn PII, quyền khiếu nại.</li>
+        <li><b>Luật 134/2025</b> (AI) Điều 4.2, 11.1: con người quyết định, nhãn AI.</li>
+      </ul></div>
+      <div class="card signal"><p style="font-size:15.5px"><b>Trước khi dùng thật:</b> ảnh hiện được gửi tới LLM đặt ngoài Việt Nam rồi mới Ẩn PII. Cần đánh giá tác động chuyển dữ liệu xuyên biên giới, DPIA và Ẩn PII ngay trên thiết bị.</p></div>
+    </div>
+    <div class="col">
+      <h2>Pilot Người giám hộ: giả thuyết, đo bằng 3 KPI</h2>
+      <div class="card"><ol style="margin:0;padding-left:20px;font-size:15.5px;line-height:1.5">
+        <li>Tỷ lệ giao dịch bị giữ được Người giám hộ Chuyển cấp.</li>
+        <li>Tỷ lệ người dùng tự hủy sau khi Người giám hộ đã xem thẻ.</li>
+        <li>Tỷ lệ hủy giữa nhóm có và không có Người giám hộ.</li>
+      </ol></div>
+      <h2 style="margin-top:4px">Lộ trình</h2>
+      <div class="card"><ul style="font-size:15.5px">
+        <li>Chạy trên AWS Bedrock (chờ ban tổ chức).</li>
+        <li>Đồng bộ SIMO hằng tháng · trung tâm quyền dữ liệu · sổ tay sự cố dữ liệu 72 giờ.</li>
+        <li>Sau cuộc thi: phân tích âm thanh cuộc gọi, hội thoại giúp người dùng bình tĩnh lại.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="foot"><span class="src">Căn cứ đã đọc nguyên văn, chi tiết từng điều khoản: docs/RESEARCH_LEGAL.md. Không phải tư vấn pháp lý.</span><span class="pg">10 / 10</span></div>
+</section>
+
+</body>
+</html>
