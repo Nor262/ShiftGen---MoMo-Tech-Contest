@@ -58,8 +58,12 @@ _Tránh dùng_: mở khóa, duyệt
 Câu thông báo cố định hiển thị khi Tạm giữ. Câu này không nhân danh cơ quan nhà nước nào.
 
 **Người giám hộ** (`FAMILY_GUARDIAN`):
-Người thân được người dùng chỉ định. Họ xem thẻ duyệt đã Ẩn PII và chỉ có quyền Chuyển cấp, không có quyền giải phóng giao dịch.
+Người thân được người dùng mời và **đã tự xác nhận** lời mời. Họ xem thẻ duyệt đã Ẩn PII (số tài khoản nhận chỉ hiện 4 số cuối) và chỉ có quyền Chuyển cấp, không có quyền giải phóng giao dịch. Chủ ví thu hồi quyền này bất kỳ lúc nào.
 _Tránh dùng_: người đồng ký, co-signer
+
+**Lời mời người giám hộ** (`guardianStatus`: `INVITED` → `ACCEPTED` → `REVOKED`):
+Chủ ví chỉ định người thân là mới gửi lời mời. Trước khi người thân tự xác nhận, họ không thấy thẻ nào. Sau khi chủ ví thu hồi, họ không thấy thẻ nào nữa.
+_Tránh dùng_: liên kết tự động
 
 **Chuyển cấp** (`ESCALATED_TO_B2E`):
 Việc Người giám hộ đẩy một Giao dịch bị giữ sang B2E để điều tra. Chuyển cấp đồng thời kéo dài Tạm giữ cho tới khi B2E ra phán quyết.

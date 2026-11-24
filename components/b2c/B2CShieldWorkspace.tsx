@@ -173,6 +173,30 @@ export function B2CShieldWorkspace() {
     setPreviewUrl(URL.createObjectURL(file));
   }
 
+  // #6: the owner can revoke the guardian at any time; the guardian then sees nothing
+  async function revokeGuardian() {
+    setConsentSaving(true);
+    setConsentFeedback(null);
+    try {
+      const res = await fetch("/api/shield/family/guardian", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "REVOKE", ownerId: activePersona.apiUserId }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setConsentFeedback({ ok: false, text: parseApiErrorMessage(res.status, data) });
+        return;
+      }
+      await refreshSession();
+      setConsentFeedback({ ok: true, text: `Đã thu hồi quyền người giám hộ của ${CAST.FAMILY_MINH.name}.` });
+    } catch {
+      setConsentFeedback({ ok: false, text: "Không thể kết nối máy chủ." });
+    } finally {
+      setConsentSaving(false);
+    }
+  }
+
   async function saveConsent(optInValue: boolean): Promise<boolean> {
     setConsentSaving(true);
     setConsentFeedback(null);
@@ -196,7 +220,7 @@ export function B2CShieldWorkspace() {
       setConsentFeedback({
         ok: true,
         text: optInValue
-          ? `Đã lưu đồng ý: Chế độ Bảo vệ 24h ĐANG BẬT và liên kết Người giám hộ ${CAST.FAMILY_MINH.name}.`
+          ? `Đã bật Bảo vệ 24h và gửi lời mời người giám hộ tới ${CAST.FAMILY_MINH.name} (chị cần tự xác nhận).`
           : "Đã cập nhật: Chế độ Bảo vệ 24h ĐANG TẮT (thu hồi đồng ý thành công).",
       });
       return true;
@@ -450,6 +474,31 @@ export function B2CShieldWorkspace() {
                   : "Lưu trạng thái TẮT"}
           </button>
         </div>
+
+        {activeConsent?.guardianId && activeConsent.guardianStatus !== "NONE" && (
+          <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
+            <p className="flex-1 text-sm text-slate-800">
+              Người giám hộ {CAST.FAMILY_MINH.name}:{" "}
+              <strong>
+                {activeConsent.guardianStatus === "INVITED"
+                  ? "đã mời, đang chờ chị xác nhận (chưa thấy thẻ nào)"
+                  : activeConsent.guardianStatus === "ACCEPTED"
+                    ? "đã xác nhận"
+                    : "đã thu hồi"}
+              </strong>
+            </p>
+            {(activeConsent.guardianStatus === "INVITED" || activeConsent.guardianStatus === "ACCEPTED") && (
+              <button
+                type="button"
+                disabled={consentSaving}
+                onClick={() => void revokeGuardian()}
+                className="min-h-[48px] rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-800 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-shift-blue disabled:opacity-60"
+              >
+                Thu hồi quyền người giám hộ
+              </button>
+            )}
+          </div>
+        )}
 
         {consentFeedback && (
           <p

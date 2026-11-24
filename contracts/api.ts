@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+  GuardianStatusSchema,
   ActorRoleSchema,
   AppealStatusSchema,
   AuditActionSchema,
@@ -48,6 +49,7 @@ export const UserConsentDtoSchema = z.object({
   /** #5: consent for the scan purpose (sending content to AI), separate from 24h protection. */
   optInScan: z.boolean(),
   guardianId: z.string().nullable(),
+  guardianStatus: GuardianStatusSchema,
   consentVersion: z.string(),
   consentedAt: z.string(),
 });
@@ -254,6 +256,13 @@ export const ShieldScanResponseSchema = z.object({
   fallbackNoticeVi: z.string().optional(),
 });
 export type ShieldScanResponse = z.infer<typeof ShieldScanResponseSchema>;
+
+// POST /api/shield/family/guardian — #6: the guardian accepts; the owner revokes
+export const GuardianActionRequestSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("ACCEPT"), ownerId: PersonaIdSchema, guardianId: z.string().min(1) }),
+  z.object({ action: z.literal("REVOKE"), ownerId: PersonaIdSchema }),
+]);
+export type GuardianActionRequest = z.infer<typeof GuardianActionRequestSchema>;
 
 // POST /api/shield/scan/[scanId]/review — #5 "Nhờ người thật xem xét" (Luật 134/2025 Điều 4.2)
 export const ScanReviewRequestSchema = z.object({

@@ -3,7 +3,7 @@ import { CAST, type CastId } from "@/lib/cast";
 const { USER_B2C_HUNG: hung, FAMILY_MINH: minh, RISK_MAKER_HUYEN: huyen, RISK_CHECKER_TUAN: tuan } = CAST;
 
 /** The story stage (/story): 4 chapters × 2 beats, one primary action at a time (spec §5.2). */
-export type BeatId = "1.1" | "1.2" | "1.3" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
+export type BeatId = "1.1" | "1.2" | "1.3" | "1.4" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
 export type Chapter = 1 | 2 | 3 | 4;
 
 export interface StoryBeat {
@@ -27,11 +27,21 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     actor: "USER_B2C_HUNG",
     buttonLabel: "Bật Bảo vệ 24h",
     lockedReason: "Mở ngay từ đầu",
-    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h và chọn con gái ${minh.name} làm người giám hộ.`,
+    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h và mời con gái ${minh.name} làm người giám hộ.`,
+  },
+  {
+    // #6: naming a guardian is only an invitation; she sees nothing until she accepts herself
+    id: "1.2",
+    phoneOwner: "FAMILY_MINH",
+    chapter: 1,
+    actor: "FAMILY_MINH",
+    buttonLabel: "Chị Minh xác nhận làm người giám hộ",
+    lockedReason: "Mở sau khi Bác Hùng mời người giám hộ",
+    narration: `Phút 00 — ${minh.name} nhận lời mời, đọc rõ mình được thấy gì, rồi tự xác nhận.`,
   },
   {
     // #5: a separate beat, so each purpose gets its own explicit "yes" (Luật 91/2025 Điều 9.4.a)
-    id: "1.2",
+    id: "1.3",
     phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
@@ -40,7 +50,7 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     narration: `Phút 00 — Trước khi quét, ${hung.name} đồng ý riêng cho AI phân tích tin nhắn. Đây là lựa chọn khác, rút lại được.`,
   },
   {
-    id: "1.3",
+    id: "1.4",
     phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",

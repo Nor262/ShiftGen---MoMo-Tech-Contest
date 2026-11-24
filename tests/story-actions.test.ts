@@ -18,6 +18,7 @@ import {
   buildNewUserProbe,
   buildScan,
   buildScanConsent,
+  buildGuardianAccept,
   buildTransfer,
   CHECKER_DRAFT_VI,
   MAKER_DRAFT_VI,
@@ -47,6 +48,8 @@ describe("story request builders", () => {
     // #5: scan consent is a separate request, never bundled with 24h protection
     expect(buildConsent()).not.toHaveProperty("optInScan");
     expect(buildScanConsent()).toEqual({ userId: "USER_B2C_HUNG", optInScan: true, consentVersion: "v1.0-law91-2025" });
+    // #6: the guardian accepts the invitation herself
+    expect(buildGuardianAccept()).toEqual({ action: "ACCEPT", ownerId: "USER_B2C_HUNG", guardianId: "FAMILY_MINH" });
     expect(buildScan()).toMatchObject({ userId: "USER_B2C_HUNG", inputType: "DEMO_PRESET", presetCode: "CASE-01" });
   });
 
@@ -115,7 +118,7 @@ describe("runBeat checks the story actually happened, not just HTTP 200", () => 
 
   it("shows the API's own Vietnamese error on failure", async () => {
     vi.stubGlobal("fetch", reply({ error: "Đã đạt hạn mức lượt gọi AI trong ngày", code: "X" }, 429));
-    await expect(runBeat("1.3", {})).rejects.toThrow("Đã đạt hạn mức lượt gọi AI trong ngày");
+    await expect(runBeat("1.4", {})).rejects.toThrow("Đã đạt hạn mức lượt gọi AI trong ngày");
   });
 
   it("refuses a Maker proposal that governance would reject, with a reason instead of a dead 400", async () => {
@@ -142,7 +145,7 @@ describe("runBeat checks the story actually happened, not just HTTP 200", () => 
 describe("storyContext gathers ids from earlier beats", () => {
   it("maps each beat's result to what the next beats need", () => {
     const ctx = storyContext({
-      "1.3": { scanId: "s1" },
+      "1.4": { scanId: "s1" },
       "2.1": { txId: "t1" },
       "2.2": { caseId: "c1" },
       "3.1": { debate },

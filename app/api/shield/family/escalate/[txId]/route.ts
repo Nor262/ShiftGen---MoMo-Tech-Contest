@@ -7,6 +7,7 @@ import {
   SanitizedEvidenceSchema,
   type SanitizedEvidence,
 } from "@/contracts";
+import { acceptedOwnersOf, guardianDenied } from "@/lib/guardian";
 import { prisma } from "@/lib/prisma";
 import {
   ensureSessionSeeded,
@@ -72,6 +73,10 @@ export async function POST(
     const { guardianId, note } = parsed.data;
     // Glossary "Yêu cầu xét lại tạm giữ": the wallet owner escalates their own hold for human review (TT 53).
     const isSelfReview = guardianId === tx.senderId;
+    if (!isSelfReview) {
+      const access = await acceptedOwnersOf(demoSessionId, guardianId);
+      if (!access.accepted.includes(tx.senderId)) return guardianDenied(access.revoked, access.invited);
+    }
     const originLabel = isSelfReview ? "Người dùng yêu cầu xét lại" : "Gia đình báo cáo";
     const scan = tx.scanId
       ? await prisma.scanSession.findFirst({

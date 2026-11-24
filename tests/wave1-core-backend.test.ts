@@ -45,8 +45,8 @@ import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { POST as postTransfer } from "@/app/api/shield/transfer/route";
 import { POST as postCancelTransfer } from "@/app/api/shield/transfer/[txId]/cancel/route";
 import { POST as postReportCyber } from "@/app/api/shield/report-cyber/route";
-import { GET as getFamilyHolds } from "@/app/api/shield/family/holds/route";
-import { POST as postFamilyEscalate } from "@/app/api/shield/family/escalate/[txId]/route";
+import { getFamilyHoldsAccepted as getFamilyHolds } from "./helpers/guardian-accepted";
+import { postFamilyEscalateAccepted as postFamilyEscalate } from "./helpers/guardian-accepted";
 
 const VALID_PNG_BYTES = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
