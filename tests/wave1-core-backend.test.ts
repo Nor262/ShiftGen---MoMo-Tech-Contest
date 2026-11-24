@@ -41,7 +41,7 @@ import {
   TIER1_IMMUNITY_MODEL,
 } from "@/lib/session";
 import { POST as postConsent } from "@/app/api/shield/consent/route";
-import { POST as postScan } from "@/app/api/shield/scan/route";
+import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { POST as postTransfer } from "@/app/api/shield/transfer/route";
 import { POST as postCancelTransfer } from "@/app/api/shield/transfer/[txId]/cancel/route";
 import { POST as postReportCyber } from "@/app/api/shield/report-cyber/route";

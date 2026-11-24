@@ -18,7 +18,7 @@ import { POST as postAppeal } from "@/app/api/immunity/[id]/appeal/route";
 import { POST as postResolveAppeal } from "@/app/api/immunity/[id]/resolve-appeal/route";
 import { POST as postRollback } from "@/app/api/immunity/[id]/rollback/route";
 import { POST as postExpireDemo } from "@/app/api/immunity/[id]/expire-demo/route";
-import { POST as postShieldScan } from "@/app/api/shield/scan/route";
+import { postScanWithConsent as postShieldScan } from "./helpers/scan-with-consent";
 
 const TEST_SESSIONS: string[] = [];
 

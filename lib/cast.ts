@@ -23,3 +23,8 @@ export function modelDisplayName(model: string): string {
   if (model === DAILY_QUOTA_FALLBACK_MODEL) return "Quy tắc dự phòng khi hết hạn mức (không dùng AI)";
   return model;
 }
+
+/** True when the result came only from the human-approved immunity registry (no AI involved). */
+export function isRegistryOnlyModel(model: string): boolean {
+  return model === TIER1_IMMUNITY_MODEL;
+}

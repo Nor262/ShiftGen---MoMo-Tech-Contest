@@ -36,6 +36,7 @@ export const CHECKER_DRAFT_VI =
 export const buildConsent = (): ConsentRequest => ({
   userId: "USER_B2C_HUNG",
   optIn24hHold: true,
+  optInScan: true, // #5: a separate purpose, granted explicitly in the same beat
   guardianId: "FAMILY_MINH",
   consentVersion: "v1.0-law91-2025",
 });

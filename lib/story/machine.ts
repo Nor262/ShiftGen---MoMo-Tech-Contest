@@ -25,9 +25,9 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
-    buttonLabel: "Bật Bảo vệ 24h",
+    buttonLabel: "Đồng ý 2 mục",
     lockedReason: "Mở ngay từ đầu",
-    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h và chọn con gái là ${minh.name} làm người giám hộ.`,
+    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h (người giám hộ: con gái ${minh.name}) và đồng ý cho AI phân tích khi quét — hai lựa chọn riêng.`,
   },
   {
     id: "1.2",

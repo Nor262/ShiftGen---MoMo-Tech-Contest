@@ -30,6 +30,7 @@ import {
 import { ScanResultPanel } from "./ScanResultPanel";
 import { TransferHoldPanel } from "./TransferHoldPanel";
 import { CAST } from "@/lib/cast";
+import { ScanConsentCard } from "./ScanConsentCard";
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -95,6 +96,9 @@ export function B2CShieldWorkspace() {
   const activeConsent =
     session?.consents.find((c) => c.userId === activePersona.apiUserId) ?? null;
   const savedOptIn = activeConsent?.optIn24hHold ?? false;
+  const scanConsent = activeConsent?.optInScan ?? false;
+  // #5: the last scan was refused for lack of scan consent → point the user at the consent card
+  const [scanNeedsConsent, setScanNeedsConsent] = useState(false);
 
   const refreshSession = useCallback(async () => {
     try {
@@ -221,6 +225,10 @@ export function B2CShieldWorkspace() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         setScanError(parseApiErrorMessage(res.status, data));
+        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
+          setScanNeedsConsent(true);
+          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -249,6 +257,10 @@ export function B2CShieldWorkspace() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         setScanError(parseApiErrorMessage(res.status, data));
+        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
+          setScanNeedsConsent(true);
+          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -280,6 +292,10 @@ export function B2CShieldWorkspace() {
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         setScanError(parseApiErrorMessage(res.status, data));
+        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
+          setScanNeedsConsent(true);
+          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -458,6 +474,17 @@ export function B2CShieldWorkspace() {
           </p>
         )}
       </section>
+
+      <ScanConsentCard
+        userId={activePersona.apiUserId}
+        agreed={scanConsent}
+        highlight={scanNeedsConsent}
+        onChanged={async () => {
+          await refreshSession();
+          setScanNeedsConsent(false);
+          setScanError(null);
+        }}
+      />
 
       {/* Minute-00 Scanner Card */}
       <section

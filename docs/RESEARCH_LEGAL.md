@@ -61,8 +61,8 @@
 - **Ẩn PII phía máy chủ vẫn là "xử lý":** nếu ảnh gốc lên server rồi mới che, MoMo vẫn đã thu thập ảnh gốc. Câu "trước khi dữ liệu rời khỏi tay người dùng" trong GLOSSARY chỉ đúng khi che **trên thiết bị**.
 
 **Kết luận: OK có điều kiện.**
-1. Màn hình đồng ý riêng cho Lượt quét, mặc định tắt, lưu log đồng ý.
-2. Ghi rõ "kết quả do AI tạo" (Luật 134 Điều 11.1).
+1. Màn hình đồng ý riêng cho Lượt quét, mặc định tắt, lưu log đồng ý. **Đã làm (#5).**
+2. Ghi rõ "kết quả do AI tạo" (Luật 134 Điều 11.1), kèm nút nhờ người thật xem xét (Điều 4.2). **Đã làm (#5).**
 3. Ẩn PII trên thiết bị trước khi gọi LLM; không lưu ảnh gốc.
 4. Nếu dùng LLM ngoài VN: hồ sơ đánh giá xuyên biên giới (Điều 20), DPIA (Điều 21), thỏa thuận bên xử lý cấm huấn luyện. Nếu không thì dùng LLM đặt tại VN.
 5. Lập hồ sơ chứng minh căn cứ Điều 19.1.a/b cho dữ liệu bên thứ ba.

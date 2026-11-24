@@ -236,6 +236,21 @@ export async function POST(request: Request) {
       });
       modelUsed = TIER1_IMMUNITY_MODEL;
     } else {
+      // #5: analysing content (AI, replay or rules) needs the user's scan consent; a pure
+      // immunity-registry lookup above does not send content anywhere, so it stays open.
+      const scanConsent = await prisma.userConsent.findUnique({
+        where: { demoSessionId_userId: { demoSessionId, userId: req.userId } },
+        select: { optInScan: true },
+      });
+      if (!scanConsent?.optInScan) {
+        return NextResponse.json(
+          {
+            error: "Bạn cần đồng ý cho AI phân tích nội dung trước khi quét. Bạn có thể rút lại bất kỳ lúc nào.",
+            code: "SCAN_CONSENT_REQUIRED",
+          },
+          { status: 403 },
+        );
+      }
       const currentUsage = await getDailyLlmUsage();
       if (!currentUsage.allowed) {
         const fb = makeFallbackOutcome();

@@ -47,6 +47,7 @@ export function toUserConsentDto(row: UserConsent): UserConsentDto {
     demoSessionId: row.demoSessionId,
     userId: row.userId,
     optIn24hHold: row.optIn24hHold,
+    optInScan: row.optInScan,
     guardianId: row.guardianId,
     consentVersion: row.consentVersion,
     consentedAt: row.consentedAt.toISOString(),

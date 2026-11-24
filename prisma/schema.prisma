@@ -13,6 +13,7 @@ model UserConsent {
   demoSessionId  String
   userId         String
   optIn24hHold   Boolean  @default(false)
+  optInScan      Boolean  @default(false)
   guardianId     String?
   consentVersion String
   consentedAt    DateTime @default(now())

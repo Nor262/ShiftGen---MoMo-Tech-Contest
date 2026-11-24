@@ -170,7 +170,7 @@ Chi tiết từng điều khoản và mức độ tin cậy ([VB] đã đọc ng
 | Tính năng | Căn cứ | Ghi chú |
 | :--- | :--- | :--- |
 | Bảo vệ 24h | TT 40/2024/TT-NHNN Điều 19.1.l, 28.1.c.(iii) [VB] | Phải nằm trong thỏa thuận ví; tách bạch với trì hoãn theo Luật PCRT Điều 44. |
-| Đồng ý cho Lượt quét & Người giám hộ | Luật 91/2025 Điều 9.4, 15.2.b [VB]; TT 40 Điều 19.1.n.(i) [VB]; "không tích sẵn mặc định" theo NĐ 356/2025 [TC] | Đồng ý từng mục đích; im lặng không phải đồng ý; người giám hộ cũng phải đồng ý. |
+| Đồng ý cho Lượt quét & Người giám hộ | Luật 91/2025 Điều 9.4, 15.2.b [VB]; TT 40 Điều 19.1.n.(i) [VB]; "không tích sẵn mặc định" theo NĐ 356/2025 [TC] | Đồng ý từng mục đích; im lặng không phải đồng ý; người giám hộ cũng phải đồng ý. **Đã làm (#5):** Đồng ý quét tách riêng khỏi Bảo vệ 24h, mặc định tắt, rút lại được, mỗi lần đổi ghi audit; API quét trả 403 khi chưa đồng ý; mọi kết quả có nhãn "Kết quả do AI tạo" và nút "Nhờ người thật xem xét". Phần người giám hộ đồng ý vẫn là kế hoạch (#6). |
 | Người giám hộ không Giải phóng tiền | TT 40 Điều 28.1.a.(iv) [VB] | Người giám hộ không phải người được ủy quyền. |
 | Ẩn PII | Luật 91 Điều 3.2, 30.1 [VB]; danh mục dữ liệu nhạy cảm theo NĐ 356 [TC] | Ẩn SĐT là tối thiểu hóa dữ liệu. |
 | Gửi dữ liệu tới LLM ngoài VN | Luật 91 Điều 20.1.c, 20.2, 21.1 [VB] | **MVP hiện gửi ảnh người dùng tải lên tới LLM đặt ngoài VN** (Gemini/Bedrock) — đây là chuyển dữ liệu xuyên biên giới. Điều kiện trước khi dùng thật: hồ sơ đánh giá tác động chuyển dữ liệu xuyên biên giới, DPIA, thỏa thuận bên xử lý cấm huấn luyện, và Ẩn PII trên thiết bị. |

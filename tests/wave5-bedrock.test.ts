@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
-import { POST as postScan } from "@/app/api/shield/scan/route";
+import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { createBedrockAdapter, setLLMProviderForTest } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { getLlmStatus, SESSION_HEADER_NAME } from "@/lib/session";

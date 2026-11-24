@@ -302,12 +302,16 @@ export function B2cLiveProbeCard({
                   <p className="font-bold">
                     {outcome.errorCode === "LLM_NOT_CONFIGURED"
                       ? `Không khớp Kho Miễn dịch, và AI hiện chưa sẵn sàng để phân tích thêm.`
-                      : `HTTP ${outcome.httpStatus} · ${outcome.errorCode}`}
+                      : outcome.errorCode === "SCAN_CONSENT_REQUIRED"
+                        ? `Không khớp Kho Miễn dịch đang hoạt động.`
+                        : `HTTP ${outcome.httpStatus} · ${outcome.errorCode}`}
                   </p>
                   <p>
                     {outcome.errorCode === "LLM_NOT_CONFIGURED"
                       ? `Chỉ dấu "${outcome.query}" hiện KHÔNG còn nằm trong Danh mục Miễn dịch đang hoạt động (đã thu hồi, hết hạn hoặc chưa được kích hoạt). Hệ thống đã chuyển sang phân tích AI trực tiếp nhưng chưa cấu hình khóa API LLM trên máy chủ.`
-                      : outcome.errorMessage}
+                      : outcome.errorCode === "SCAN_CONSENT_REQUIRED"
+                        ? `Chỉ dấu "${outcome.query}" hiện KHÔNG còn nằm trong Danh mục Miễn dịch đang hoạt động (đã thu hồi, hết hạn hoặc chưa được kích hoạt). Người dùng mới chưa đồng ý cho AI phân tích nên hệ thống không phân tích thêm.`
+                        : outcome.errorMessage}
                   </p>
                 </div>
               </div>

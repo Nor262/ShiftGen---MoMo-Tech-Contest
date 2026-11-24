@@ -141,6 +141,7 @@ export type AppealStatus = z.infer<typeof AppealStatusSchema>;
 export const AUDIT_ACTIONS = [
   "CONSENT_UPDATED",
   "SCAN_COMPLETED",
+  "SCAN_REVIEW_REQUESTED",
   "TRANSFER_HELD_24H",
   "TRANSFER_COMPLETED",
   "TRANSFER_CANCELLED",

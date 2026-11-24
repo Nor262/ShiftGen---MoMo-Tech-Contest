@@ -1,3 +1,4 @@
+import { toUserConsentDto } from "./shield";
 import { getPrimaryLlmStatus } from "@/lib/llm";
 import { prisma } from "@/lib/prisma";
 import { seedBaselineSession } from "@/prisma/seed";
@@ -175,15 +176,7 @@ export async function getSessionSnapshot(
 
   return {
     sessionId: demoSessionId,
-    consents: consents.map((c) => ({
-      id: c.id,
-      demoSessionId: c.demoSessionId,
-      userId: c.userId,
-      optIn24hHold: c.optIn24hHold,
-      guardianId: c.guardianId,
-      consentVersion: c.consentVersion,
-      consentedAt: c.consentedAt.toISOString(),
-    })),
+    consents: consents.map(toUserConsentDto),
     scansCount,
     holds: holds.map((h) => ({
       txId: h.txId,

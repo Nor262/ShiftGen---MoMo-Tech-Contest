@@ -42,7 +42,8 @@ describe("story request builders", () => {
   });
 
   it("Bác Hùng opts in with Chị Minh as guardian, then scans CASE-01", () => {
-    expect(buildConsent()).toMatchObject({ userId: "USER_B2C_HUNG", optIn24hHold: true, guardianId: "FAMILY_MINH" });
+    // two separate purposes granted in the same beat (#5): 24h protection and scan analysis
+    expect(buildConsent()).toMatchObject({ userId: "USER_B2C_HUNG", optIn24hHold: true, optInScan: true, guardianId: "FAMILY_MINH" });
     expect(buildScan()).toMatchObject({ userId: "USER_B2C_HUNG", inputType: "DEMO_PRESET", presetCode: "CASE-01" });
   });
 

@@ -48,10 +48,18 @@ export function PhoneFrame({ state }: ViewProps) {
     case "1.1":
       screen = (
         <div className="space-y-3">
-          <p className="font-semibold text-slate-900">Bảo vệ 24h</p>
-          <p>Giao dịch rủi ro cao sẽ được tạm giữ tối đa 24 giờ và báo cho người thân.</p>
-          <p className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
-            {done ? `Đã bật · Người giám hộ: ${CAST.FAMILY_MINH.name}` : "Chưa bật"}
+          <p className="font-semibold text-slate-900">Hai lựa chọn riêng</p>
+          <p>
+            <strong>Bảo vệ 24h:</strong> giao dịch rủi ro cao được tạm giữ tối đa 24 giờ và báo cho người thân.{" "}
+            <span className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
+              {done ? `Đã bật · ${CAST.FAMILY_MINH.name}` : "Chưa bật"}
+            </span>
+          </p>
+          <p>
+            <strong>Cho AI phân tích khi quét:</strong> ảnh được gửi tới AI rồi xóa sau phiên.{" "}
+            <span className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
+              {done ? "Đã đồng ý" : "Chưa đồng ý"}
+            </span>
           </p>
         </div>
       );
@@ -160,10 +168,11 @@ export function Backstage({ state }: ViewProps) {
   if (result) {
     switch (beat) {
       case "1.1":
-        headline = "Đã bật Bảo vệ 24h";
+        headline = "Đã ghi nhận 2 đồng ý riêng";
         details = [
-          `Người giám hộ: ${CAST.FAMILY_MINH.name}`,
-          "Đồng ý được ghi vào nhật ký, Bác có thể tắt bất kỳ lúc nào.",
+          `Bảo vệ 24h · người giám hộ: ${CAST.FAMILY_MINH.name}`,
+          "Cho AI phân tích khi quét",
+          "Mỗi đồng ý được ghi nhật ký riêng; Bác rút lại được từng mục bất kỳ lúc nào.",
         ];
         break;
       case "1.2": {
