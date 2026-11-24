@@ -27,6 +27,7 @@ import {
   parseApiErrorMessage,
 } from "./labels";
 import { CAST } from "@/lib/cast";
+import { GuardianInvitationCard } from "./GuardianInvitationCard";
 
 export function FamilyCoSignView() {
   const [holds, setHolds] = useState<FamilyHoldDto[]>([]);
@@ -35,6 +36,8 @@ export function FamilyCoSignView() {
   const [escalatingTxId, setEscalatingTxId] = useState<string | null>(null);
   const [escalatedCases, setEscalatedCases] = useState<Record<string, string>>({});
   const [callDialogTx, setCallDialogTx] = useState<FamilyHoldDto | null>(null);
+  // #6: null = access granted; otherwise the guardian has not accepted yet, or was revoked
+  const [invitation, setInvitation] = useState<{ invitedBy: string[]; revoked: boolean } | null>(null);
 
   const loadHolds = useCallback(async () => {
     setLoading(true);
@@ -42,10 +45,20 @@ export function FamilyCoSignView() {
     try {
       const res = await fetch("/api/shield/family/holds", { cache: "no-store" });
       const data = await res.json().catch(() => null);
+      const code = (data as { code?: string } | null)?.code;
+      if (res.status === 403 && (code === "GUARDIAN_NOT_ACCEPTED" || code === "GUARDIAN_REVOKED")) {
+        setInvitation({
+          invitedBy: (data as { invitedBy?: string[] }).invitedBy ?? [],
+          revoked: code === "GUARDIAN_REVOKED",
+        });
+        setHolds([]);
+        return;
+      }
       if (!res.ok) {
         setErrorMessage(parseApiErrorMessage(res.status, data));
         return;
       }
+      setInvitation(null);
       setHolds((data as FamilyHoldsResponse).holds ?? []);
     } catch {
       setErrorMessage("Không thể tải danh sách giao dịch tạm giữ từ máy chủ.");
@@ -192,7 +205,13 @@ export function FamilyCoSignView() {
       )}
 
       {/* Holds List */}
-      {loading ? (
+      {invitation ? (
+        <GuardianInvitationCard
+          invitedBy={invitation.invitedBy}
+          revoked={invitation.revoked}
+          onAccepted={loadHolds}
+        />
+      ) : loading ? (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 text-base text-slate-600">
           Đang tải các giao dịch cần người thân xác nhận...
         </div>

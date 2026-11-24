@@ -14,6 +14,7 @@ import {
   type CaseDecisionRequest,
   type ConsentRequest,
   type FamilyEscalateRequest,
+  type GuardianActionRequest,
   type InvestigateCaseRequest,
   type ShieldScanRequest,
   type TransferRequest,
@@ -38,6 +39,13 @@ export const buildConsent = (): ConsentRequest => ({
   optIn24hHold: true,
   guardianId: "FAMILY_MINH",
   consentVersion: "v1.0-law91-2025",
+});
+
+/** #6: the invited guardian accepts herself. */
+export const buildGuardianAccept = (): GuardianActionRequest => ({
+  action: "ACCEPT",
+  ownerId: "USER_B2C_HUNG",
+  guardianId: "FAMILY_MINH",
 });
 
 /** #5: scan consent is its own request, never bundled with 24h protection. */
@@ -119,7 +127,7 @@ export function storyContext(results: Results): StoryContext {
   const set = <K extends keyof StoryContext>(key: K, value: unknown) => {
     if (value !== undefined) ctx[key] = value as StoryContext[K];
   };
-  set("scanId", field(results["1.3"], "scanId"));
+  set("scanId", field(results["1.4"], "scanId"));
   set("txId", field(results["2.1"], "txId"));
   set("caseId", field(results["2.2"], "caseId"));
   set("debate", field(results["3.1"], "debate"));
@@ -176,8 +184,10 @@ export async function runBeat(id: BeatId, ctx: StoryContext): Promise<unknown> {
     case "1.1":
       return call(withSession("/api/shield/consent", ctx.session), buildConsent(), ConsentResponseSchema);
     case "1.2":
-      return call(withSession("/api/shield/consent", ctx.session), buildScanConsent(), ConsentResponseSchema);
+      return call(withSession("/api/shield/family/guardian", ctx.session), buildGuardianAccept(), ConsentResponseSchema);
     case "1.3":
+      return call(withSession("/api/shield/consent", ctx.session), buildScanConsent(), ConsentResponseSchema);
+    case "1.4":
       return call(withSession("/api/shield/scan", ctx.session), buildScan(), ShieldScanResponseSchema);
     case "2.1":
       return call(

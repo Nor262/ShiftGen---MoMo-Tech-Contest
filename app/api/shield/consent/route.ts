@@ -32,6 +32,24 @@ export async function POST(request: Request) {
     };
 
     const result = await prisma.$transaction(async (tx) => {
+      // #6: naming a guardian only sends an invitation; they must accept before seeing anything.
+      const before = await tx.userConsent.findUnique({
+        where: { demoSessionId_userId: { demoSessionId, userId } },
+        select: { guardianId: true, guardianStatus: true },
+      });
+      let guardianStatus: string | undefined;
+      let guardianEvent: "GUARDIAN_INVITED" | "GUARDIAN_REVOKED" | null = null;
+      if (optIn24hHold !== undefined) {
+        const sameGuardian = before?.guardianId === normalizedGuardianId;
+        const live = before?.guardianStatus === "INVITED" || before?.guardianStatus === "ACCEPTED";
+        if (!normalizedGuardianId) {
+          guardianStatus = "NONE";
+          if (before?.guardianId && live) guardianEvent = "GUARDIAN_REVOKED";
+        } else if (!sameGuardian || !live) {
+          guardianStatus = "INVITED";
+          guardianEvent = "GUARDIAN_INVITED";
+        }
+      }
       const consent = await tx.userConsent.upsert({
         where: {
           demoSessionId_userId: { demoSessionId, userId },
@@ -43,11 +61,13 @@ export async function POST(request: Request) {
           optInScan: false,
           guardianId: null,
           ...changes,
+          ...(guardianStatus && { guardianStatus }),
           consentVersion,
           consentedAt: new Date(),
         },
         update: {
           ...changes,
+          ...(guardianStatus && { guardianStatus }),
           consentVersion,
           consentedAt: new Date(),
         },
@@ -80,6 +100,22 @@ export async function POST(request: Request) {
             targetId: consent.id,
             rationale: e.rationale,
             metadataJson: JSON.stringify(e.metadata),
+          },
+        });
+      }
+      if (guardianEvent) {
+        await tx.auditLog.create({
+          data: {
+            demoSessionId,
+            actorId: userId,
+            actorRole: "USER_B2C",
+            action: guardianEvent,
+            targetId: consent.id,
+            rationale:
+              guardianEvent === "GUARDIAN_INVITED"
+                ? `Mời ${normalizedGuardianId} làm người giám hộ (chờ xác nhận).`
+                : `Bỏ người giám hộ ${before?.guardianId}.`,
+            metadataJson: JSON.stringify({ guardianId: normalizedGuardianId ?? before?.guardianId ?? null }),
           },
         });
       }

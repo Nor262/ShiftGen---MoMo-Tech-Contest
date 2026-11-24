@@ -106,9 +106,9 @@
 - Không thiết kế người giám hộ như người đồng ký: tránh tạo ra quyền định đoạt tài sản mà luật không trao.
 
 **Kết luận: OK có điều kiện.**
-1. Hai bên đồng ý: chủ ví và người giám hộ.
-2. Ghi rõ phạm vi thông tin người giám hộ được thấy.
-3. Có nút thu hồi quyền giám hộ bất kỳ lúc nào.
+1. Hai bên đồng ý: chủ ví và người giám hộ. **Đã làm (#6):** chủ ví chỉ gửi lời mời; người giám hộ tự xác nhận, trước đó API trả 403 và không lộ thẻ nào.
+2. Ghi rõ phạm vi thông tin người giám hộ được thấy. **Đã làm (#6):** màn hình lời mời liệt kê được thấy / không bao giờ thấy; số tài khoản nhận chỉ hiện 4 số cuối.
+3. Có nút thu hồi quyền giám hộ bất kỳ lúc nào. **Đã làm (#6):** sau khi thu hồi, API thẻ và Chuyển cấp đều từ chối. Mời, xác nhận, thu hồi đều ghi audit.
 4. Không ẩn đi quyền tự quyết của chủ ví.
 
 ### F4. B2E điều tra bằng AI agent: đồ thị chia nhỏ giao dịch, ví trung gian, dùng chung thiết bị

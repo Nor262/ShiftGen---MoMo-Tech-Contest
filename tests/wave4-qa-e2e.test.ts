@@ -64,8 +64,8 @@ import { POST as postExpireDemo } from "@/app/api/immunity/[id]/expire-demo/rout
 import { POST as postResolveAppeal } from "@/app/api/immunity/[id]/resolve-appeal/route";
 import { GET as getSession } from "@/app/api/session/route";
 import { POST as postConsent } from "@/app/api/shield/consent/route";
-import { POST as postFamilyEscalate } from "@/app/api/shield/family/escalate/[txId]/route";
-import { GET as getFamilyHolds } from "@/app/api/shield/family/holds/route";
+import { postFamilyEscalateAccepted as postFamilyEscalate } from "./helpers/guardian-accepted";
+import { getFamilyHoldsAccepted as getFamilyHolds } from "./helpers/guardian-accepted";
 import { POST as postReportCyber } from "@/app/api/shield/report-cyber/route";
 import { postScanWithConsent as postScan } from "./helpers/scan-with-consent";
 import { POST as postTransfer } from "@/app/api/shield/transfer/route";

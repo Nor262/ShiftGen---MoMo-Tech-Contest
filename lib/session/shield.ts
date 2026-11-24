@@ -1,5 +1,6 @@
 import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import {
+  GuardianStatusSchema,
   CaseStatusSchema,
   GraphDataSchema,
   HeldTxStatusSchema,
@@ -49,6 +50,7 @@ export function toUserConsentDto(row: UserConsent): UserConsentDto {
     optIn24hHold: row.optIn24hHold,
     optInScan: row.optInScan,
     guardianId: row.guardianId,
+    guardianStatus: GuardianStatusSchema.catch("NONE").parse(row.guardianStatus),
     consentVersion: row.consentVersion,
     consentedAt: row.consentedAt.toISOString(),
   };

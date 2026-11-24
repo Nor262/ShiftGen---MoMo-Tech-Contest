@@ -6,6 +6,7 @@ import {
   RiskLevelSchema,
   SanitizedEvidenceSchema,
 } from "@/contracts";
+import { acceptedOwnersOf, guardianDenied, maskAccount } from "@/lib/guardian";
 import { prisma } from "@/lib/prisma";
 import { ensureSessionSeeded, getSessionId, releaseExpiredHolds } from "@/lib/session";
 
@@ -30,9 +31,15 @@ export async function GET(request: Request) {
     await ensureSessionSeeded(demoSessionId);
     await releaseExpiredHolds(demoSessionId);
 
+    // #6: a guardian sees only owners who invited them AND whose invitation they accepted
+    const guardianId = new URL(request.url).searchParams.get("guardianId") ?? "FAMILY_MINH";
+    const access = await acceptedOwnersOf(demoSessionId, guardianId);
+    if (access.accepted.length === 0) return guardianDenied(access);
+
     const rows = await prisma.heldTransaction.findMany({
       where: {
         demoSessionId,
+        senderId: { in: access.accepted },
         status: { in: ["ON_HOLD_24H", "ESCALATED_TO_B2E", "CANCELLED_BY_USER", "CANCELLED_BY_B2E", "RELEASED"] },
       },
       orderBy: { createdAt: "desc" },
@@ -61,7 +68,7 @@ export async function GET(request: Request) {
       return FamilyHoldDtoSchema.parse({
         txId: row.txId,
         senderLabel: row.senderLabel,
-        recipientAccount: row.recipientAccount,
+        recipientAccount: maskAccount(row.recipientAccount),
         recipientBank: row.recipientBank,
         amountVnd: row.amountVnd,
         riskScore: scan ? scan.riskScore : null,

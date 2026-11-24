@@ -72,6 +72,11 @@ export const CYBER_THREAT_TYPES = [
 export const CyberThreatTypeSchema = z.enum(CYBER_THREAT_TYPES);
 export type CyberThreatType = z.infer<typeof CyberThreatTypeSchema>;
 
+/** #6: a guardian must accept an invitation before seeing anything; the owner can revoke it. */
+export const GUARDIAN_STATUSES = ["NONE", "INVITED", "ACCEPTED", "REVOKED"] as const;
+export const GuardianStatusSchema = z.enum(GUARDIAN_STATUSES);
+export type GuardianStatus = z.infer<typeof GuardianStatusSchema>;
+
 export const HELD_TX_STATUSES = [
   "COMPLETED",
   "ON_HOLD_24H",
@@ -142,6 +147,9 @@ export const AUDIT_ACTIONS = [
   "CONSENT_UPDATED",
   "SCAN_COMPLETED",
   "SCAN_REVIEW_REQUESTED",
+  "GUARDIAN_INVITED",
+  "GUARDIAN_ACCEPTED",
+  "GUARDIAN_REVOKED",
   "TRANSFER_HELD_24H",
   "TRANSFER_COMPLETED",
   "TRANSFER_CANCELLED",

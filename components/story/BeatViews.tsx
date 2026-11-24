@@ -13,6 +13,7 @@ import {
 import { DEMO_PRESETS, RISK_LEVEL_META, SCAM_CATEGORY_VI } from "@/components/b2c/labels";
 import { AiResultNotice } from "@/components/b2c/AiResultNotice";
 import { CAST, modelDisplayName } from "@/lib/cast";
+import { GUARDIAN_SCOPE } from "@/lib/guardian-scope";
 import { isReplayModel, isReplayNotice } from "@/lib/replay-label";
 import { STORY_AMOUNT_VND, STORY_RECIPIENT_ACCOUNT } from "@/lib/story/actions";
 import { beatById, type StoryState } from "@/lib/story/machine";
@@ -42,7 +43,7 @@ export function PhoneFrame({ state }: ViewProps) {
   const owner = beatById(beat).phoneOwner;
   const approval = state.results["4.1"] as { txStatus?: string } | undefined;
   const tx = state.results["2.1"] as TransferResponse | undefined;
-  const scan = state.results["1.3"] as ShieldScanResponse | undefined;
+  const scan = state.results["1.4"] as ShieldScanResponse | undefined;
 
   let screen: React.ReactNode;
   switch (beat) {
@@ -59,6 +60,23 @@ export function PhoneFrame({ state }: ViewProps) {
       break;
     case "1.2":
       screen = (
+        <div className="space-y-2">
+          <p className="font-semibold text-slate-900">Lời mời làm người giám hộ</p>
+          <p>Chị sẽ thấy:</p>
+          <ul className="list-disc pl-5">
+            {GUARDIAN_SCOPE.sees.map((x) => (
+              <li key={x}>{x}</li>
+            ))}
+          </ul>
+          <p>Không bao giờ thấy: {GUARDIAN_SCOPE.neverSees.join(", ").toLowerCase()}.</p>
+          <p className={done ? "font-semibold text-emerald-800" : "text-slate-600"}>
+            {done ? "Đã xác nhận" : GUARDIAN_SCOPE.canDo}
+          </p>
+        </div>
+      );
+      break;
+    case "1.3":
+      screen = (
         <div className="space-y-3">
           <p className="font-semibold text-slate-900">Cho AI phân tích khi quét</p>
           <p>
@@ -70,7 +88,7 @@ export function PhoneFrame({ state }: ViewProps) {
         </div>
       );
       break;
-    case "1.3":
+    case "1.4":
       screen = (
         <div className="space-y-2">
           <p className="font-semibold text-slate-900">Tin nhắn Zalo vừa nhận</p>
@@ -179,10 +197,18 @@ export function Backstage({ state }: ViewProps) {
         details = [`Người giám hộ: ${CAST.FAMILY_MINH.name}`, "Đồng ý được ghi nhật ký; Bác tắt được bất kỳ lúc nào."];
         break;
       case "1.2":
+        headline = `${CAST.FAMILY_MINH.name} đã tự xác nhận làm người giám hộ`;
+        details = [
+          "Trước khi xác nhận, chị không thấy thẻ nào.",
+          GUARDIAN_SCOPE.canDo,
+          GUARDIAN_SCOPE.revocable,
+        ];
+        break;
+      case "1.3":
         headline = "Đã ghi nhận đồng ý cho AI phân tích khi quét";
         details = ["Một mục đồng ý riêng, ghi nhật ký riêng.", "Chưa đồng ý thì hệ thống không quét."];
         break;
-      case "1.3": {
+      case "1.4": {
         const r = result as ShieldScanResponse;
         headline = `Rủi ro ${RISK_LEVEL_META[r.result.risk_level].labelVi.toLowerCase()} · ${r.result.risk_score}/100 · ${SCAM_CATEGORY_VI[r.result.scam_category]}`;
         details = r.result.psych_manipulation_cues.slice(0, 3).map((c) => c.explanation_vi);

@@ -17,7 +17,7 @@ const TODAY = [
 /** "Có TrustLoop" is DESIGN.md's Minute Timeline: the same minutes, a different ending. */
 const WITH_TRUSTLOOP = [
   { at: "Phút 00", label: "Quét tin nhắn: AI chỉ ra dấu hiệu giả danh và thao túng.", marker: true },
-  { at: "Phút 89", label: "Lệnh đầu tiên bị tạm giữ theo chế độ Bảo vệ 24h Bác đã bật; người giám hộ được báo.", hold: true },
+  { at: "Phút 89", label: "Lệnh đầu tiên bị tạm giữ theo chế độ Bảo vệ 24h Bác đã bật; người giám hộ (đã tự xác nhận) được báo.", hold: true },
   { at: "Phút 90+", label: "Đội Risk điều tra, hai người duyệt độc lập, tài khoản nhận bị cảnh báo." },
 ] as const;
 
