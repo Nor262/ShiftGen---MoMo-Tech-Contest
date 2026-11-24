@@ -72,7 +72,7 @@ export function parseWarRoomReplayRecord(raw: unknown): WarRoomReplayRecord {
   return WarRoomReplayRecordSchema.parse(raw);
 }
 
-/** Recorded with `node scripts/record-warroom-replay.mjs CASE-01` against a live LLM (ticket #15). */
+/** Recorded with `node scripts/record-warroom-replay.mjs [baseUrl]` against a live LLM (tickets #15, #36). */
 // shortcut: each new recording needs its JSON imported here by hand; switch to a generated index if scenarios grow.
 const WARROOM_REPLAY_RECORDS: Partial<
   Record<WarRoomReplayRecord["scenarioCode"], WarRoomReplayRecord>

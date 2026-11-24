@@ -1,4 +1,4 @@
-import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/session/shield";
+import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/model-ids";
 
 /** The one cast list for every displayed name in the demo (ticket #18). Codes stay in `.tech-only`. */
 export const CAST = {
