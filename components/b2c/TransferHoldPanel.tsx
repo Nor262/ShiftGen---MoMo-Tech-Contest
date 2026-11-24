@@ -96,7 +96,7 @@ export function TransferHoldPanel({
     const ok = await onEnableOptInNow();
     if (ok) {
       setStatusNote(
-        `Đã bật chế độ Bảo vệ 24h và liên kết Người giám hộ ${CAST.FAMILY_MINH.name}. Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.`,
+        `Đã bật chế độ Bảo vệ 24h và gửi lời mời người giám hộ tới ${CAST.FAMILY_MINH.name} (chị cần tự xác nhận). Bạn có thể bấm Tiếp tục chuyển tiền để kiểm chứng giữ chậm an toàn.`,
       );
     }
     setEnablingOptIn(false);
@@ -275,7 +275,7 @@ export function TransferHoldPanel({
               </p>
               <p className="text-sm text-amber-900">
                 Theo Luật 91/2025, hệ thống không tự bật ngầm. Hãy bật tự nguyện nếu muốn tạm giữ 24h
-                và báo người thân ({CAST.FAMILY_MINH.name}) kiểm tra trước khi tiền rời ví.
+                và báo người giám hộ ({CAST.FAMILY_MINH.name}, nếu chị đã xác nhận lời mời) kiểm tra trước khi tiền rời ví.
               </p>
             </div>
           </div>

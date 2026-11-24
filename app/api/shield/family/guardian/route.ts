@@ -6,6 +6,7 @@ import { ensureSessionSeeded, getSessionId, toUserConsentDto } from "@/lib/sessi
 
 export const dynamic = "force-dynamic";
 
+// shortcut: ownerId / guardianId are client-asserted (see lib/guardian.ts).
 /**
  * #6: the invited guardian ACCEPTs; the wallet owner REVOKEs at any time.
  * Each step is audited; invitations are created by POST /api/shield/consent (guardianId).

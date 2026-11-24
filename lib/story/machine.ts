@@ -2,7 +2,7 @@ import { CAST, type CastId } from "@/lib/cast";
 
 const { USER_B2C_HUNG: hung, FAMILY_MINH: minh, RISK_MAKER_HUYEN: huyen, RISK_CHECKER_TUAN: tuan } = CAST;
 
-/** The story stage (/story): 4 chapters × 2 beats, one primary action at a time (spec §5.2). */
+/** The story stage (/story): 4 chapters, one primary action at a time (spec §5.2; chapter 1 grew with #5/#6). */
 export type BeatId = "1.1" | "1.2" | "1.3" | "1.4" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
 export type Chapter = 1 | 2 | 3 | 4;
 

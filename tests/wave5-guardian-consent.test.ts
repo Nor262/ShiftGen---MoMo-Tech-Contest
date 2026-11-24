@@ -101,3 +101,51 @@ describe("guardian consent: invite → accept → revoke", () => {
     expect(actions.indexOf("GUARDIAN_ACCEPTED")).toBeLessThan(actions.indexOf("GUARDIAN_REVOKED"));
   });
 });
+
+describe("guardian state transitions through /api/shield/consent", () => {
+  const owner = (body: Record<string, unknown>) =>
+    postConsent(req("/api/shield/consent", { userId: "USER_B2C_NEW", ...body }));
+  const status = async (res: Response) => (await res.json()).consent.guardianStatus as string;
+
+  it("re-saving with the same accepted guardian keeps ACCEPTED", async () => {
+    expect(await status(await owner({ optIn24hHold: true, guardianId: "FAMILY_MINH" }))).toBe("INVITED");
+    await guardian({ action: "ACCEPT", ownerId: "USER_B2C_NEW", guardianId: "FAMILY_MINH" });
+    expect(await status(await owner({ optIn24hHold: true, guardianId: "FAMILY_MINH" }))).toBe("ACCEPTED");
+  });
+
+  it("turning 24h protection off removes the guardian and logs it", async () => {
+    expect(await status(await owner({ optIn24hHold: false, guardianId: null }))).toBe("NONE");
+    const log = await prisma.auditLog.findFirst({
+      where: { demoSessionId: sessionId, action: "GUARDIAN_REVOKED", actorId: "USER_B2C_NEW" },
+    });
+    expect(log).not.toBeNull();
+  });
+
+  it("revoking when there is no guardian is refused", async () => {
+    const res = await guardian({ action: "REVOKE", ownerId: "USER_B2C_NEW" });
+    expect(res.status).toBe(409);
+  });
+
+  it("inviting again after a revoke starts a new invitation", async () => {
+    await owner({ optIn24hHold: true, guardianId: "FAMILY_MINH" });
+    await guardian({ action: "REVOKE", ownerId: "USER_B2C_NEW" });
+    expect(await status(await owner({ optIn24hHold: true, guardianId: "FAMILY_MINH" }))).toBe("INVITED");
+  });
+
+  it("a pending invitation is shown even if another owner revoked this guardian", async () => {
+    // USER_B2C_HUNG revoked FAMILY_MINH earlier; USER_B2C_NEW has just invited her
+    const h = await holds();
+    expect(h.status).toBe(403);
+    const body = await h.json();
+    expect(body.code).toBe("GUARDIAN_NOT_ACCEPTED");
+    expect(body.invitedBy).toContain("USER_B2C_NEW");
+  });
+});
+
+import { maskAccount } from "@/lib/guardian";
+describe("maskAccount", () => {
+  it("keeps only the last 4 digits of an account", () => {
+    expect(maskAccount("990123456789")).toBe("•••• 6789");
+    expect(maskAccount("123")).toBe("123");
+  });
+});

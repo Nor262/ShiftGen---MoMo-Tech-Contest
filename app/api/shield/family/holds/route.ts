@@ -34,7 +34,7 @@ export async function GET(request: Request) {
     // #6: a guardian sees only owners who invited them AND whose invitation they accepted
     const guardianId = new URL(request.url).searchParams.get("guardianId") ?? "FAMILY_MINH";
     const access = await acceptedOwnersOf(demoSessionId, guardianId);
-    if (access.accepted.length === 0) return guardianDenied(access.revoked, access.invited);
+    if (access.accepted.length === 0) return guardianDenied(access);
 
     const rows = await prisma.heldTransaction.findMany({
       where: {

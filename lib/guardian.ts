@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// shortcut: identities (ownerId, guardianId) are asserted by the client, like every demo persona;
+// bind them to the signed-in user when the demo gets real authentication.
 /**
  * #6: what a guardian may see. Only owners whose invitation this guardian ACCEPTED, and only while
  * the owner has not revoked it (Luật 91/2025 Điều 9–10, 15.2.b; TT 40 Điều 19.1.n).
@@ -17,9 +19,10 @@ export async function acceptedOwnersOf(demoSessionId: string, guardianId: string
   };
 }
 
-export function guardianDenied(revoked: boolean, invitedBy: string[] = []) {
+export function guardianDenied(access: { revoked: boolean; invited: string[] }) {
+  const invitedBy = access.invited;
   return NextResponse.json(
-    revoked
+    access.revoked && invitedBy.length === 0
       ? { error: "Chủ ví đã thu hồi quyền người giám hộ của bạn.", code: "GUARDIAN_REVOKED" }
       : {
           error: "Bạn cần xác nhận lời mời làm người giám hộ trước khi xem thông tin.",

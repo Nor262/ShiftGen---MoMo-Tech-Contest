@@ -69,8 +69,7 @@ function buildTextLookupPayload(userId: B2CPersonaOption["apiUserId"], rawInput:
 export function B2CShieldWorkspace() {
   const [session, setSession] = useState<SessionResponse | null>(null);
   const [sessionLoading, setSessionLoading] = useState(true);
-  const [activePersonaKey, setActivePersonaKey] =
-    useState<B2CPersonaOption["key"]>("HUNG");
+  const [activePersonaKey, setActivePersonaKey] = useState<B2CPersonaOption["key"]>("HUNG");
 
   const [consentDraftChecked, setConsentDraftChecked] = useState(false);
   const [consentSaving, setConsentSaving] = useState(false);
@@ -90,11 +89,9 @@ export function B2CShieldWorkspace() {
   const [scanResponse, setScanResponse] = useState<ShieldScanResponse | null>(null);
   const [lastPresetCode, setLastPresetCode] = useState<NonNullable<ShieldScanRequest["presetCode"]> | null>(null);
 
-  const activePersona =
-    B2C_PERSONAS.find((p) => p.key === activePersonaKey) ?? B2C_PERSONAS[0];
+  const activePersona = B2C_PERSONAS.find((p) => p.key === activePersonaKey) ?? B2C_PERSONAS[0];
 
-  const activeConsent =
-    session?.consents.find((c) => c.userId === activePersona.apiUserId) ?? null;
+  const activeConsent = session?.consents.find((c) => c.userId === activePersona.apiUserId) ?? null;
   const savedOptIn = activeConsent?.optIn24hHold ?? false;
   const scanConsent = activeConsent?.optInScan ?? false;
   // #5: the last scan was refused for lack of scan consent → point the user at the consent card
@@ -348,9 +345,8 @@ export function B2CShieldWorkspace() {
                 </span>
               </div>
               <p className="text-sm text-slate-600 sm:text-base">
-                Kiểm tra ảnh chụp tin nhắn, link <code>.apk</code> hoặc số tài khoản trước khi
-                chuyển tiền — chữ lớn dễ đọc, giữ chậm minh bạch, tuyệt đối không giả danh cơ quan
-                chức năng.
+                Kiểm tra ảnh chụp tin nhắn, link <code>.apk</code> hoặc số tài khoản trước khi chuyển tiền — chữ lớn dễ
+                đọc, giữ chậm minh bạch, tuyệt đối không giả danh cơ quan chức năng.
               </p>
             </div>
           </div>
@@ -370,9 +366,7 @@ export function B2CShieldWorkspace() {
 
         {/* B2C Persona Switcher */}
         <div className="space-y-2 border-t border-slate-100 pt-4">
-          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
-            Chọn vai trò trải nghiệm B2C:
-          </p>
+          <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Chọn vai trò trải nghiệm B2C:</p>
           <div className="grid gap-2 sm:grid-cols-3" role="group" aria-label="Chuyển đổi nhân vật B2C">
             {B2C_PERSONAS.map((persona) => {
               const selected = persona.key === activePersona.key;
@@ -415,10 +409,10 @@ export function B2CShieldWorkspace() {
                 Chế độ Bảo vệ 24h Chủ động (Opt-in · Luật BVDLCN 91/2025)
               </h2>
               <p className="text-sm text-slate-600">
-                Mặc định luôn <strong>TẮT</strong>. Khi bạn tự nguyện bật, các giao dịch rủi ro cao
-                (&ge;75 điểm hoặc khớp chỉ báo cộng đồng) sẽ tạm giữ 24 giờ và chỉ gửi{" "}
-                <strong>tóm tắt đã ẩn CCCD/SĐT/số dư</strong> cho người thân{" "}
-                <strong>{CAST.FAMILY_MINH.name}</strong>. Bạn có quyền thu hồi bất kỳ lúc nào.
+                Mặc định luôn <strong>TẮT</strong>. Khi bạn tự nguyện bật, các giao dịch rủi ro cao (&ge;75 điểm hoặc
+                khớp chỉ báo cộng đồng) sẽ tạm giữ 24 giờ và chỉ gửi <strong>tóm tắt đã ẩn CCCD/SĐT/số dư</strong> cho
+                người giám hộ <strong>{CAST.FAMILY_MINH.name}</strong> sau khi chị tự xác nhận lời mời. Bạn có quyền thu
+                hồi bất kỳ lúc nào.
               </p>
             </div>
           </div>
@@ -434,7 +428,7 @@ export function B2CShieldWorkspace() {
             {sessionLoading
               ? "Đang kiểm tra..."
               : savedOptIn
-                ? `Trạng thái: ĐANG BẬT (${CAST.FAMILY_MINH.name})`
+                ? "Trạng thái: ĐANG BẬT"
                 : "Trạng thái: ĐANG TẮT (Mặc định)"}
           </span>
         </div>
@@ -448,12 +442,11 @@ export function B2CShieldWorkspace() {
               className="mt-1 h-5 w-5 shrink-0 rounded border-slate-400 text-momo-600 focus:ring-momo-500"
             />
             <span>
-              <strong>Tôi tự nguyện đồng ý</strong> bật quy tắc tạm giữ xác minh 24 giờ cho giao
-              dịch rủi ro cao và liên kết người thân giám hộ <strong>{CAST.FAMILY_MINH.name}</strong>
+              <strong>Tôi tự nguyện đồng ý</strong> bật quy tắc tạm giữ xác minh 24 giờ cho giao dịch rủi ro cao và mời
+              người thân <strong>{CAST.FAMILY_MINH.name}</strong> làm người giám hộ
               {activeConsent?.consentedAt && savedOptIn ? (
                 <span className="mt-0.5 block text-xs text-slate-500">
-                  Cập nhật gần nhất: {formatDateTimeVi(activeConsent.consentedAt)} (
-                  {activeConsent.consentVersion})
+                  Cập nhật gần nhất: {formatDateTimeVi(activeConsent.consentedAt)} ({activeConsent.consentVersion})
                 </span>
               ) : null}
             </span>
@@ -550,8 +543,7 @@ export function B2CShieldWorkspace() {
                 Máy quét Phút 00 — Kiểm tra Ảnh Chat, Link .APK &amp; Số Tài khoản
               </h2>
               <p className="text-sm text-slate-600">
-                Tra Kho Miễn dịch trước, sau đó AI phân tích đa phương thức &amp; ẩn PII tự
-                động.
+                Tra Kho Miễn dịch trước, sau đó AI phân tích đa phương thức &amp; ẩn PII tự động.
               </p>
             </div>
           </div>
@@ -584,16 +576,12 @@ export function B2CShieldWorkspace() {
                 handlePickedFile(e.dataTransfer.files?.[0] ?? null);
               }}
               className={`flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-5 text-center transition ${
-                isDragging
-                  ? "border-momo-600 bg-momo-50"
-                  : "border-slate-300 bg-white hover:border-momo-400"
+                isDragging ? "border-momo-600 bg-momo-50" : "border-slate-300 bg-white hover:border-momo-400"
               }`}
             >
               <Upload className="h-8 w-8 text-momo-600" aria-hidden="true" />
               <div className="space-y-1">
-                <p className="text-sm font-semibold text-slate-800">
-                  Kéo thả ảnh vào đây hoặc chọn tệp từ thiết bị
-                </p>
+                <p className="text-sm font-semibold text-slate-800">Kéo thả ảnh vào đây hoặc chọn tệp từ thiết bị</p>
                 <p className="text-xs text-slate-500">
                   Ảnh chỉ xử lý trong bộ nhớ cho phiên hiện tại, không lưu ảnh gốc vào CSDL.
                 </p>
@@ -660,9 +648,7 @@ export function B2CShieldWorkspace() {
                         <img
                           src={preset.imagePath}
                           alt={preset.label}
-                          onError={() =>
-                            setBrokenPresets((prev) => ({ ...prev, [preset.code]: true }))
-                          }
+                          onError={() => setBrokenPresets((prev) => ({ ...prev, [preset.code]: true }))}
                           className="h-12 w-12 shrink-0 rounded-lg border border-slate-200 object-cover"
                         />
                       )}
@@ -681,9 +667,7 @@ export function B2CShieldWorkspace() {
               onSubmit={(e) => void handleLookupScan(e)}
               className="space-y-2.5 rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
             >
-              <h3 className="text-base font-bold text-slate-900">
-                3. Tra cứu nhanh Số tài khoản / Link nghi vấn
-              </h3>
+              <h3 className="text-base font-bold text-slate-900">3. Tra cứu nhanh Số tài khoản / Link nghi vấn</h3>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
                   type="text"
@@ -713,9 +697,7 @@ export function B2CShieldWorkspace() {
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    setLookupInput("https://dichvucong-xacminh-hoso.example/capnhat.apk")
-                  }
+                  onClick={() => setLookupInput("https://dichvucong-xacminh-hoso.example/capnhat.apk")}
                   className="rounded-md border border-slate-300 bg-white px-2.5 py-1 font-mono text-slate-800 hover:bg-momo-50"
                 >
                   dichvucong-xacminh-hoso.example/capnhat.apk

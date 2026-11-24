@@ -73,9 +73,11 @@ export async function POST(
     const { guardianId, note } = parsed.data;
     // Glossary "Yêu cầu xét lại tạm giữ": the wallet owner escalates their own hold for human review (TT 53).
     const isSelfReview = guardianId === tx.senderId;
+    // shortcut: "self review" trusts guardianId === senderId as the owner acting (client-asserted identity,
+    // see lib/guardian.ts); a guardian path always needs an accepted, unrevoked invitation.
     if (!isSelfReview) {
       const access = await acceptedOwnersOf(demoSessionId, guardianId);
-      if (!access.accepted.includes(tx.senderId)) return guardianDenied(access.revoked, access.invited);
+      if (!access.accepted.includes(tx.senderId)) return guardianDenied(access);
     }
     const originLabel = isSelfReview ? "Người dùng yêu cầu xét lại" : "Gia đình báo cáo";
     const scan = tx.scanId
