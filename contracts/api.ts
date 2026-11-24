@@ -369,6 +369,29 @@ export const InvestigateCaseResponseSchema = z.object({
 });
 export type InvestigateCaseResponse = z.infer<typeof InvestigateCaseResponseSchema>;
 
+// GET/POST /api/warroom/cases/[caseId]/str — #7 suspicious-transaction report (simulated, never auto-sent)
+export const StrConfirmRequestSchema = z.object({
+  actorId: z.string().min(1),
+  actorRole: ActorRoleSchema,
+});
+export type StrConfirmRequest = z.infer<typeof StrConfirmRequestSchema>;
+
+export const StrStatusResponseSchema = z.object({
+  caseId: z.string(),
+  eligible: z.boolean(),
+  criminalSigns: z.boolean(),
+  detectedAt: z.string().nullable(),
+  occurredAt: z.string().nullable(),
+  deadline: z.string().nullable(),
+  basis: z.enum(["DETECTED_1_WORKING_DAY", "OCCURRED_3_WORKING_DAYS", "CRIMINAL_24_HOURS"]).nullable(),
+  basisVi: z.string().nullable(),
+  overdue: z.boolean(),
+  draftVi: z.string().nullable(),
+  confirmedAt: z.string().nullable(),
+  confirmedBy: z.string().nullable(),
+});
+export type StrStatusResponse = z.infer<typeof StrStatusResponseSchema>;
+
 // POST /api/warroom/cases/[caseId]/decision
 export const CaseDecisionRequestSchema = z.discriminatedUnion("decision", [
   z.object({

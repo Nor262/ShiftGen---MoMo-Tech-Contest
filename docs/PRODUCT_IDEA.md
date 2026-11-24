@@ -200,7 +200,7 @@ Chi tiết từng điều khoản và mức độ tin cậy ([VB] đã đọc ng
 
 ### Tính năng xuất phát từ luật (chưa xây)
 * **Hướng dẫn trình báo đúng luật — Đã làm (#8):** Công an cấp xã/Đồn Công an có trách nhiệm tiếp nhận tố giác và không được từ chối; người tố giác được thông báo kết quả, mốc 20 ngày (BLTTHS Điều 144.4, 145, 146.3, 147 [VB]). Hiện sau Lượt quét rủi ro cao/nghiêm trọng, sau khi người dùng tự hủy giao dịch và ở thẻ tổng kết `/story`; kèm cảnh báo "lừa đảo lần hai" và gói bằng chứng tạo ngay trên máy (chỉ phân tích, đã Ẩn PII, nhãn MẪU MÔ PHỎNG và nhãn AI). Không in số hotline chưa xác minh.
-* **Bàn giao báo cáo giao dịch đáng ngờ** kèm đồng hồ hạn chót (Luật PCRT Điều 26, 37 [VB]) và cờ cấm tiết lộ (Điều 40.2).
+* **Bàn giao báo cáo giao dịch đáng ngờ — Đã làm (#7):** khi Vụ có Kết luận rủi ro cao, War-Room hiện bản nháp (MẪU MÔ PHỎNG, tài khoản bị che) và hạn chót sớm nhất trong: 01 ngày làm việc từ khi phát hiện, 03 ngày làm việc từ khi phát sinh, 24 giờ nếu có dấu hiệu tội phạm (Luật PCRT Điều 26, 37 [VB]); quá hạn thì cảnh báo; chuyên viên có thẩm quyền xác nhận gửi (mô phỏng, có audit, không tự gửi). Thẻ CSKH được lọc để không nhắc việc báo cáo (Điều 40.2).
 * **Đồng bộ SIMO hằng tháng** trước ngày 10 (TT 40 Điều 30.2 [VB]).
 * **Trung tâm quyền dữ liệu** cho người dùng (Luật 91 Điều 4.1, 9.4, 10, 14 [VB]).
 * **Nhãn "Đánh giá do AI" + nút "Nhờ người thật xem lại"** (Luật 134 Điều 11.1, 4.2 [VB]).

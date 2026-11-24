@@ -3,6 +3,7 @@
 import { isReplayModel } from "@/lib/replay-label";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CAST, castName, modelDisplayName } from "@/lib/cast";
+import { StrDraftCard } from "./StrDraftCard";
 import { addWorkingDays, ESCALATION_DECISION_WORKING_DAYS } from "@/lib/working-days";
 import {
   AlertCircle,
@@ -658,6 +659,9 @@ export function WarRoomWorkspace() {
 
               {/* 4 Parallel Agents Grid */}
               <AgentCardsGrid agentsState={activeAgentsState} />
+
+              {/* #7: STR draft + legal deadline once the case has a Kết luận rủi ro cao */}
+              {selectedCase.status === "CLOSED" && <StrDraftCard caseId={selectedCase.caseId} />}
 
               {/* 2-Column Debate, Empathetic CSKH Handover Card & Maker Decisions */}
               <DebateAndDecisionPanel

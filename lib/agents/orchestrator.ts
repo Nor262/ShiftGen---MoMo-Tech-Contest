@@ -40,6 +40,7 @@ import {
   type AgentCasePromptInput,
 } from "./prompts";
 import { retrievePolicyChunks } from "./retriever";
+import { scrubTippingOff } from "@/lib/str";
 
 const DEFAULT_AGENT_TIMEOUT_MS = 20_000;
 
@@ -239,7 +240,7 @@ function safeParseCaseContext(raw: Record<string, unknown>) {
   return fallback.success ? fallback.data : {};
 }
 
-function enforceSynthesisGuardrail(
+export function enforceSynthesisGuardrail(
   rawSynthesis: DebateSynthesis,
   verifiedSources: string[],
 ): DebateSynthesis {
@@ -264,6 +265,8 @@ function enforceSynthesisGuardrail(
     independent_sources: verifiedSources,
     eligible_for_active_immunity: eligible,
     eligibility_reason_vi: eligibilityReason,
+    // #7: the CSKH card must never reveal a suspicious-transaction report (Luật PCRT Điều 40.2)
+    cskh_empathetic_card: scrubTippingOff(rawSynthesis.cskh_empathetic_card),
   });
 }
 
