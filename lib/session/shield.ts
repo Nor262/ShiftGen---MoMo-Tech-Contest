@@ -1,3 +1,4 @@
+import { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL } from "@/lib/model-ids";
 import { OFFICIAL_APP_STORE_GUIDANCE_VI } from "@/lib/safety-guidance";
 import {
   GuardianStatusSchema,
@@ -28,8 +29,7 @@ import type {
   UserConsent,
 } from "@prisma/client";
 
-export const DAILY_QUOTA_FALLBACK_MODEL = "fallback-immunity-and-rules" as const;
-export const TIER1_IMMUNITY_MODEL = "immunity-registry-tier1" as const;
+export { DAILY_QUOTA_FALLBACK_MODEL, TIER1_IMMUNITY_MODEL };
 export const DAILY_QUOTA_FALLBACK_NOTICE_VI =
   "Hạn mức lượt phân tích AI dùng chung trong ngày của bản demo đã tạm hết. Hệ thống đã chuyển sang chế độ dự phòng bằng Danh mục Miễn dịch Cộng đồng và bộ quy tắc nhận diện rủi ro.";
 
