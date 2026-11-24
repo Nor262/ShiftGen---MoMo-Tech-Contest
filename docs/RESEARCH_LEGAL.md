@@ -216,6 +216,7 @@ Mỗi ý tưởng dưới đây đều xuất phát từ một nghĩa vụ hoặ
 3. **Bàn giao báo cáo giao dịch đáng ngờ (B2E → Cục Phòng, chống rửa tiền).**
    - Căn cứ: Luật PCRT Điều 26, 37.2, 37.3, 40.2 [VB].
    - Tính năng: khi Vụ điều tra có Kết luận rủi ro cao, hệ thống soạn sẵn hồ sơ báo cáo giao dịch đáng ngờ kèm đồng hồ hạn chót: 01 ngày làm việc từ lúc phát hiện, 03 ngày làm việc từ lúc phát sinh, 24 giờ nếu có dấu hiệu tội phạm. Người có thẩm quyền ký gửi. Có cờ "cấm tiết lộ" chặn mọi nội dung CSKH hoặc B2C nhắc tới việc đã báo cáo. Biểu mẫu theo TT 09/2023 [CXM].
+   - **Đã làm (#7, bản mô phỏng):** `lib/str.ts` tính hạn chót sớm nhất; `GET/POST /api/warroom/cases/[caseId]/str` chỉ cho Vụ `CLOSED`, chỉ chuyên viên Risk xác nhận, ghi audit `STR_SUBMISSION_CONFIRMED` (MẪU MÔ PHỎNG), không gửi thật; thẻ CSKH được lọc bằng `scrubTippingOff`. Biểu mẫu TT 09/2023 chưa áp dụng (chưa xác minh). Ngày nghỉ lễ chưa tính (chỉ bỏ thứ Bảy, Chủ nhật).
 
 4. **Đồng bộ SIMO hằng tháng và kiểm tra trước khi chuyển tiền.**
    - Căn cứ: TT 40 Điều 28.1.d, 28.4.c, 30.2 và Phụ lục 01 (lý do 3, 4, 6, 8) [VB].
