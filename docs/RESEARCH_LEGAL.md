@@ -63,6 +63,7 @@
 **Kết luận: OK có điều kiện.**
 1. Màn hình đồng ý riêng cho Lượt quét, mặc định tắt, lưu log đồng ý. **Đã làm (#5).**
 2. Ghi rõ "kết quả do AI tạo" (Luật 134 Điều 11.1), kèm nút nhờ người thật xem xét (Điều 4.2). **Đã làm (#5).**
+   - Phạm vi của Đồng ý quét là mục đích *gửi ảnh hoặc nội dung tới AI*. Tra cứu số tài khoản/đường link trong Kho Miễn dịch (do con người duyệt) không gửi gì tới AI hay ra nước ngoài nên không cần mục này; căn cứ xử lý là Điều 19.1.b (phòng, chống tội phạm) như với dữ liệu bên thứ ba. Kiểm tra đồng ý chạy trước khi máy chủ nạp hay băm ảnh; giao diện khóa tải ảnh cho tới khi người dùng đồng ý.
 3. Ẩn PII trên thiết bị trước khi gọi LLM; không lưu ảnh gốc.
 4. Nếu dùng LLM ngoài VN: hồ sơ đánh giá xuyên biên giới (Điều 20), DPIA (Điều 21), thỏa thuận bên xử lý cấm huấn luyện. Nếu không thì dùng LLM đặt tại VN.
 5. Lập hồ sơ chứng minh căn cứ Điều 19.1.a/b cho dữ liệu bên thứ ba.

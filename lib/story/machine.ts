@@ -3,7 +3,7 @@ import { CAST, type CastId } from "@/lib/cast";
 const { USER_B2C_HUNG: hung, FAMILY_MINH: minh, RISK_MAKER_HUYEN: huyen, RISK_CHECKER_TUAN: tuan } = CAST;
 
 /** The story stage (/story): 4 chapters × 2 beats, one primary action at a time (spec §5.2). */
-export type BeatId = "1.1" | "1.2" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
+export type BeatId = "1.1" | "1.2" | "1.3" | "2.1" | "2.2" | "3.1" | "3.2" | "4.1" | "4.2";
 export type Chapter = 1 | 2 | 3 | 4;
 
 export interface StoryBeat {
@@ -25,17 +25,27 @@ export const STORY_BEATS: readonly StoryBeat[] = [
     phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
-    buttonLabel: "Đồng ý 2 mục",
+    buttonLabel: "Bật Bảo vệ 24h",
     lockedReason: "Mở ngay từ đầu",
-    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h (người giám hộ: con gái ${minh.name}) và đồng ý cho AI phân tích khi quét — hai lựa chọn riêng.`,
+    narration: `Phút 00 — ${hung.name} bật Bảo vệ 24h và chọn con gái ${minh.name} làm người giám hộ.`,
   },
   {
+    // #5: a separate beat, so each purpose gets its own explicit "yes" (Luật 91/2025 Điều 9.4.a)
     id: "1.2",
     phoneOwner: "USER_B2C_HUNG",
     chapter: 1,
     actor: "USER_B2C_HUNG",
-    buttonLabel: "Quét tin nhắn này",
+    buttonLabel: "Đồng ý cho AI phân tích khi quét",
     lockedReason: "Mở sau khi bật Bảo vệ 24h",
+    narration: `Phút 00 — Trước khi quét, ${hung.name} đồng ý riêng cho AI phân tích tin nhắn. Đây là lựa chọn khác, rút lại được.`,
+  },
+  {
+    id: "1.3",
+    phoneOwner: "USER_B2C_HUNG",
+    chapter: 1,
+    actor: "USER_B2C_HUNG",
+    buttonLabel: "Quét tin nhắn này",
+    lockedReason: "Mở sau khi đồng ý cho AI phân tích",
     narration: `Phút 00 — ${hung.name} nhận tin nhắn Zalo tự xưng công an, dọa bắt giam, và quét thử.`,
   },
   {

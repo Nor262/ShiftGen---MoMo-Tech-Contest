@@ -30,7 +30,7 @@ export function ScanConsentCard({
       const res = await fetch("/api/shield/consent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, optInScan: next, consentVersion: "v1.0-law91-2025" }),
+        body: JSON.stringify({ userId, optInScan: next }),
       });
       if (!res.ok) {
         setError(parseApiErrorMessage(res.status, await res.json().catch(() => null)));

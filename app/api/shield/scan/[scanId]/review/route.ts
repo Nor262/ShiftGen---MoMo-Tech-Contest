@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ScanReviewRequestSchema, ScanReviewResponseSchema } from "@/contracts";
 import { prisma } from "@/lib/prisma";
+import { checkDbRateLimit, extractClientIp } from "@/lib/rate-limit";
 import { ensureSessionSeeded, getSessionId } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
@@ -21,6 +22,13 @@ export async function POST(request: Request, context: { params: Promise<{ scanId
     }
 
     const demoSessionId = getSessionId(request);
+    const rateLimit = await checkDbRateLimit(extractClientIp(request), demoSessionId);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Bạn vừa gửi quá nhiều yêu cầu. Vui lòng thử lại sau.", code: "RATE_LIMIT_EXCEEDED" },
+        { status: 429, headers: { "Retry-After": String(rateLimit.retryAfterSec) } },
+      );
+    }
     await ensureSessionSeeded(demoSessionId);
     const scan = await prisma.scanSession.findFirst({ where: { scanId, demoSessionId } });
     if (!scan) {
@@ -29,6 +37,13 @@ export async function POST(request: Request, context: { params: Promise<{ scanId
         { status: 404 },
       );
     }
+    if (scan.userId !== parsed.data.userId) {
+      return NextResponse.json(
+        { error: "Chỉ người đã quét mới nhờ xem xét được kết quả này.", code: "NOT_SCAN_OWNER" },
+        { status: 403 },
+      );
+    }
+    // shortcut: the request is recorded in the audit log only; add a Risk-team review queue when needed.
 
     const log = await prisma.auditLog.create({
       data: {

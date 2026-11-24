@@ -24,7 +24,9 @@ export function modelDisplayName(model: string): string {
   return model;
 }
 
-/** True when the result came only from the human-approved immunity registry (no AI involved). */
-export function isRegistryOnlyModel(model: string): boolean {
-  return model === TIER1_IMMUNITY_MODEL;
+/** Where a scan result came from, in words a viewer can trust (#5, Luật 134/2025 Điều 11.1). */
+export function resultSourceLabel(model: string): string {
+  if (model === TIER1_IMMUNITY_MODEL) return "Kết quả tra cứu Kho Miễn dịch do con người duyệt (không dùng AI)";
+  if (model === DAILY_QUOTA_FALLBACK_MODEL) return "Kết quả từ quy tắc dự phòng (không dùng AI)";
+  return "Kết quả do AI tạo — có thể sai, hãy kiểm tra lại trước khi quyết định";
 }

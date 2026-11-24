@@ -86,6 +86,18 @@ describe("scan consent is required, separate and withdrawable", () => {
     expect(logs.every((l) => l.createdAt instanceof Date)).toBe(true);
   });
 
+  it("refuses an image/preset scan before touching the image when consent is missing", async () => {
+    await consent({ optInScan: false });
+    setLLMProviderForTest(failing);
+    const res = await postScan(
+      json("/api/shield/scan", { userId: "USER_B2C_HUNG", inputType: "DEMO_PRESET", presetCode: "CASE-01" }),
+    );
+    expect(res.status).toBe(403);
+    // nothing was analysed or stored for this refused request
+    const scans = await prisma.scanSession.count({ where: { demoSessionId: sessionId } });
+    expect(scans).toBe(1); // only the one consented scan from earlier
+  });
+
   it("rejects a consent request that changes nothing", async () => {
     const res = await consent({});
     expect(res.status).toBe(400);
@@ -104,6 +116,16 @@ describe("'Nhờ người thật xem xét' on a scan result", () => {
     expect((await res.json()).status).toBe("REVIEW_REQUESTED");
     const log = await prisma.auditLog.findFirst({ where: { demoSessionId: sessionId, action: "SCAN_REVIEW_REQUESTED" } });
     expect(log?.targetId).toBe(scanned.scanId);
+  });
+
+  it("refuses a review request from someone other than the scan's owner", async () => {
+    setLLMProviderForTest(failing);
+    await consent({ optInScan: true });
+    const scanned = await (await scan()).json();
+    const res = await postReview(json(`/api/shield/scan/${scanned.scanId}/review`, { userId: "USER_B2C_NEW" }), {
+      params: Promise.resolve({ scanId: scanned.scanId }),
+    });
+    expect(res.status).toBe(403);
   });
 
   it("404s for a scan that is not in this session", async () => {

@@ -99,6 +99,13 @@ export function B2CShieldWorkspace() {
   const scanConsent = activeConsent?.optInScan ?? false;
   // #5: the last scan was refused for lack of scan consent → point the user at the consent card
   const [scanNeedsConsent, setScanNeedsConsent] = useState(false);
+  function showScanError(status: number, data: unknown) {
+    setScanError(parseApiErrorMessage(status, data));
+    if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
+      setScanNeedsConsent(true);
+      document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
 
   const refreshSession = useCallback(async () => {
     try {
@@ -224,11 +231,7 @@ export function B2CShieldWorkspace() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setScanError(parseApiErrorMessage(res.status, data));
-        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
-          setScanNeedsConsent(true);
-          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        showScanError(res.status, data);
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -256,11 +259,7 @@ export function B2CShieldWorkspace() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setScanError(parseApiErrorMessage(res.status, data));
-        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
-          setScanNeedsConsent(true);
-          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        showScanError(res.status, data);
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -291,11 +290,7 @@ export function B2CShieldWorkspace() {
       });
       const data = await res.json().catch(() => null);
       if (!res.ok) {
-        setScanError(parseApiErrorMessage(res.status, data));
-        if ((data as { code?: string } | null)?.code === "SCAN_CONSENT_REQUIRED") {
-          setScanNeedsConsent(true);
-          document.getElementById("scan-consent")?.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+        showScanError(res.status, data);
         return;
       }
       setScanResponse(data as ShieldScanResponse);
@@ -486,6 +481,13 @@ export function B2CShieldWorkspace() {
         }}
       />
 
+      {!scanConsent && (
+        <p className="rounded-lg bg-slate-100 px-4 py-3 text-sm text-slate-800">
+          Quét ảnh đang khóa cho tới khi bạn đồng ý ở trên. Bạn vẫn tra cứu được số tài khoản hoặc đường link trong Kho
+          Miễn dịch mà không cần gửi gì tới AI.
+        </p>
+      )}
+
       {/* Minute-00 Scanner Card */}
       <section
         aria-labelledby="scanner-heading"
@@ -549,6 +551,7 @@ export function B2CShieldWorkspace() {
               </div>
               <input
                 type="file"
+                disabled={!scanConsent}
                 accept="image/jpeg,image/png,image/webp"
                 aria-label="Chọn ảnh chụp màn hình để phân tích"
                 onChange={(e) => handlePickedFile(e.target.files?.[0] ?? null)}
@@ -571,7 +574,7 @@ export function B2CShieldWorkspace() {
                   </p>
                   <button
                     type="button"
-                    disabled={scanning}
+                    disabled={scanning || !scanConsent}
                     onClick={() => void handleUploadScan()}
                     className="mt-1 min-h-[48px] rounded-lg bg-momo-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-momo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
                   >
@@ -595,7 +598,7 @@ export function B2CShieldWorkspace() {
                     <button
                       key={preset.code}
                       type="button"
-                      disabled={scanning}
+                      disabled={scanning || !scanConsent}
                       onClick={() => void handlePresetScan(preset.code)}
                       className="flex min-h-[60px] w-full items-center gap-3 rounded-xl border border-slate-200 bg-white p-2.5 text-left transition hover:border-momo-400 hover:bg-momo-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-momo-500 disabled:opacity-60"
                     >
