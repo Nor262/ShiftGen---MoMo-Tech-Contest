@@ -25,7 +25,7 @@ const CASE01_IMAGE = DEMO_PRESETS.find((p) => p.code === "CASE-01")!.imagePath;
 /** DESIGN.md Hold Banner: the page's single Signal Orange surface. */
 function HoldBanner({ holdExpiresAt }: { holdExpiresAt: string | null }) {
   return (
-    <div className="rounded-lg border-l-4 border-signal-700 bg-signal-50 p-3 text-slate-900">
+    <div className="rounded-lg border-l-4 border-signal-500 bg-signal-50 p-3 text-slate-900">
       <p>{NEUTRAL_HOLD_MESSAGE}</p>
       {holdExpiresAt && <p className="mt-1 font-semibold">Giữ đến {vnTime(holdExpiresAt)}</p>}
     </div>

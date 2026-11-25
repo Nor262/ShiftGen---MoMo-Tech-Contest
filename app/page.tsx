@@ -108,7 +108,7 @@ export default function HomePage() {
             {WITH_TRUSTLOOP.map((t) => (
               <li
                 key={t.at}
-                className={"hold" in t ? "flex gap-3 rounded-lg border-l-4 border-signal-700 bg-signal-50 p-2" : "flex gap-3"}
+                className={"hold" in t ? "flex gap-3 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-2" : "flex gap-3"}
               >
                 <span className="w-20 shrink-0 font-mono text-base font-semibold text-momo-primary">{t.at}</span>
                 <span className="text-base text-slate-800">
