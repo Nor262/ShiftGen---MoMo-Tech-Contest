@@ -179,7 +179,19 @@ ShiftGen logo (cropped mark, `public/shiftgen-mark.png`) 28px in the nav next to
 }
 ```
 
-### Tailwind v3 (`tailwind.config.ts` → `theme.extend`)
+### Tailwind shade numbers vs token names
+
+The shipped `tailwind.config.ts` keeps Tailwind's numbered scales. Shades 500–900 must be readable text on white/canvas, and 100–400 on the dark War-Room surface (enforced by `tests/design-tokens.test.ts`). So the numbers do not match the token names above:
+
+| Token | Tailwind class |
+|-------|----------------|
+| Signal Orange 700 `#c2410c` (hold banner, high-risk accent) | `signal-500` |
+| Signal Orange 500 `#ec652b` (icons, timeline marker, decorative ≥ 24px bold) | `signal-400` |
+| Signal Wash `#fdf0e9` | `signal-50` |
+| Seafoam 700 `#13705f` | `emerald-600` |
+| Seafoam 50 `#e8f6f1` | `emerald-50` |
+
+### Tailwind v3 (`tailwind.config.ts` → `theme.extend`) — original target, not what ships
 ```ts
 colors: {
   navy: "#111a4a", ink: "#3b3e47", steel: "#5b5e68", fog: "#a9acb6",

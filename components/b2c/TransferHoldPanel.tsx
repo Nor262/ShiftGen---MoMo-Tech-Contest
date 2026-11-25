@@ -377,11 +377,11 @@ export function TransferHoldPanel({
         <div
           role="region"
           aria-label="Biên nhận Tạm giữ Bảo mật 24h"
-          className="space-y-4 rounded-lg border-l-4 border-signal-700 bg-signal-50 p-5 text-slate-900"
+          className="space-y-4 rounded-lg border-l-4 border-signal-500 bg-signal-50 p-5 text-slate-900"
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-start gap-3">
-              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-signal-700" aria-hidden="true" />
+              <Lock className="mt-0.5 h-6 w-6 shrink-0 text-signal-500" aria-hidden="true" />
               <div className="space-y-1">
                 <span className="inline-block rounded-full bg-signal-100 px-2.5 py-0.5 text-xs font-bold text-signal-900">
                   ĐANG TẠM GIỮ ({DEMO_SIMULATION_LABEL})<span className="tech-only"> · ON_HOLD_24H</span>

@@ -227,7 +227,7 @@ export function ScanResultPanel({
             <div className="flex items-start gap-3">
               <ShieldAlert
                 className={`mt-0.5 h-7 w-7 shrink-0 ${
-                  immunityHit.status === "ACTIVE" ? "text-signal-700" : "text-amber-700"
+                  immunityHit.status === "ACTIVE" ? "text-signal-500" : "text-amber-700"
                 }`}
                 aria-hidden="true"
               />
@@ -429,7 +429,7 @@ export function ScanResultPanel({
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <Smartphone className="mt-0.5 h-7 w-7 shrink-0 text-signal-700" aria-hidden="true" />
+                <Smartphone className="mt-0.5 h-7 w-7 shrink-0 text-signal-500" aria-hidden="true" />
                 <div className="space-y-1">
                   <h4 className="text-lg font-extrabold text-signal-900">
                     Cảnh báo An toàn Thiết bị Android — Nguy cơ Mã độc .APK

@@ -31,6 +31,22 @@ describe("DESIGN.md color tokens", () => {
     expect(contrast("#111a4a", "#ffffff")).toBeCloseTo(16.5, 1);
   });
 
+  // #39: Tailwind shade numbers are not DESIGN.md token names; pin the mapping and its use.
+  it("signal-500 is DESIGN.md Signal Orange 700 and signal-400 is Signal Orange 500", () => {
+    expect((colors.signal as Scale)["500"]).toBe("#c2410c");
+    expect((colors.signal as Scale)["400"]).toBe("#ec652b");
+  });
+
+  it("hold and high-risk accents use signal-500 (#c2410c), not the darker signal-700", async () => {
+    const { readdirSync, readFileSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const walk = (d: string): string[] =>
+      readdirSync(d).flatMap((n) => (statSync(join(d, n)).isDirectory() ? walk(join(d, n)) : /\.tsx?$/.test(n) ? [join(d, n)] : []));
+    const files = [...walk("app"), ...walk("components")];
+    expect(files.length).toBeGreaterThan(10);
+    for (const f of files) expect(readFileSync(f, "utf8"), f).not.toMatch(/(border|text|bg)-signal-700/);
+  });
+
   for (const name of scales) {
     const scale = colors[name] as Scale;
     const darkSurfaces = [(colors.slate as Scale)["900"], (colors.slate as Scale)["950"]];
