@@ -1,10 +1,28 @@
 // Exports docs/submission/one-page-guide.html to a strict 1-page A4 PDF.
 // Usage: node scripts/export-guide.mjs
-import { chromium } from "playwright";
 import { existsSync, mkdirSync, readdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+
+const require = createRequire(import.meta.url);
+
+function loadPlaywright() {
+  const candidates = [
+    "playwright",
+    process.env.PLAYWRIGHT_PATH,
+    join(homedir(), ".local", "share", "mise", "installs", "playwright", "latest", "node_modules", "playwright"),
+  ].filter(Boolean);
+  for (const modPath of candidates) {
+    try {
+      return require(modPath);
+    } catch {
+      // try next candidate
+    }
+  }
+  throw new Error("Could not load playwright module");
+}
 
 function resolveChromiumExecutable() {
   const cacheDir = join(homedir(), ".cache", "ms-playwright");
@@ -20,6 +38,7 @@ function resolveChromiumExecutable() {
   return undefined;
 }
 
+const { chromium } = loadPlaywright();
 mkdirSync("submission", { recursive: true });
 const executablePath = resolveChromiumExecutable();
 const browser = await chromium.launch(
