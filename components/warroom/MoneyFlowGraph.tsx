@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Background,
+  BackgroundVariant,
   Controls,
   Handle,
   MarkerType,
@@ -64,78 +65,125 @@ function TrustLoopGraphNode({ data, selected }: NodeProps<TrustFlowNode>) {
   const typeMeta = NODE_TYPE_META[raw.type];
 
   const containerClass = isFlagged
-    ? "border-red-500 bg-red-950/85 text-red-50 shadow-[0_0_20px_rgba(239,68,68,0.35)]"
+    ? "border-[#ec652b]/80 bg-[#1a1314] text-slate-50"
     : isVerifiedMerchant
-      ? "border-emerald-400 bg-emerald-950/85 text-emerald-50 shadow-[0_0_18px_rgba(16,185,129,0.28)]"
-      : "border-slate-600 bg-slate-900/95 text-slate-100 shadow-md";
+      ? "border-emerald-500/75 bg-[#091c18] text-emerald-50"
+      : "border-slate-700 bg-[#0d1624] text-slate-100";
 
-  const badgeClass = isFlagged
-    ? "border-red-400/50 bg-red-500/20 text-red-200"
+  const typeTextClass = isFlagged
+    ? "text-[#fb923c]"
     : isVerifiedMerchant
-      ? "border-emerald-400/50 bg-emerald-500/20 text-emerald-200"
-      : "border-slate-600 bg-slate-800 text-slate-300";
+      ? "text-emerald-300"
+      : "text-slate-300";
+
+  const riskBadgeClass = isFlagged
+    ? "bg-[#c2410c]/30 text-[#fed7aa] border border-[#ec652b]/50"
+    : isVerifiedMerchant
+      ? "bg-emerald-500/20 text-emerald-200 border border-emerald-400/40"
+      : "bg-slate-800/90 text-slate-300 border border-slate-700";
 
   return (
     <div
-      className={`min-w-[205px] max-w-[245px] rounded-xl border-2 px-3 py-2.5 transition ${containerClass} ${
-        selected ? "ring-2 ring-momo-400 ring-offset-2 ring-offset-slate-950" : ""
+      className={`w-[240px] rounded-lg border-[1.5px] px-3 py-2.5 transition-colors ${containerClass} ${
+        selected ? "ring-2 ring-[#0b57d0] ring-offset-2 ring-offset-[#011821]" : ""
       }`}
     >
       <Handle
         type="target"
         position={Position.Left}
-        className="!h-2.5 !w-2.5 !border-slate-950 !bg-slate-400"
+        className="!h-2 !w-2 !border-[#011821] !bg-slate-400"
       />
 
-      <div className="mb-1.5 flex items-center justify-between gap-2">
+      <div className="mb-1 flex items-center justify-between gap-2">
         <span
-          className={`inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide ${badgeClass}`}
+          className={`inline-flex items-center gap-1 whitespace-nowrap text-xs font-semibold uppercase tracking-wide ${typeTextClass}`}
         >
           {getNodeIcon(raw.type)}
           <span>{typeMeta.labelVi}</span>
         </span>
         {typeof raw.risk_score === "number" && (
           <span
-            className={`rounded px-1.5 py-0.5 font-mono text-xs font-bold ${
-              isFlagged
-                ? "bg-red-500/30 text-red-100"
-                : isVerifiedMerchant
-                  ? "bg-emerald-500/25 text-emerald-100"
-                  : "bg-slate-800 text-slate-300"
-            }`}
+            className={`whitespace-nowrap rounded px-1.5 py-0.5 font-mono text-xs font-semibold ${riskBadgeClass}`}
           >
             Risk {raw.risk_score}
           </span>
         )}
       </div>
 
-      <p className="truncate text-xs font-bold leading-snug text-white">{raw.label}</p>
+      <p className="truncate text-sm font-semibold leading-snug text-white">{raw.label}</p>
       {raw.subtitle && (
-        <p className="mt-0.5 line-clamp-2 text-xs leading-tight text-slate-300">
+        <p className="mt-0.5 truncate text-xs leading-snug text-slate-300" title={raw.subtitle}>
           {raw.subtitle}
-        </p>
-      )}
-
-      {isFlagged && (
-        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-red-500/25 px-1.5 py-0.5 text-xs font-semibold text-red-200">
-          <AlertOctagon className="h-3 w-3" aria-hidden="true" />
-          ĐÁNH DẤU RỦI RO
-        </p>
-      )}
-      {isVerifiedMerchant && (
-        <p className="mt-1.5 inline-flex items-center gap-1 rounded bg-emerald-500/25 px-1.5 py-0.5 text-xs font-semibold text-emerald-200">
-          <ShieldCheck className="h-3 w-3" aria-hidden="true" />
-          HỢP LỆ / SẠCH
         </p>
       )}
 
       <Handle
         type="source"
         position={Position.Right}
-        className="!h-2.5 !w-2.5 !border-slate-950 !bg-slate-400"
+        className="!h-2 !w-2 !border-[#011821] !bg-slate-400"
       />
     </div>
   );
+}
+
+/**
+ * Compute non-overlapping layered coordinates so money-flow columns have wide
+ * horizontal corridors for edge labels and shared DEVICE/IP nodes sit in
+ * dedicated top/bottom lanes instead of blocking intermediate edges.
+ */
+function computeLayeredPositions(nodes: GraphNode[]): Map<string, { x: number; y: number }> {
+  const positions = new Map<string, { x: number; y: number }>();
+
+  const col0: GraphNode[] = [];
+  const col1: GraphNode[] = [];
+  const col2: GraphNode[] = [];
+  const topInfra: GraphNode[] = [];
+  const bottomInfra: GraphNode[] = [];
+
+  for (const node of nodes) {
+    switch (node.type) {
+      case "VICTIM":
+        col0.push(node);
+        break;
+      case "MULE":
+      case "MERCHANT":
+        col1.push(node);
+        break;
+      case "SCAMMER":
+      case "BANK_ACCOUNT":
+        col2.push(node);
+        break;
+      case "DEVICE":
+        topInfra.push(node);
+        break;
+      case "IP":
+        bottomInfra.push(node);
+        break;
+    }
+  }
+
+  const placeColumn = (items: GraphNode[], x: number, centerY: number, gapY: number) => {
+    if (items.length === 0) return;
+    const totalHeight = (items.length - 1) * gapY;
+    const startY = centerY - totalHeight / 2;
+    items.forEach((item, idx) => {
+      positions.set(item.id, { x, y: Math.round(startY + idx * gapY) });
+    });
+  };
+
+  const mainCenterY = 276;
+  placeColumn(col0, 24, mainCenterY, 132);
+  placeColumn(col1, 412, mainCenterY, 140);
+  placeColumn(col2, 800, mainCenterY, 140);
+
+  topInfra.forEach((item, idx) => {
+    positions.set(item.id, { x: 604 + idx * 272, y: 20 });
+  });
+  bottomInfra.forEach((item, idx) => {
+    positions.set(item.id, { x: 604 + idx * 272, y: 528 });
+  });
+
+  return positions;
 }
 
 const nodeTypes = {
@@ -172,20 +220,29 @@ export function MoneyFlowGraph({
     return new Set(graphData.nodes.filter((n) => n.flagged).map((n) => n.id));
   }, [dismissedFp, flaggedNodeIds, graphData.nodes]);
 
+  const layoutPositions = useMemo(
+    () => computeLayeredPositions(graphData.nodes),
+    [graphData.nodes],
+  );
+
+  const nodeTypeById = useMemo(
+    () => new Map(graphData.nodes.map((n) => [n.id, n.type])),
+    [graphData.nodes],
+  );
+
   const flowNodes = useMemo<TrustFlowNode[]>(
     () =>
       graphData.nodes.map((node, index) => {
         const isFlagged = flaggedSet.has(node.id);
         const isVerifiedMerchant = node.type === "MERCHANT" && !isFlagged;
-        // Fallback grid layout when upstream graph omits coordinates
         const fallbackPos = {
-          x: (index % 3) * 285 + 40,
-          y: Math.floor(index / 3) * 145 + 40,
+          x: (index % 3) * 320 + 24,
+          y: Math.floor(index / 3) * 140 + 24,
         };
         return {
           id: node.id,
           type: "trustNode",
-          position: node.position ?? fallbackPos,
+          position: layoutPositions.get(node.id) ?? node.position ?? fallbackPos,
           data: {
             raw: node,
             isFlagged,
@@ -193,12 +250,19 @@ export function MoneyFlowGraph({
           },
         };
       }),
-    [flaggedSet, graphData.nodes],
+    [flaggedSet, graphData.nodes, layoutPositions],
   );
 
   const flowEdges = useMemo<Edge[]>(
     () =>
       graphData.edges.map((edge) => {
+        const srcType = nodeTypeById.get(edge.source);
+        const dstType = nodeTypeById.get(edge.target);
+        const isInfraLink =
+          srcType === "DEVICE" ||
+          srcType === "IP" ||
+          dstType === "DEVICE" ||
+          dstType === "IP";
         const edgeFlagged =
           !dismissedFp &&
           (Boolean(edge.flagged) ||
@@ -208,34 +272,46 @@ export function MoneyFlowGraph({
           edge.label ??
           (typeof edge.amount_vnd === "number" ? formatVnd(edge.amount_vnd) : undefined);
 
+        const strokeColor = isInfraLink
+          ? edgeFlagged
+            ? "#94a3b8"
+            : "#64748b"
+          : edgeFlagged
+            ? "#ec652b"
+            : "#34d399";
+
         return {
           id: edge.id,
           source: edge.source,
           target: edge.target,
-          label: labelText,
-          animated: edgeFlagged,
+          type: "smoothstep",
+          pathOptions: { borderRadius: 10 },
+          label: isInfraLink ? undefined : labelText,
+          animated: !isInfraLink && edgeFlagged,
           style: {
-            stroke: edgeFlagged ? "#ec652b" : "#44b48b",
-            strokeWidth: edgeFlagged ? 2.2 : 1.7,
+            stroke: strokeColor,
+            strokeWidth: isInfraLink ? 1.3 : edgeFlagged ? 2 : 1.7,
+            strokeDasharray: isInfraLink ? "5 4" : undefined,
           },
           labelStyle: {
-            fill: "#e3e4e8",
+            fill: "#f1f5f9",
             fontSize: 11,
             fontWeight: 600,
+            fontFamily: "var(--font-mono), ui-monospace, monospace",
           },
           labelBgStyle: {
-            fill: "#0c0f16",
-            fillOpacity: 0.92,
+            fill: "#011821",
+            fillOpacity: 0.94,
           },
           labelBgPadding: [6, 3],
           labelBgBorderRadius: 4,
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            color: edgeFlagged ? "#ec652b" : "#44b48b",
+            color: strokeColor,
           },
         };
       }),
-    [dismissedFp, flaggedSet, graphData.edges],
+    [dismissedFp, flaggedSet, graphData.edges, nodeTypeById],
   );
 
   const selectedNode = useMemo(
@@ -276,7 +352,7 @@ export function MoneyFlowGraph({
       </div>
 
       <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
-        <div className="h-[410px] w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+        <div className="h-[490px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#011821]">
           {mounted ? (
             <ReactFlowProvider>
               <ReactFlow
@@ -284,13 +360,13 @@ export function MoneyFlowGraph({
                 edges={flowEdges}
                 nodeTypes={nodeTypes}
                 fitView
-                fitViewOptions={{ padding: 0.2 }}
+                fitViewOptions={{ padding: 0.14 }}
                 minZoom={0.4}
                 maxZoom={1.6}
                 onNodeClick={(_event, node) => setSelectedNodeId(node.id)}
                 onPaneClick={() => setSelectedNodeId(null)}
               >
-                <Background color="#23262f" gap={20} />
+                <Background variant={BackgroundVariant.Dots} color="#1e3a4c" gap={22} size={1.2} />
                 <Controls className="!rounded-lg !border !border-slate-700 !bg-slate-900 [&_button]:!border-slate-700 [&_button]:!bg-slate-900 [&_button]:!fill-slate-200 hover:[&_button]:!bg-slate-800" />
                 <MiniMap
                   pannable
