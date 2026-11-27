@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vòng lặp Phòng vệ 4 Nhịp Khép kín — MoMo TrustLoop v2</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f6f6f8;
+      --color-paper-2: #ffffff;
+      --color-ink:     #111a4a;
+      --color-muted:   #5b5e68;
+      --color-soft:    #3b3e47;
+      --color-accent:  #c2410c;
+      --color-link:    #0b57d0;
+      --font-sans:     'Be Vietnam Pro', system-ui, sans-serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1200px; width: 100%; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-sans);
+      font-size: clamp(1.5rem, 2.2vw + 0.75rem, 2rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 960px; display: block; }
+
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">LOOP · MOMO TRUSTLOOP V2</p>
+    <h1>Vòng lặp Phòng vệ Niềm tin Số Khép kín</h1>
+
+    <div class="diagram-container">
+      <!-- Parametric Loop: C=(480,292), R=196, N=6, station=184x64, hub=204x96 -->
+      <svg viewBox="0 0 960 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="loop-flywheel-title loop-flywheel-desc">
+        <title id="loop-flywheel-title">Vòng lặp Phòng vệ Khép kín MoMo TrustLoop</title>
+        <desc id="loop-flywheel-desc">Chu trình 6 trạm khép kín từ quét ảnh Phút 00, tạm giữ 24h, người giám hộ, điều tra 4 Agent tới duyệt 2 cấp và đồng bộ ngược vào lõi miễn dịch trung tâm.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#5b5e68"/>
+          </marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#c2410c"/>
+          </marker>
+          <marker id="arrow-spoke" markerWidth="6" markerHeight="5" refX="5" refY="2.5" orient="auto">
+            <polygon points="0 0, 6 2.5, 0 5" fill="#5b5e68"/>
+          </marker>
+          <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="0.9" fill="rgba(17,26,74,0.10)"/>
+          </pattern>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#f6f6f8"/>
+        <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
+
+        <!-- SOLID RING ARCS (R=196 around C=(480,292)) -->
+        <!-- k=0 -> k=1 -->
+        <path d="M 571.630,118.758 A 196 196 0 0 1 649.365,193.362" fill="none" stroke="#5b5e68" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <!-- k=1 -> k=2 -->
+        <path d="M 667.856,236.416 A 196 196 0 0 1 668.426,345.774" fill="none" stroke="#c2410c" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+        <!-- k=2 -> k=3 -->
+        <path d="M 650.095,389.452 A 196 196 0 0 1 572.668,464.700" fill="none" stroke="#5b5e68" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <!-- k=3 -> k=4 -->
+        <path d="M 388.370,465.242 A 196 196 0 0 1 310.635,390.638" fill="none" stroke="#5b5e68" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <!-- k=4 -> k=5 -->
+        <path d="M 292.144,347.584 A 196 196 0 0 1 291.574,238.226" fill="none" stroke="#5b5e68" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <!-- k=5 -> k=0 -->
+        <path d="M 309.905,194.548 A 196 196 0 0 1 387.332,119.300" fill="none" stroke="#c2410c" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+        <!-- DASHED RADIAL WRITE-BACK SPOKES (station -> hub) -->
+        <line x1="480.0" y1="128.0" x2="480.0" y2="238.0" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <line x1="594.3" y1="226.0" x2="573.9" y2="237.8" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <line x1="594.3" y1="358.0" x2="573.9" y2="346.2" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <line x1="480.0" y1="456.0" x2="480.0" y2="346.0" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <line x1="365.7" y1="358.0" x2="386.1" y2="346.2" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <line x1="365.7" y1="226.0" x2="386.1" y2="237.8" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+
+        <!-- Spoke labels on k=0 and k=4 -->
+        <rect x="444" y="172" width="72" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="480" y="182" fill="#5b5e68" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TRA CỨU TIER 1</text>
+
+        <rect x="444" y="396" width="72" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="480" y="406" fill="#5b5e68" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">GHI AUDITLOG</text>
+
+        <!-- CENTRAL HUB (204x96 at 378,244) -->
+        <g>
+          <rect x="378" y="244" width="204" height="96" rx="8" fill="#f6f6f8"/>
+          <rect x="378" y="244" width="204" height="96" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.6"/>
+          <rect x="430" y="254" width="100" height="14" rx="2" fill="rgba(17,26,74,0.08)"/>
+          <text x="480" y="264" fill="#111a4a" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">SHARED IMMUNITY</text>
+          <text x="480" y="292" fill="#111a4a" font-size="13" font-family="'Be Vietnam Pro', sans-serif" font-weight="700" text-anchor="middle">Kho Miễn dịch 4 Lớp</text>
+          <text x="480" y="312" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Chỉ-ghi-thêm · TTL · Đồng bộ B2C</text>
+        </g>
+
+        <!-- 6 STATIONS (184x64) -->
+        <!-- k=0: Top (480, 96) -> box (388, 64) -->
+        <g>
+          <rect x="388" y="64" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="388" y="64" width="184" height="64" rx="6" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <text x="480" y="88" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600" text-anchor="middle">01 · Phút 00 Quét ảnh</text>
+          <text x="480" y="108" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Ẩn PII · Nhận diện dụ .apk</text>
+        </g>
+
+        <!-- k=1: Top-right (650, 194) -> box (558, 162) [FOCAL] -->
+        <g>
+          <rect x="558" y="162" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="558" y="162" width="184" height="64" rx="6" fill="#fdf0e9" stroke="#c2410c" stroke-width="1.8"/>
+          <text x="650" y="186" fill="#c2410c" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="700" text-anchor="middle">02 · Phút 89 Tạm giữ 24h</text>
+          <text x="650" y="206" fill="#3b3e47" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Opt-in · Thông báo trung tính</text>
+        </g>
+
+        <!-- k=2: Bottom-right (650, 390) -> box (558, 358) -->
+        <g>
+          <rect x="558" y="358" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="558" y="358" width="184" height="64" rx="6" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <text x="650" y="382" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600" text-anchor="middle">03 · Người giám hộ</text>
+          <text x="650" y="402" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">0 PII · Chỉ quyền Chuyển cấp</text>
+        </g>
+
+        <!-- k=3: Bottom (480, 488) -> box (388, 456) -->
+        <g>
+          <rect x="388" y="456" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="388" y="456" width="184" height="64" rx="6" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <text x="480" y="480" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600" text-anchor="middle">04 · Phút 90+ War-Room</text>
+          <text x="480" y="500" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">4 Agent song song + Phản biện</text>
+        </g>
+
+        <!-- k=4: Bottom-left (310, 390) -> box (218, 358) -->
+        <g>
+          <rect x="218" y="358" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="218" y="358" width="184" height="64" rx="6" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <text x="310" y="382" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600" text-anchor="middle">05 · Duyệt 2 cấp Checker</text>
+          <text x="310" y="402" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">&gt;=2 nguồn · Maker != Checker</text>
+        </g>
+
+        <!-- k=5: Top-left (310, 194) -> box (218, 162) -->
+        <g>
+          <rect x="218" y="162" width="184" height="64" rx="6" fill="#f6f6f8"/>
+          <rect x="218" y="162" width="184" height="64" rx="6" fill="#ffffff" stroke="#0b57d0" stroke-width="1.4"/>
+          <text x="310" y="186" fill="#0b57d0" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600" text-anchor="middle">06 · Bảo vệ Người kế tiếp</text>
+          <text x="310" y="206" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Cảnh báo tức thì khi trùng</text>
+        </g>
+
+        <!-- LEGEND STRIP -->
+        <line x1="40" y1="552" x2="920" y2="552" stroke="rgba(17,26,74,0.12)" stroke-width="1"/>
+        <line x1="40" y1="576" x2="76" y2="576" stroke="#5b5e68" stroke-width="1.4" marker-end="url(#arrow)"/>
+        <text x="84" y="580" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Luồng xử lý thuận chiều (Phút 00 → Hôm sau)</text>
+
+        <line x1="396" y1="576" x2="432" y2="576" stroke="#5b5e68" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-spoke)"/>
+        <text x="440" y="580" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Đồng bộ trạng thái về Kho Miễn dịch</text>
+
+        <rect x="700" y="569" width="14" height="14" rx="3" fill="#fdf0e9" stroke="#c2410c" stroke-width="1.5"/>
+        <text x="722" y="580" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Điểm chặn trước khi mất tiền</text>
+      </svg>
+    </div>
+  </div>
+</body>
+</html>
