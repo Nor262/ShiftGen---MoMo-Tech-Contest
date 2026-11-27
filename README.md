@@ -12,15 +12,15 @@
 - **Trải nghiệm kể chuyện nhanh (/story):** [`https://momo-trustloop.vercel.app/story`](https://momo-trustloop.vercel.app/story)
 - **Không gian làm việc đầy đủ:** [`https://momo-trustloop.vercel.app`](https://momo-trustloop.vercel.app) *(không cần đăng nhập/mật khẩu; tự cô lập theo phiên)*
 - **Hạ tầng triển khai hiện tại:** Vercel (`sin1` Singapore, Fluid Compute `maxDuration` up to `300s`; route `/api/shield/scan` đặt `maxDuration = 60`, `/api/warroom/cases/[caseId]/investigate` đặt `maxDuration = 120`) + Supabase PostgreSQL (`ap-southeast-1`) + **FPT AI Factory** (`gemma-4-31B-it` cho Vision, `Qwen3.8-27B` cho War-Room, fallback sang Gemini).
-- **Kế hoạch chuyển đổi AWS Sandbox:** Đã hoàn thiện adapter **AWS Bedrock** (`LLM_BACKEND=bedrock`), sẵn sàng chuyển khi BTC cấp quyền model; bản Vercel hiện tại giữ làm môi trường demo trực tuyến & dự phòng.
+- **Kế hoạch AWS Sandbox (tùy chọn, theo email BTC):** Đã hoàn thiện adapter **AWS Bedrock** (`LLM_BACKEND=bedrock`, region `ap-southeast-2`), sẵn sàng chuyển nếu được cấp quyền model; bản Vercel hiện tại chạy chính thức cho vòng sơ khảo.
 - **Lưu ý Supabase Free Tier (Keep-Alive):** Supabase Free tự tạm dừng (*auto-pause*) sau 7 ngày không có truy vấn. Khuyến nghị ping định kỳ endpoint kiểm tra sức khỏe `GET /api/health` (trả HTTP `200` kèm trạng thái DB & LLM) để giữ kết nối luôn sẵn sàng.
 - **Đồng bộ 2 thiết bị cho BGK:** Mở cùng URL với tham số `?session=momo-final` trên cả Laptop và Điện thoại.
-- **Tài liệu đi kèm:** [Hướng dẫn Demo 1 Trang (3 phút)](./docs/ONE_PAGE_GUIDE.md) | [Bảng Số đo Độ trễ Thực tế](./docs/MEASURED_LATENCIES.md) | [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md) | [Đặc tả Yêu cầu](./docs/SPEC_REQUIREMENTS.md) | [Đặc tả Thiết kế](./docs/SPEC_DESIGN.md) | [Căn cứ pháp lý](./docs/RESEARCH_LEGAL.md) | [Số liệu vấn đề](./docs/RESEARCH_PROBLEM.md).
+- **Tài liệu đi kèm:** [Hướng dẫn Demo 1 Trang (3 phút)](./docs/ONE_PAGE_GUIDE.md) | [Kịch bản Video 3 phút](./docs/submission/VIDEO_SCRIPT_3MIN.md) | [Bảng Số đo Độ trễ Thực tế](./docs/MEASURED_LATENCIES.md) | [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md) | [Đặc tả Yêu cầu](./docs/SPEC_REQUIREMENTS.md) | [Đặc tả Thiết kế](./docs/SPEC_DESIGN.md) | [Căn cứ pháp lý](./docs/RESEARCH_LEGAL.md) | [Số liệu vấn đề](./docs/RESEARCH_PROBLEM.md).
 
 ### Chạy Local (SQLite — Phát triển & Kiểm thử nhanh)
 ```bash
 npm install
-cp .env.example .env   # Điền GEMINI_API_KEY (hoặc OPENAI_API_KEY / AWS Bedrock)
+cp .env.example .env   # Điền khóa LLM (nếu dùng Gemini key, đặt LLM_BACKEND=gemini)
 npm run db:push
 npm run dev
 ```
@@ -48,9 +48,9 @@ Container `app` tự đợi `postgres` healthy, chạy `prisma db push --schema=
 
 ### Kiến trúc `LLMProvider` (Độc lập Cloud & Mô hình)
 Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvider` cấu hình qua biến môi trường:
-- **Primary (`LLM_BACKEND=gemini`):** Google Gemini REST API (`gemini-2.5-flash` cho cả Vision & Reasoning).
-- **AWS Bedrock (`LLM_BACKEND=bedrock`, `ap-southeast-1`):** `@aws-sdk/client-bedrock-runtime` (`ConverseCommand`) với **Amazon Nova Pro** (`apac.amazon.nova-pro-v1:0`) cho Vision và **Claude Sonnet** (`apac.anthropic.claude-sonnet-4-20250514-v1:0`) cho 4+1 Agents, tùy chọn `BEDROCK_GUARDRAIL_ID`.
-- **Fallback (`LLM_FALLBACK_BACKEND=openai`):** Bất kỳ endpoint OpenAI-compatible (`/chat/completions`).
+- **Live Production hiện tại (`LLM_BACKEND=openai` — FPT AI Factory):** Endpoint OpenAI-compatible (`/chat/completions` tại `https://token-api.fpt.ai/v1`) chạy **`gemma-4-31B-it`** (Vision) và **`Qwen3.8-27B`** (War-Room 4+1 Agents).
+- **Mặc định trong code & Dự phòng (`LLM_BACKEND=gemini` / `LLM_FALLBACK_BACKEND=gemini`):** Google Gemini REST API (`gemini-3-flash-preview` cho Vision & `gemini-3.5-flash-lite` cho Reasoning).
+- **AWS Bedrock (`LLM_BACKEND=bedrock`, `ap-southeast-2`):** `@aws-sdk/client-bedrock-runtime` (`ConverseCommand`) với **Amazon Nova Pro** (`apac.amazon.nova-pro-v1:0`) cho Vision và **Claude Sonnet** (`apac.anthropic.claude-sonnet-4-20250514-v1:0`) cho 4+1 Agents, tùy chọn `BEDROCK_GUARDRAIL_ID`.
 - **Bảo vệ hạn mức & Trung thực:** Thiếu API key trả HTTP `503` (`LLM_NOT_CONFIGURED`). Khi chạm ngưỡng `DAILY_LLM_CALL_LIMIT` (mặc định `100` lượt/ngày), hệ thống ghi nhận rõ trạng thái fallback thay vì âm thầm giả mạo AI.
 
 ### Phân tách Thuật toán Thuần (Deterministic) vs Nhiệm vụ LLM
@@ -70,7 +70,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 - Kho tri thức `data/vnPolicies.json` (13 chunk) tổng hợp từ văn bản pháp luật công khai và điều khoản sản phẩm, đã chuẩn hóa theo [RESEARCH_LEGAL.md](./docs/RESEARCH_LEGAL.md) (ghi rõ QĐ 2345/QĐ-NHNN đã bị bãi bỏ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025, ngưỡng sinh trắc học 10M/20M thuộc TT 50/2024 sửa bởi TT 77/2025, và TT 53/2026 ghi rõ là nguồn báo chí chưa xác minh điều khoản).
 
 ### Chính sách Xử lý & Xóa Ảnh Tải lên
-- Ảnh tải lên (`JPG`/`PNG`/`WEBP`, tối đa 5 MB, kiểm tra magic bytes) được giữ **trong bộ nhớ RAM theo từng request** để gửi trực tiếp tới nhà cung cấp LLM đang cấu hình (`Gemini API` hoặc `AWS Bedrock`) phục vụ phân tích thời gian thực.
+- Ảnh tải lên (`JPG`/`PNG`/`WEBP`, tối đa 5 MB, kiểm tra magic bytes) được giữ **trong bộ nhớ RAM theo từng request** để gửi trực tiếp tới nhà cung cấp LLM đang cấu hình (**FPT AI Factory**, **Gemini API** hoặc **AWS Bedrock**) phục vụ phân tích thời gian thực.
 - **Không lưu ảnh gốc vào CSDL** (`ScanSession` chỉ lưu `imageHash` và JSON kết quả đã ẩn PII), **không** chuyển tiếp ảnh gốc sang màn hình Người giám hộ hay `B2E War-Room` (`contains_raw_image: false`), kèm hàm `purgeExpiredUploads()` (TTL mặc định 2 giờ) dọn tệp tạm nếu có.
 
 ### Điều khoản Dữ liệu: Gemini API Free Tier vs Paid Tier / AWS Bedrock
@@ -121,19 +121,19 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 | Cổng chuyển tiền ngân hàng, API SIMO NHNN thật, lịch sử 3 nhân vật | **Mô phỏng (`MẪU MÔ PHỎNG`)** | Dữ liệu tổng hợp 100% phục vụ kiểm chứng luồng khép kín. |
 
 ### Giới hạn đã biết — Ponytail Debt Ledger (`/ponytail-debt`)
-Kết quả quét toàn bộ kho mã nguồn bằng lệnh `git grep -nE '(#|//|/[*]) ?(shortcut|ponytail):'` (loại trừ dòng hướng dẫn cú pháp trong `AGENTS.md:9`):
+9 mục kiến trúc tiêu biểu (trên tổng số **25** ghi chú `// shortcut:` trong toàn kho mã nguồn qua `git grep -nE '(#|//|/[*]) ?(shortcut|ponytail):'`, loại trừ dòng hướng dẫn trong `AGENTS.md`):
 
-1. `components/b2c/labels.ts:22` — Minh Anh dùng chung khe đồng ý `USER_B2C_NEW` trong enum `PersonaId` đã đóng băng. **Ceiling:** dùng chung consent slot. **Upgrade:** mở rộng enum nếu cần tách dòng đồng ý riêng cho Minh Anh.
-2. `lib/agents/retriever.ts:54` — Chỉ mục BM25 trong bộ nhớ RAM trên 12 chunk tĩnh `vnPolicies.json`. **Ceiling:** phù hợp tập chính sách nhỏ tĩnh. **Upgrade:** nâng cấp lên hybrid vector + BM25 khi kho văn bản vượt ~500 chunk.
+1. `components/b2c/labels.ts:23` — Minh Anh dùng chung khe đồng ý `USER_B2C_NEW` trong enum `PersonaId` đã đóng băng. **Ceiling:** dùng chung consent slot. **Upgrade:** mở rộng enum nếu cần tách dòng đồng ý riêng cho Minh Anh.
+2. `lib/agents/retriever.ts:54` — Chỉ mục BM25 trong bộ nhớ RAM trên 13 chunk tĩnh `vnPolicies.json`. **Ceiling:** phù hợp tập chính sách nhỏ tĩnh. **Upgrade:** nâng cấp lên hybrid vector + BM25 khi kho văn bản vượt ~500 chunk.
 3. `lib/graph/analyzer.ts:12` — Dải ngưỡng cố định 70%–100% của hạn mức sinh trắc học 10 triệu cho hành vi chia nhỏ gần ngưỡng. **Ceiling:** ngưỡng phần trăm tĩnh. **Upgrade:** chuyển sang ngưỡng phân vị thích ứng theo lịch sử giao dịch.
 4. `lib/graph/analyzer.ts:578` — Bố cục lưới cột cố định cho đồ thị suy ra từ giao dịch. **Ceiling:** phù hợp đồ thị nhỏ gọn. **Upgrade:** chuyển sang `dagre`/`elk` nếu đồ thị vượt ~50 nút.
 5. `lib/graph/analyzer.ts:850` — Trọng số rủi ro cộng dồn heuristic (smurfing/mule/cyber). **Ceiling:** trọng số chuyên gia chưa hiệu chỉnh thống kê. **Upgrade:** hiệu chỉnh trên tập dữ liệu gian lận lịch sử có nhãn khi lên production.
-6. `lib/immunity/service.ts:126` — Giới hạn truy vấn `AuditLog` ở 100 bản ghi mới nhất mỗi phiên. **Ceiling:** tối đa 100 dòng/lần đọc. **Upgrade:** thêm phân trang cursor nếu phiên chạy dài ngày.
+6. `lib/immunity/service.ts:134` — Giới hạn truy vấn `AuditLog` ở 100 bản ghi mới nhất mỗi phiên. **Ceiling:** tối đa 100 dòng/lần đọc. **Upgrade:** thêm phân trang cursor nếu phiên chạy dài ngày.
 7. `lib/rate-limit.ts:30` — Bộ đếm sliding-window bằng `Map` trong bộ nhớ RAM. **Ceiling:** chỉ đồng bộ trên 1 instance server. **Upgrade:** chuyển sang Redis/Upstash khi chạy nhiều instance.
 8. `lib/rate-limit.ts:99` — Bộ đếm Prisma fixed-window thay cho sorted set sliding-window trên Redis. **Ceiling:** làm tròn theo cửa sổ cố định. **Upgrade:** dùng Upstash Redis khi chịu tải burst đa vùng.
-9. `lib/session/shield.ts:394` — Bộ luật regex/từ khóa chỉ kích hoạt **DUY NHẤT** khi chạm ngưỡng `DAILY_LLM_CALL_LIMIT`; các lượt quét bình thường luôn gọi `LLMProvider` thật. **Ceiling:** chỉ là chốt an toàn khi hết quota demo ngày. **Upgrade:** nâng hoặc gỡ giới hạn `DAILY_LLM_CALL_LIMIT` với billing trả phí.
+9. `lib/session/shield.ts:398` — Bộ luật regex/từ khóa chỉ kích hoạt **DUY NHẤT** khi chạm ngưỡng `DAILY_LLM_CALL_LIMIT`; các lượt quét bình thường luôn gọi `LLMProvider` thật. **Ceiling:** chỉ là chốt an toàn khi hết quota demo ngày. **Upgrade:** nâng hoặc gỡ giới hạn `DAILY_LLM_CALL_LIMIT` với billing trả phí.
 
-**Tổng cộng:** `25 markers, 0 with no trigger` trên toàn kho mã nguồn (Waves 0–5, tra cứu đầy đủ bằng lệnh `git grep` ở trên).
+**Tổng cộng:** `25 markers, 0 with no trigger` trên toàn kho mã nguồn (Waves 0–5, gồm các ghi chú demo persona, replay, ngày làm việc và rate-limit).
 
 ---
 
@@ -141,7 +141,7 @@ Kết quả quét toàn bộ kho mã nguồn bằng lệnh `git grep -nE '(#|//|
 
 > **Cam kết trung thực:** Không công bố các chỉ số chưa đo đạc (`"99%"`, `"<1s"`, `"<15s"`). Chi tiết đầy đủ xem tại [docs/MEASURED_LATENCIES.md](./docs/MEASURED_LATENCIES.md).
 
-### Số đo thật trên bản deploy (10 lượt mỗi luồng, đo 24/11/2026 giờ Việt Nam)
+### Số đo thật trên bản deploy (10 lượt mỗi luồng, đo 24/11/2026 giờ VN / 23/11/2026 UTC)
 | Luồng | `model_used` | min / median / max |
 | :--- | :--- | :--- |
 | Lượt quét ảnh CASE-01 | `gemma-4-31B-it` | 3387 ms / 3516 ms / 3689 ms |

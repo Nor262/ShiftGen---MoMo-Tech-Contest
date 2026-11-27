@@ -8,7 +8,7 @@
 
 ## 1. Phạm vi Đã Bàn giao (3 Trụ cột Khép kín)
 
-1. **B2C Phút 00 & Người giám hộ (`/shield`, `/family` — nhãn UI hiện ghi "Family Co-Sign"):**
+1. **B2C Phút 00 & Người giám hộ (`/shield`, `/family`):**
    - Quét ảnh chụp màn hình chat / link `.apk` (ảnh giám khảo tải lên hoặc 3 kịch bản mẫu `CASE-01/02/03` gắn nhãn `MẪU MÔ PHỎNG`).
    - `PII_Redactor` 2 chiều (ẩn CCCD, SĐT gồm cả `+84 ...`, số dư, lịch sử chi tiêu; không lưu raw PII xuống DB và không gửi ảnh gốc sang Family/B2E).
    - Bảo vệ 24h Opt-in với Thông báo trung tính `NEUTRAL_HOLD_MESSAGE` (không mạo danh NHNN/Công an/Tòa án); hết hạn giữ mà chưa Chuyển cấp thì Giải phóng (`RELEASED`).

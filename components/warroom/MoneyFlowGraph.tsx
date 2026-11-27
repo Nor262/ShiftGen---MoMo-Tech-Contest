@@ -127,60 +127,100 @@ function TrustLoopGraphNode({ data, selected }: NodeProps<TrustFlowNode>) {
 }
 
 /**
- * Compute non-overlapping layered coordinates so money-flow columns have wide
- * horizontal corridors for edge labels and shared DEVICE/IP nodes sit in
- * dedicated top/bottom lanes instead of blocking intermediate edges.
+ * Compute non-overlapping layered coordinates from edge topology (BFS depth)
+ * so money flows strictly left-to-right on every scenario (including CASE-03
+ * where buyers are BANK_ACCOUNTs) and shared DEVICE/IP nodes sit in dedicated
+ * top/bottom lanes computed dynamically from the main band bounds.
  */
-function computeLayeredPositions(nodes: GraphNode[]): Map<string, { x: number; y: number }> {
+function computeLayeredPositions(
+  nodes: GraphNode[],
+  edges: GraphData["edges"],
+): Map<string, { x: number; y: number }> {
   const positions = new Map<string, { x: number; y: number }>();
 
-  const col0: GraphNode[] = [];
-  const col1: GraphNode[] = [];
-  const col2: GraphNode[] = [];
   const topInfra: GraphNode[] = [];
   const bottomInfra: GraphNode[] = [];
+  const mainNodes: GraphNode[] = [];
 
   for (const node of nodes) {
-    switch (node.type) {
-      case "VICTIM":
-        col0.push(node);
-        break;
-      case "MULE":
-      case "MERCHANT":
-        col1.push(node);
-        break;
-      case "SCAMMER":
-      case "BANK_ACCOUNT":
-        col2.push(node);
-        break;
-      case "DEVICE":
-        topInfra.push(node);
-        break;
-      case "IP":
-        bottomInfra.push(node);
-        break;
+    if (node.type === "DEVICE") topInfra.push(node);
+    else if (node.type === "IP") bottomInfra.push(node);
+    else mainNodes.push(node);
+  }
+
+  const mainIds = new Set(mainNodes.map((n) => n.id));
+  const inDegree = new Map<string, number>();
+  const adj = new Map<string, string[]>();
+  for (const id of mainIds) {
+    inDegree.set(id, 0);
+    adj.set(id, []);
+  }
+  for (const e of edges) {
+    if (mainIds.has(e.source) && mainIds.has(e.target) && e.source !== e.target) {
+      adj.get(e.source)!.push(e.target);
+      inDegree.set(e.target, (inDegree.get(e.target) ?? 0) + 1);
     }
   }
 
-  const placeColumn = (items: GraphNode[], x: number, centerY: number, gapY: number) => {
-    if (items.length === 0) return;
+  // Longest-path layering (Kahn's topological relaxation) for DAGs
+  const layer = new Map<string, number>();
+  const queue: string[] = [];
+  for (const n of mainNodes) {
+    if ((inDegree.get(n.id) ?? 0) === 0) {
+      layer.set(n.id, 0);
+      queue.push(n.id);
+    } else {
+      layer.set(n.id, 0);
+    }
+  }
+  const remainingIn = new Map(inDegree);
+  while (queue.length > 0) {
+    const u = queue.shift()!;
+    const uLayer = layer.get(u) ?? 0;
+    for (const v of adj.get(u) ?? []) {
+      layer.set(v, Math.max(layer.get(v) ?? 0, uLayer + 1));
+      const nextIn = (remainingIn.get(v) ?? 1) - 1;
+      remainingIn.set(v, nextIn);
+      if (nextIn === 0) queue.push(v);
+    }
+  }
+
+  // Group by compacted layer index
+  const columns = new Map<number, GraphNode[]>();
+  for (const n of mainNodes) {
+    const l = layer.get(n.id) ?? 0;
+    if (!columns.has(l)) columns.set(l, []);
+    columns.get(l)!.push(n);
+  }
+  const sortedLayerKeys = [...columns.keys()].sort((a, b) => a - b);
+
+  const colStep = 432; // 240px node + 192px label corridor
+  const gapY = 128;
+  const maxRows = Math.max(1, ...sortedLayerKeys.map((k) => columns.get(k)!.length));
+  const centerY = Math.max(240, Math.round(((maxRows - 1) * gapY) / 2) + 160);
+
+  let minMainY = centerY;
+  let maxMainY = centerY;
+
+  sortedLayerKeys.forEach((key, colIdx) => {
+    const items = columns.get(key)!;
     const totalHeight = (items.length - 1) * gapY;
     const startY = centerY - totalHeight / 2;
+    const x = 24 + colIdx * colStep;
     items.forEach((item, idx) => {
-      positions.set(item.id, { x, y: Math.round(startY + idx * gapY) });
+      const y = Math.round(startY + idx * gapY);
+      positions.set(item.id, { x, y });
+      minMainY = Math.min(minMainY, y);
+      maxMainY = Math.max(maxMainY, y);
     });
-  };
+  });
 
-  const mainCenterY = 276;
-  placeColumn(col0, 24, mainCenterY, 132);
-  placeColumn(col1, 412, mainCenterY, 140);
-  placeColumn(col2, 800, mainCenterY, 140);
-
+  const infraStartX = sortedLayerKeys.length > 1 ? Math.round((sortedLayerKeys.length - 1) * colStep * 0.5) + 24 : 240;
   topInfra.forEach((item, idx) => {
-    positions.set(item.id, { x: 604 + idx * 272, y: 20 });
+    positions.set(item.id, { x: infraStartX + idx * 280, y: Math.max(16, minMainY - 144) });
   });
   bottomInfra.forEach((item, idx) => {
-    positions.set(item.id, { x: 604 + idx * 272, y: 528 });
+    positions.set(item.id, { x: infraStartX + idx * 280, y: maxMainY + 144 });
   });
 
   return positions;
@@ -221,8 +261,8 @@ export function MoneyFlowGraph({
   }, [dismissedFp, flaggedNodeIds, graphData.nodes]);
 
   const layoutPositions = useMemo(
-    () => computeLayeredPositions(graphData.nodes),
-    [graphData.nodes],
+    () => computeLayeredPositions(graphData.nodes, graphData.edges),
+    [graphData.nodes, graphData.edges],
   );
 
   const nodeTypeById = useMemo(
@@ -253,66 +293,89 @@ export function MoneyFlowGraph({
     [flaggedSet, graphData.nodes, layoutPositions],
   );
 
-  const flowEdges = useMemo<Edge[]>(
-    () =>
-      graphData.edges.map((edge) => {
-        const srcType = nodeTypeById.get(edge.source);
-        const dstType = nodeTypeById.get(edge.target);
-        const isInfraLink =
-          srcType === "DEVICE" ||
-          srcType === "IP" ||
-          dstType === "DEVICE" ||
-          dstType === "IP";
-        const edgeFlagged =
-          !dismissedFp &&
-          (Boolean(edge.flagged) ||
-            flaggedSet.has(edge.source) ||
-            flaggedSet.has(edge.target));
-        const labelText =
-          edge.label ??
-          (typeof edge.amount_vnd === "number" ? formatVnd(edge.amount_vnd) : undefined);
+  const flowEdges = useMemo<Edge[]>(() => {
+    const infraTargetCounts = new Map<string, number>();
+    for (const edge of graphData.edges) {
+      const sType = nodeTypeById.get(edge.source);
+      const tType = nodeTypeById.get(edge.target);
+      if (sType === "DEVICE" || sType === "IP") {
+        infraTargetCounts.set(edge.source, (infraTargetCounts.get(edge.source) ?? 0) + 1);
+      }
+      if (tType === "DEVICE" || tType === "IP") {
+        infraTargetCounts.set(edge.target, (infraTargetCounts.get(edge.target) ?? 0) + 1);
+      }
+    }
+    const labeledInfraSeen = new Set<string>();
 
-        const strokeColor = isInfraLink
-          ? edgeFlagged
-            ? "#94a3b8"
-            : "#64748b"
-          : edgeFlagged
-            ? "#ec652b"
-            : "#34d399";
+    return graphData.edges.map((edge) => {
+      const srcType = nodeTypeById.get(edge.source);
+      const dstType = nodeTypeById.get(edge.target);
+      const isInfraLink =
+        srcType === "DEVICE" ||
+        srcType === "IP" ||
+        dstType === "DEVICE" ||
+        dstType === "IP";
+      const edgeFlagged =
+        !dismissedFp &&
+        (Boolean(edge.flagged) ||
+          flaggedSet.has(edge.source) ||
+          flaggedSet.has(edge.target));
+      const rawLabel =
+        edge.label ??
+        (typeof edge.amount_vnd === "number" ? formatVnd(edge.amount_vnd) : undefined);
 
-        return {
-          id: edge.id,
-          source: edge.source,
-          target: edge.target,
-          type: "smoothstep",
-          pathOptions: { borderRadius: 10 },
-          label: isInfraLink ? undefined : labelText,
-          animated: !isInfraLink && edgeFlagged,
-          style: {
-            stroke: strokeColor,
-            strokeWidth: isInfraLink ? 1.3 : edgeFlagged ? 2 : 1.7,
-            strokeDasharray: isInfraLink ? "5 4" : undefined,
-          },
-          labelStyle: {
-            fill: "#f1f5f9",
-            fontSize: 11,
-            fontWeight: 600,
-            fontFamily: "var(--font-mono), ui-monospace, monospace",
-          },
-          labelBgStyle: {
-            fill: "#011821",
-            fillOpacity: 0.94,
-          },
-          labelBgPadding: [6, 3],
-          labelBgBorderRadius: 4,
-          markerEnd: {
-            type: MarkerType.ArrowClosed,
-            color: strokeColor,
-          },
-        };
-      }),
-    [dismissedFp, flaggedSet, graphData.edges, nodeTypeById],
-  );
+      let displayLabel = rawLabel;
+      if (isInfraLink && rawLabel) {
+        const infraId =
+          srcType === "DEVICE" || srcType === "IP" ? edge.source : edge.target;
+        const count = infraTargetCounts.get(infraId) ?? 1;
+        if (count > 2) {
+          if (labeledInfraSeen.has(infraId)) {
+            displayLabel = undefined;
+          } else {
+            labeledInfraSeen.add(infraId);
+          }
+        }
+      }
+
+      const strokeColor = isInfraLink
+        ? "#94a3b8"
+        : edgeFlagged
+          ? "#ec652b"
+          : "#34d399";
+
+      return {
+        id: edge.id,
+        source: edge.source,
+        target: edge.target,
+        type: "smoothstep",
+        pathOptions: { borderRadius: 10 },
+        label: displayLabel,
+        animated: !isInfraLink && edgeFlagged,
+        style: {
+          stroke: strokeColor,
+          strokeWidth: isInfraLink ? 1.4 : edgeFlagged ? 2 : 1.7,
+          strokeDasharray: isInfraLink ? "5 4" : undefined,
+        },
+        labelStyle: {
+          fill: "#f1f5f9",
+          fontSize: 11,
+          fontWeight: 600,
+          fontFamily: "var(--font-mono), ui-monospace, monospace",
+        },
+        labelBgStyle: {
+          fill: "#011821",
+          fillOpacity: 0.94,
+        },
+        labelBgPadding: [6, 3],
+        labelBgBorderRadius: 4,
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          color: strokeColor,
+        },
+      };
+    });
+  }, [dismissedFp, flaggedSet, graphData.edges, nodeTypeById]);
 
   const selectedNode = useMemo(
     () => graphData.nodes.find((n) => n.id === selectedNodeId) ?? null,
@@ -339,23 +402,28 @@ export function MoneyFlowGraph({
           )}
         </div>
         <div className="flex flex-wrap items-center gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5 text-red-300">
-            <span className="h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden="true" />
+          <span className="inline-flex items-center gap-1.5 text-orange-300">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#ec652b]" aria-hidden="true" />
             Rủi ro / Mule ({flaggedSet.size})
           </span>
           <span className="inline-flex items-center gap-1.5 text-emerald-300">
             <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" aria-hidden="true" />
             Tiểu thương sạch
           </span>
+          <span className="inline-flex items-center gap-1.5 text-slate-300">
+            <span className="w-4 border-t border-dashed border-slate-400" aria-hidden="true" />
+            Thiết bị / IP
+          </span>
           <span className="text-slate-400">Nhấp vào nút để soi chi tiết</span>
         </div>
       </div>
 
       <div className="grid gap-3 lg:grid-cols-[1fr_300px]">
-        <div className="h-[490px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#011821]">
+        <div className="h-[480px] lg:h-[560px] w-full overflow-hidden rounded-xl border border-slate-800 bg-[#011821]">
           {mounted ? (
             <ReactFlowProvider>
               <ReactFlow
+                key={graphData.nodes.map((n) => n.id).join(",")}
                 nodes={flowNodes}
                 edges={flowEdges}
                 nodeTypes={nodeTypes}

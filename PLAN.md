@@ -3,25 +3,28 @@
 ## 1. Architecture Summary
 **MoMo TrustLoop v2** is a closed-loop digital trust ecosystem built on **Next.js 15 App Router (TypeScript + Tailwind v3 + React Flow)**, **Prisma 6 (Dual Parity: SQLite dev / PostgreSQL prod)**, and a **Cloud & LLM-Agnostic `LLMProvider`** (`gemini` | `openai` | `bedrock`).
 
-- **Pillar 1 (B2C Phút 00 & Người giám hộ):** Vision/NLP chat & `.apk` malware scanner + 2-tier Immunity lookup (Pre/Post Vision) + Pre-consented Opt-in 24h Hold (exact neutral copy; expiry → `RELEASED`) + `PII_Redactor` + minimal 1-screen Người giám hộ view (`/family`, UI label still "Family Co-Sign") whose only power is Chuyển cấp (escalate to B2E, which extends the hold) — never release.
+- **Pillar 1 (B2C Phút 00 & Người giám hộ):** Vision/NLP chat & `.apk` malware scanner + 2-tier Immunity lookup (Pre/Post Vision) + Pre-consented Opt-in 24h Hold (exact neutral copy; expiry → `RELEASED`) + `PII_Redactor` + minimal 1-screen Người giám hộ view (`/family`) whose only power is Chuyển cấp (escalate to B2E, which extends the hold) — never release.
 - **Pillar 2 (B2E 4-Agent War-Room):** Parallel `Promise.allSettled` execution of `GraphTracer`, `EvidenceCorrelator`, `ComplianceRAG (BM25)`, and `FalsePositiveDefender` + `DebateSynthesizer` + deterministic code guardrail (`eligible_for_active_immunity = independent_sources.length >= 2`) + interactive `@xyflow/react` graph + Empathetic CSKH Handover Card.
 - **Pillar 3 (4-Layer Community Immunity — TrustLoop's own governance design, not a legal requirement):** Layer 1 Soft Warning (1 source, 72h) → Layer 2 `>=2` independent sources of different types (`400` enforced) & Maker–Checker (`checkerId !== makerId`, `403` enforced) → Layer 3 TTL (`72h` / `720h` + demo expire) → Layer 4 Appeals reviewed by a Checker other than the activating one (`403 APPEAL_REVIEWER_CONFLICT`; demo persona `RISK_CHECKER_LAN`) & Rollback (removes the warning only; investigation records kept) + append-only `AuditLog`. TT 53/2026 is cited only for "a human reviews disputed automated decisions" (press sources, article unverified — see `docs/RESEARCH_LEGAL.md`). Indicators surface to a user only on an exact-value match, worded "rủi ro cao"; never a public list.
 - **Session Isolation:** Every table is scoped by `demoSessionId` via `tl_session` cookie / `?session=<slug>` query override so concurrent judges never collide.
 
-## 2. Canonical API Surface (19 Endpoints)
+## 2. Canonical API Surface (19 Baseline + Wave 5 Endpoints)
 - **Wave 0 (Foundation):** `GET /api/health`, `GET /api/session`, `POST /api/demo/reset`
 - **Wave 1 (B2C Shield & Family):**
   - `POST /api/shield/consent`
   - `POST /api/shield/scan`
+  - `POST /api/shield/scan/[scanId]/review` *(Wave 5)*
   - `POST /api/shield/transfer`
   - `POST /api/shield/transfer/[txId]/cancel`
   - `POST /api/shield/report-cyber`
   - `GET /api/shield/family/holds`
+  - `POST /api/shield/family/guardian` *(Wave 5)*
   - `POST /api/shield/family/escalate/[txId]`
 - **Wave 2 (B2E War-Room):**
   - `GET /api/warroom/cases`
   - `POST /api/warroom/cases/[caseId]/investigate`
   - `POST /api/warroom/cases/[caseId]/decision`
+  - `GET / POST /api/warroom/cases/[caseId]/str` *(Wave 5)*
 - **Wave 3 (Immunity Governance):**
   - `GET /api/immunity`
   - `POST /api/immunity/[id]/approve`
@@ -48,7 +51,7 @@
 - **Design, Storytelling & Telemetry (`#9`, `#10`, `#11`, `#18–#22`, `#39`):** TrustLoop design system (`DESIGN.md`), Signal Orange 700 accents, plain-language mode, `/story` 4-chapter stage + home lanes, 10/10 live latency measurements on Vercel (`docs/MEASURED_LATENCIES.md`), and 10-page pitch PDF (`docs/pitch/TrustLoop-pitch.pdf`).
 
 **Remaining Operational / Contest Tasks:**
-1. **AWS Sandbox migration** (mandatory when BTC grants Bedrock model access, `#17`) — switch `LLM_BACKEND=bedrock` on Vercel, keep FPT as `LLM_FALLBACK_BACKEND`, re-measure latency.
+1. **AWS Sandbox migration** (optional per BTC email, `#17`) — switch `LLM_BACKEND=bedrock` (`ap-southeast-2`) on Vercel if granted model access, keep FPT as `LLM_FALLBACK_BACKEND`, re-measure latency.
 2. **Supabase Free keep-alive** — ping `GET https://momo-trustloop.vercel.app/api/health` every 1–2 days through `11/12/2026` to avoid 7-day auto-pause.
 3. **Optional law-derived backlog** (`docs/PRODUCT_IDEA.md` §10) — monthly SIMO sync, Law 91 data rights center, 72h incident playbook.
 

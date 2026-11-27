@@ -41,20 +41,32 @@ function resolveChromiumExecutable() {
 const { chromium } = loadPlaywright();
 mkdirSync("submission", { recursive: true });
 const executablePath = resolveChromiumExecutable();
-const browser = await chromium.launch(
-  executablePath ? { executablePath } : { channel: "chrome" },
-);
-const page = await browser.newPage({ viewport: { width: 1240, height: 1754 } });
-const htmlUrl = pathToFileURL(resolve("docs/submission/one-page-guide.html")).href;
-await page.goto(htmlUrl, { waitUntil: "networkidle" });
-await page.evaluate(() => document.fonts.ready);
+const browser = await chromium.launch(executablePath ? { executablePath } : {});
 
-const outPath = "submission/01-MoMo-TrustLoop-HuongDan-A4.pdf";
-await page.pdf({
-  path: outPath,
-  format: "A4",
-  printBackground: true,
-  margin: { top: "0", right: "0", bottom: "0", left: "0" },
-});
-await browser.close();
-console.log("wrote", outPath);
+try {
+  const page = await browser.newPage({ viewport: { width: 1240, height: 1754 } });
+  const htmlUrl = pathToFileURL(resolve("docs/submission/one-page-guide.html")).href;
+  await page.goto(htmlUrl, { waitUntil: "networkidle" });
+  await page.evaluate(() => document.fonts.ready);
+
+  const overflowCheck = await page.evaluate(() => {
+    const el = document.querySelector(".page");
+    return el ? { scrollH: el.scrollHeight, clientH: el.clientHeight } : null;
+  });
+  if (overflowCheck && overflowCheck.scrollH > overflowCheck.clientH + 2) {
+    throw new Error(
+      `One-page guide overflows A4 height (${overflowCheck.scrollH}px > ${overflowCheck.clientH}px)`,
+    );
+  }
+
+  const outPath = "submission/01-MoMo-TrustLoop-HuongDan-A4.pdf";
+  await page.pdf({
+    path: outPath,
+    format: "A4",
+    printBackground: true,
+    margin: { top: "0", right: "0", bottom: "0", left: "0" },
+  });
+  console.log("wrote", outPath);
+} finally {
+  await browser.close();
+}

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Máy Trạng thái Quản trị Miễn dịch 4 Lớp — MoMo TrustLoop v2</title>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap&subset=vietnamese" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -16,7 +16,7 @@
       --color-accent:  #c2410c;
       --color-link:    #0b57d0;
       --font-sans:     'Be Vietnam Pro', system-ui, sans-serif;
-      --font-mono:     'Geist Mono', ui-monospace, monospace;
+      --font-mono:     'JetBrains Mono', ui-monospace, monospace;
     }
 
     body {
@@ -69,7 +69,7 @@
     <div class="diagram-container">
       <svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="state-immunity-title state-immunity-desc">
         <title id="state-immunity-title">Máy Trạng thái Quản trị Miễn dịch 4 Lớp</title>
-        <desc id="state-immunity-desc">Chuyển đổi trạng thái chỉ báo miễn dịch từ Cảnh báo mềm qua Kích hoạt có kiểm soát Maker khác Checker và TTL tới Hết hạn hoặc Khiếu nại Thu hồi.</desc>
+        <desc id="state-immunity-desc">Vòng đời 5 trạng thái chuẩn của Chỉ báo Miễn dịch: Cảnh báo mềm, Chờ Checker duyệt, Hiệu lực B2C, Hết hạn và Đã thu hồi sau Khiếu nại.</desc>
         <defs>
           <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
             <polygon points="0 0, 8 3, 0 6" fill="#5b5e68"/>
@@ -89,102 +89,102 @@
         <rect width="100%" height="100%" fill="url(#dots)" opacity="0.55"/>
 
         <!-- TRANSITIONS (orthogonal, drawn before states) -->
-        <!-- Start dot (56,164) -> SOFT_WARNING (104,164) -->
-        <line x1="64" y1="164" x2="104" y2="164" stroke="#111a4a" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <!-- Start dot (56,164) -> SOFT_WARNING (100,164) -->
+        <line x1="64" y1="164" x2="100" y2="164" stroke="#111a4a" stroke-width="1.3" marker-end="url(#arrow)"/>
 
-        <!-- SOFT_WARNING (300,164) -> ACTIVE (384,164) -->
-        <line x1="300" y1="164" x2="384" y2="164" stroke="#c2410c" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
-        <rect x="304" y="138" width="76" height="14" rx="2" fill="#f6f6f8"/>
-        <text x="342" y="148" fill="#c2410c" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">APPROVE [403/400]</text>
+        <!-- SOFT_WARNING (292,164) -> PENDING_CHECKER (376,164) -->
+        <line x1="292" y1="164" x2="376" y2="164" stroke="#5b5e68" stroke-width="1.3" marker-end="url(#arrow)"/>
+        <rect x="296" y="138" width="76" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="334" y="148" fill="#5b5e68" font-size="8" font-family="'JetBrains Mono', monospace" text-anchor="middle">ĐỀ XUẤT [≥2 NGUỒN]</text>
 
-        <!-- ACTIVE (584,164) -> APPEALED (680,164) -->
-        <line x1="584" y1="164" x2="680" y2="164" stroke="#0b57d0" stroke-width="1.3" marker-end="url(#arrow-link)"/>
-        <rect x="596" y="138" width="72" height="14" rx="2" fill="#f6f6f8"/>
-        <text x="632" y="148" fill="#0b57d0" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">KHIẾU NẠI</text>
+        <!-- PENDING_CHECKER (572,164) -> ACTIVE (668,164) -->
+        <line x1="572" y1="164" x2="668" y2="164" stroke="#c2410c" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+        <rect x="576" y="138" width="88" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="620" y="148" fill="#c2410c" font-size="8" font-family="'JetBrains Mono', monospace" text-anchor="middle">DUYỆT [CHẶN 403/400]</text>
 
-        <!-- ACTIVE (484,204) -> EXPIRED (484,316) -->
-        <line x1="484" y1="204" x2="484" y2="316" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
-        <rect x="444" y="252" width="80" height="14" rx="2" fill="#f6f6f8"/>
-        <text x="484" y="262" fill="#5b5e68" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">HẾT TTL (72H/720H)</text>
+        <!-- SOFT_WARNING (196,204) -> EXPIRED (376,352) -->
+        <path d="M 196,204 V 344 Q 196,352 204,352 H 376" fill="none" stroke="#5b5e68" stroke-width="1.1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <rect x="212" y="336" width="84" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="254" y="346" fill="#5b5e68" font-size="8" font-family="'JetBrains Mono', monospace" text-anchor="middle">HẾT HẠN (72H)</text>
 
-        <!-- APPEALED (780,204) -> OVERTURNED_ROLLBACK (780,316) -->
-        <line x1="780" y1="204" x2="780" y2="316" stroke="#c2410c" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
-        <rect x="720" y="252" width="120" height="14" rx="2" fill="#f6f6f8"/>
-        <text x="780" y="262" fill="#c2410c" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">CHECKER KHÁC XÉT</text>
+        <!-- ACTIVE (696,204) -> EXPIRED (572,352) -->
+        <path d="M 696,204 V 344 Q 696,352 688,352 H 572" fill="none" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <rect x="588" y="336" width="92" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="634" y="346" fill="#5b5e68" font-size="8" font-family="'JetBrains Mono', monospace" text-anchor="middle">HẾT HẠN (72H/30D)</text>
 
-        <!-- APPEALED -> ACTIVE (upheld return, dashed above) -->
-        <path d="M 780,124 V 88 Q 780,80 772,80 H 492 Q 484,80 484,88 V 124" fill="none" stroke="#5b5e68" stroke-width="1.1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
-        <rect x="580" y="72" width="104" height="14" rx="2" fill="#f6f6f8"/>
-        <text x="632" y="82" fill="#5b5e68" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle">UPHELD [GIỮ HIỆU LỰC]</text>
+        <!-- ACTIVE (784,204) -> ROLLED_BACK (784,316) -->
+        <line x1="784" y1="204" x2="784" y2="316" stroke="#0b57d0" stroke-width="1.4" marker-end="url(#arrow-link)"/>
+        <rect x="708" y="252" width="152" height="14" rx="2" fill="#f6f6f8"/>
+        <text x="784" y="262" fill="#0b57d0" font-size="8" font-family="'JetBrains Mono', monospace" text-anchor="middle">KHIẾU NẠI → CHECKER KHÁC THU HỒI</text>
 
-        <!-- EXPIRED (484,388) -> End dot (632,444) -->
-        <path d="M 484,388 V 436 Q 484,444 492,444 H 616" fill="none" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
-        <!-- OVERTURNED_ROLLBACK (780,388) -> End dot (632,444) -->
-        <path d="M 780,388 V 436 Q 780,444 772,444 H 648" fill="none" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- EXPIRED (474,388) -> End dot (632,444) -->
+        <path d="M 474,388 V 436 Q 474,444 482,444 H 616" fill="none" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <!-- ROLLED_BACK (784,388) -> End dot (632,444) -->
+        <path d="M 784,388 V 436 Q 784,444 776,444 H 648" fill="none" stroke="#5b5e68" stroke-width="1.2" marker-end="url(#arrow)"/>
 
         <!-- START & END SYMBOLS -->
         <circle cx="56" cy="164" r="6" fill="#111a4a"/>
         <circle cx="632" cy="444" r="8" fill="none" stroke="#111a4a" stroke-width="1.5"/>
         <circle cx="632" cy="444" r="5" fill="#111a4a"/>
 
-        <!-- STATES (rounded rects rx=8) -->
+        <!-- STATES (5 canonical IMMUNITY_STATUSES) -->
         <!-- SOFT_WARNING -->
         <g>
-          <rect x="104" y="124" width="196" height="80" rx="8" fill="#f6f6f8"/>
-          <rect x="104" y="124" width="196" height="80" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
-          <rect x="116" y="134" width="52" height="14" rx="2" fill="rgba(17,26,74,0.07)"/>
-          <text x="142" y="144" fill="#111a4a" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">LỚP 1</text>
-          <text x="116" y="168" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">SOFT_WARNING</text>
-          <text x="116" y="188" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace">1 nguồn · Cảnh báo mềm 72h</text>
+          <rect x="100" y="124" width="192" height="80" rx="8" fill="#f6f6f8"/>
+          <rect x="100" y="124" width="192" height="80" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <rect x="112" y="134" width="48" height="14" rx="2" fill="rgba(17,26,74,0.07)"/>
+          <text x="136" y="144" fill="#111a4a" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">LỚP 1</text>
+          <text x="112" y="168" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">Cảnh báo mềm</text>
+          <text x="112" y="188" fill="#5b5e68" font-size="9" font-family="'JetBrains Mono', monospace">SOFT_WARNING · 1 nguồn · 72h</text>
+        </g>
+
+        <!-- PENDING_CHECKER -->
+        <g>
+          <rect x="376" y="124" width="196" height="80" rx="8" fill="#f6f6f8"/>
+          <rect x="376" y="124" width="196" height="80" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <rect x="388" y="134" width="48" height="14" rx="2" fill="rgba(17,26,74,0.07)"/>
+          <text x="412" y="144" fill="#111a4a" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">LỚP 2A</text>
+          <text x="388" y="168" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">Chờ người duyệt</text>
+          <text x="388" y="188" fill="#5b5e68" font-size="9" font-family="'JetBrains Mono', monospace">PENDING_CHECKER · Maker gửi</text>
         </g>
 
         <!-- ACTIVE [FOCAL] -->
         <g>
-          <rect x="384" y="124" width="200" height="80" rx="8" fill="#f6f6f8"/>
-          <rect x="384" y="124" width="200" height="80" rx="8" fill="#fdf0e9" stroke="#c2410c" stroke-width="1.8"/>
-          <rect x="396" y="134" width="52" height="14" rx="2" fill="#c2410c"/>
-          <text x="422" y="144" fill="#ffffff" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">LỚP 2</text>
-          <text x="396" y="168" fill="#c2410c" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="700">ACTIVE (Miễn dịch B2C)</text>
-          <text x="396" y="188" fill="#3b3e47" font-size="9" font-family="'Geist Mono', monospace">&gt;=2 nguồn · Checker != Maker</text>
-        </g>
-
-        <!-- APPEALED -->
-        <g>
-          <rect x="680" y="124" width="200" height="80" rx="8" fill="#f6f6f8"/>
-          <rect x="680" y="124" width="200" height="80" rx="8" fill="#ffffff" stroke="#0b57d0" stroke-width="1.5"/>
-          <rect x="692" y="134" width="52" height="14" rx="2" fill="rgba(11,87,208,0.10)"/>
-          <text x="718" y="144" fill="#0b57d0" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">LỚP 4</text>
-          <text x="692" y="168" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">APPEALED (Chờ rà soát)</text>
-          <text x="692" y="188" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace">Con người xét (TT 53/2026)</text>
+          <rect x="668" y="124" width="212" height="80" rx="8" fill="#f6f6f8"/>
+          <rect x="668" y="124" width="212" height="80" rx="8" fill="#fdf0e9" stroke="#c2410c" stroke-width="1.8"/>
+          <rect x="680" y="134" width="48" height="14" rx="2" fill="#c2410c"/>
+          <text x="704" y="144" fill="#ffffff" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">LỚP 2B</text>
+          <text x="680" y="168" fill="#c2410c" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="700">Đang hiệu lực (ACTIVE)</text>
+          <text x="680" y="188" fill="#3b3e47" font-size="9" font-family="'JetBrains Mono', monospace">≥2 nguồn · Checker ≠ Maker</text>
         </g>
 
         <!-- EXPIRED -->
         <g>
-          <rect x="384" y="316" width="200" height="72" rx="8" fill="#f6f6f8"/>
-          <rect x="384" y="316" width="200" height="72" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
-          <rect x="396" y="326" width="52" height="14" rx="2" fill="rgba(17,26,74,0.07)"/>
-          <text x="422" y="336" fill="#111a4a" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">LỚP 3</text>
-          <text x="396" y="360" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">EXPIRED (Hết hiệu lực)</text>
-          <text x="396" y="376" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace">Không treo cảnh báo vĩnh viễn</text>
+          <rect x="376" y="316" width="196" height="72" rx="8" fill="#f6f6f8"/>
+          <rect x="376" y="316" width="196" height="72" rx="8" fill="#ffffff" stroke="#111a4a" stroke-width="1.2"/>
+          <rect x="388" y="326" width="48" height="14" rx="2" fill="rgba(17,26,74,0.07)"/>
+          <text x="412" y="336" fill="#111a4a" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">LỚP 3</text>
+          <text x="388" y="360" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">Hết hạn (EXPIRED)</text>
+          <text x="388" y="376" fill="#5b5e68" font-size="9" font-family="'JetBrains Mono', monospace">Không treo cảnh báo vĩnh viễn</text>
         </g>
 
-        <!-- OVERTURNED_ROLLBACK -->
+        <!-- ROLLED_BACK -->
         <g>
           <rect x="680" y="316" width="200" height="72" rx="8" fill="#f6f6f8"/>
           <rect x="680" y="316" width="200" height="72" rx="8" fill="#ffffff" stroke="#13705f" stroke-width="1.5"/>
           <rect x="692" y="326" width="68" height="14" rx="2" fill="#e8f6f1"/>
-          <text x="726" y="336" fill="#13705f" font-size="8" font-family="'Geist Mono', monospace" font-weight="600" text-anchor="middle">ROLLBACK</text>
-          <text x="692" y="360" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">OVERTURNED_ROLLBACK</text>
-          <text x="692" y="376" fill="#5b5e68" font-size="9" font-family="'Geist Mono', monospace">Gỡ cảnh báo · Lưu AuditLog 5 năm</text>
+          <text x="726" y="336" fill="#13705f" font-size="8" font-family="'JetBrains Mono', monospace" font-weight="600" text-anchor="middle">LỚP 4</text>
+          <text x="692" y="360" fill="#111a4a" font-size="12" font-family="'Be Vietnam Pro', sans-serif" font-weight="600">Đã thu hồi (ROLLED_BACK)</text>
+          <text x="692" y="376" fill="#5b5e68" font-size="9" font-family="'JetBrains Mono', monospace">Gỡ cảnh báo · Lưu AuditLog</text>
         </g>
 
         <!-- LEGEND STRIP -->
         <line x1="32" y1="488" x2="928" y2="488" stroke="rgba(17,26,74,0.12)" stroke-width="1"/>
         <rect x="32" y="504" width="14" height="14" rx="3" fill="#fdf0e9" stroke="#c2410c" stroke-width="1.5"/>
-        <text x="54" y="515" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Trạng thái ACTIVE đồng bộ B2C (cần &gt;=2 nguồn &amp; Maker != Checker)</text>
+        <text x="54" y="515" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Trạng thái ACTIVE đồng bộ B2C (cần ≥2 nguồn &amp; Maker ≠ Checker)</text>
 
-        <rect x="468" y="504" width="14" height="14" rx="3" fill="#ffffff" stroke="#13705f" stroke-width="1.5"/>
-        <text x="490" y="515" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Thu hồi tức thì bởi Checker độc lập (RISK_CHECKER_LAN)</text>
+        <rect x="456" y="504" width="14" height="14" rx="3" fill="#ffffff" stroke="#13705f" stroke-width="1.5"/>
+        <text x="478" y="515" fill="#3b3e47" font-size="10" font-family="'Be Vietnam Pro', sans-serif">Thu hồi tức thì bởi Checker độc lập (theo hướng TT 53/2026)</text>
       </svg>
     </div>
   </div>
