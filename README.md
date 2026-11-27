@@ -9,9 +9,10 @@
 ## 1. Giới thiệu & Hướng dẫn Chạy (Live URL, Local, PostgreSQL/Vercel & Docker)
 
 ### Live URL (Production)
-- **Public Demo:** [`https://momo-trustloop.vercel.app`](https://momo-trustloop.vercel.app)
-- **Hạ tầng triển khai (Kế hoạch — bắt buộc cho cuộc thi):** chuyển sang **AWS Sandbox** — `LLM_BACKEND=bedrock`, Docker (mục "Chạy 1 Lệnh với Docker") trên EC2/Amplify `ap-southeast-1`; bản Vercel bên dưới giữ làm dự phòng.
-- **Hạ tầng hiện tại:** Vercel (`sin1` Singapore, Fluid Compute `maxDuration` up to `300s`; route `/api/shield/scan` đặt `maxDuration = 60`, `/api/warroom/cases/[caseId]/investigate` đặt `maxDuration = 120`) + Supabase PostgreSQL (`ap-southeast-1`).
+- **Trải nghiệm kể chuyện nhanh (/story):** [`https://momo-trustloop.vercel.app/story`](https://momo-trustloop.vercel.app/story)
+- **Không gian làm việc đầy đủ:** [`https://momo-trustloop.vercel.app`](https://momo-trustloop.vercel.app) *(không cần đăng nhập/mật khẩu; tự cô lập theo phiên)*
+- **Hạ tầng triển khai hiện tại:** Vercel (`sin1` Singapore, Fluid Compute `maxDuration` up to `300s`; route `/api/shield/scan` đặt `maxDuration = 60`, `/api/warroom/cases/[caseId]/investigate` đặt `maxDuration = 120`) + Supabase PostgreSQL (`ap-southeast-1`) + **FPT AI Factory** (`gemma-4-31B-it` cho Vision, `Qwen3.8-27B` cho War-Room, fallback sang Gemini).
+- **Kế hoạch chuyển đổi AWS Sandbox:** Đã hoàn thiện adapter **AWS Bedrock** (`LLM_BACKEND=bedrock`), sẵn sàng chuyển khi BTC cấp quyền model; bản Vercel hiện tại giữ làm môi trường demo trực tuyến & dự phòng.
 - **Lưu ý Supabase Free Tier (Keep-Alive):** Supabase Free tự tạm dừng (*auto-pause*) sau 7 ngày không có truy vấn. Khuyến nghị ping định kỳ endpoint kiểm tra sức khỏe `GET /api/health` (trả HTTP `200` kèm trạng thái DB & LLM) để giữ kết nối luôn sẵn sàng.
 - **Đồng bộ 2 thiết bị cho BGK:** Mở cùng URL với tham số `?session=momo-final` trên cả Laptop và Điện thoại.
 - **Tài liệu đi kèm:** [Hướng dẫn Demo 1 Trang (3 phút)](./docs/ONE_PAGE_GUIDE.md) | [Bảng Số đo Độ trễ Thực tế](./docs/MEASURED_LATENCIES.md) | [Ý tưởng Sản phẩm](./docs/PRODUCT_IDEA.md) | [Đặc tả Yêu cầu](./docs/SPEC_REQUIREMENTS.md) | [Đặc tả Thiết kế](./docs/SPEC_DESIGN.md) | [Căn cứ pháp lý](./docs/RESEARCH_LEGAL.md) | [Số liệu vấn đề](./docs/RESEARCH_PROBLEM.md).
@@ -56,7 +57,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 | Lớp xử lý | Cơ chế | Trách nhiệm cụ thể |
 | :--- | :--- | :--- |
 | **Thuần thuật toán (Không dùng LLM)** | `lib/graph/analyzer.ts` | Phát hiện Chia nhỏ giao dịch (*smurfing*) dưới ngưỡng xác thực sinh trắc học 10M/lần & 20M/ngày (múi giờ `Asia/Ho_Chi_Minh`) và cụm Ví trung gian (*mule*) dùng chung thiết bị/IP — dấu hiệu đáng ngờ theo Luật PCRT 2022 Điều 29 & TT 40/2024 Phụ lục 01. |
-| **Thuần thuật toán (Không dùng LLM)** | `lib/agents/retriever.ts` | Chỉ mục **BM25** chuẩn hóa tiếng Việt trên 12 chunk pháp lý & bảo hiểm trong `data/vnPolicies.json`. |
+| **Thuần thuật toán (Không dùng LLM)** | `lib/agents/retriever.ts` | Chỉ mục **BM25** chuẩn hóa tiếng Việt trên 13 chunk pháp lý & bảo hiểm trong `data/vnPolicies.json`. |
 | **Thuần thuật toán (Không dùng LLM)** | `lib/pii/redactor.ts`, `lib/immunity/service.ts` | Che mờ CCCD 12 số, SĐT, số dư; bọc `<untrusted_user_content>`; hậu kiểm cứng `>= 2` nguồn độc lập (`400`), tách vai trò Maker ≠ Checker (`403`), TTL & `AuditLog`. |
 | **Runtime LLM** | `Vision Scanner` + `4+1 War-Room Agents` | Phân tích ảnh chat/biên lai/link `.apk` (Multimodal Vision), giải thích ấm áp cho người cao tuổi, tranh biện 4 Agent song song (`Promise.allSettled` + SSE) gồm `False-Positive Defender`, và soạn **Thẻ Bàn giao CSKH Thấu cảm**. |
 
@@ -66,7 +67,7 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 
 ### Dữ liệu Tổng hợp 100% & Tài liệu Công khai
 - Toàn bộ hồ sơ `CASE-01` (Bác Hùng), `CASE-02` (Minh Anh), `CASE-03` (Chị Hoa) và 3 ảnh mẫu trong `public/demo-images/` (`zalo-fake-police.png`, `vneid-apk.png`, `livestream-merchant.png`) đều là **`MẪU MÔ PHỎNG`** tổng hợp 100% — **không** chứa CCCD thật, số điện thoại thật hay tài khoản ngân hàng thật.
-- Kho tri thức `data/vnPolicies.json` (12 chunk) tổng hợp từ văn bản pháp lý công khai và điều khoản sản phẩm. **Đã biết sai lệch:** một số chunk còn dẫn QĐ 2345/QĐ-NHNN (đã bị bãi bỏ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025) và gán cho TT 53/2026 nội dung chưa xác minh. *Kế hoạch:* làm sạch kho để chỉ còn tóm tắt văn bản pháp luật theo [RESEARCH_LEGAL.md](./docs/RESEARCH_LEGAL.md).
+- Kho tri thức `data/vnPolicies.json` (13 chunk) tổng hợp từ văn bản pháp luật công khai và điều khoản sản phẩm, đã chuẩn hóa theo [RESEARCH_LEGAL.md](./docs/RESEARCH_LEGAL.md) (ghi rõ QĐ 2345/QĐ-NHNN đã bị bãi bỏ bởi QĐ 2872/QĐ-NHNN từ 01/01/2025, ngưỡng sinh trắc học 10M/20M thuộc TT 50/2024 sửa bởi TT 77/2025, và TT 53/2026 ghi rõ là nguồn báo chí chưa xác minh điều khoản).
 
 ### Chính sách Xử lý & Xóa Ảnh Tải lên
 - Ảnh tải lên (`JPG`/`PNG`/`WEBP`, tối đa 5 MB, kiểm tra magic bytes) được giữ **trong bộ nhớ RAM theo từng request** để gửi trực tiếp tới nhà cung cấp LLM đang cấu hình (`Gemini API` hoặc `AWS Bedrock`) phục vụ phân tích thời gian thực.
@@ -79,24 +80,33 @@ Mọi lời gọi AI trong sản phẩm đi qua tầng trừu tượng `LLMProvi
 
 ---
 
-## 4. Thư viện Mã nguồn mở & Công cụ AI Hỗ trợ Lập trình
+## 4. Tài sản có sẵn, Thư viện Mã nguồn mở & Công cụ AI Đã dùng
+
+### Tài sản có sẵn (Pre-existing Assets)
+- **Nhận diện nhóm `ShiftGen`:** `docs/brand/shiftgen-logo.jpg`, `public/shiftgen-mark.png` (biểu tượng đội thi có sẵn của nhóm).
+- **Bộ chữ (Typography):** `Be Vietnam Pro`, `JetBrains Mono`, `Geist Mono` qua Google Fonts (giấy phép mã nguồn mở **SIL Open Font License 1.1**).
+- **Biểu tượng giao diện (Icons):** Bộ icon vector từ `lucide-react` (giấy phép **ISC**).
+- *Tài sản nhóm tự tạo mới 100% cho cuộc thi:* Toàn bộ 3 ảnh chat/APK mô phỏng (`public/demo-images/*`), bộ kịch bản `data/scenarios.ts`, dữ liệu `data/replays/*`, sơ đồ kiến trúc `docs/diagrams/*` và toàn bộ mã nguồn ứng dụng.
 
 ### Thư viện Mã nguồn mở (từ `package.json`)
 | Thư viện | Phiên bản (`package.json`) | Giấy phép (License) | Vai trò |
 | :--- | :---: | :---: | :--- |
 | `next` | `^15.3.0` | MIT | Full-stack App Router & Route Handlers |
-| `react` / `react-dom` | `^19.0.0` | MIT | Giao diện người dùng 3 không gian làm việc |
+| `react` / `react-dom` | `^19.0.0` | MIT | Giao diện người dùng đa không gian làm việc |
 | `@prisma/client` / `prisma` | `^6.6.0` | Apache-2.0 | ORM song song SQLite (dev) & PostgreSQL (prod) |
 | `@xyflow/react` | `^12.5.0` | MIT | Đồ thị dòng tiền & cụm ví *mule* tương tác |
 | `zod` | `^3.24.2` | MIT | Khóa chặt schema đầu vào & JSON đầu ra của Agent |
-| `tailwindcss` | `^3.4.17` | MIT | Hệ thống thiết kế Light (B2C) & Dark (War-Room) |
+| `tailwindcss` / `postcss` / `autoprefixer` | `^3.4.17` / `^8.5.0` / `^10.4.21` | MIT | Hệ thống thiết kế Light (B2C) & Dark (War-Room) |
+| `clsx` / `tailwind-merge` | `^2.1.1` / `^2.6.0` | MIT | Tiện ích gộp class CSS |
 | `lucide-react` | `^0.487.0` | ISC | Bộ icon giao diện |
 | `@aws-sdk/client-bedrock-runtime` | `^3.780.0` | Apache-2.0 | Kết nối AWS Bedrock Converse API (`ap-southeast-1`) |
-| `vitest` | `^3.1.1` | MIT | Kiểm thử đơn vị & tích hợp E2E |
+| `typescript` / `tsx` / `vitest` / `playwright` | `^5.8.2` / `^4.19.3` / `^3.1.1` / `^1.65.1` | Apache-2.0 / MIT | Typecheck, seed script, kiểm thử tự động & xuất PDF |
 
-### Công cụ AI Hỗ trợ Lập trình (Minh bạch Phát triển)
-- **Điều phối đa tác nhân:** Antigravity Multi-Agent Swarm (`Orchestrator (Neon)`, `Gemini 4 Neon`, `Gemini 4 Hydrogen`) chia theo Waves 0–4 với ranh giới sở hữu thư mục nghiêm ngặt.
-- **Kỹ năng kỷ luật mã nguồn:** Áp dụng **`ponytail` skill** (level `full`, giấy phép **MIT**, từ cấu hình cục bộ `~/.gemini/config/skills/ponytail/SKILL.md`) xuyên suốt Waves 0–4 để giữ mã nguồn gọn, không phình to (*anti-bloat*) và ghi nhận mọi giới hạn MVP qua từ khóa `// shortcut:`.
+### Công cụ AI Đã dùng (Minh bạch Phát triển)
+- **AI hỗ trợ lập trình:**
+  - **Antigravity** (hỗ trợ kiến trúc, triển khai Waves 0–4, kiểm định & thiết kế sơ đồ).
+  - **Claude Code** (2 thành viên khác trong nhóm sử dụng để phát triển các tính năng Wave 5, rà soát pháp lý, giao diện `/story` và xuất slide pitch).
+- **Kỹ năng kỷ luật mã nguồn:** Áp dụng **`ponytail` skill** (MIT) và **`diagram-design` skill** (MIT) để giữ mã nguồn gọn, chống phình to và ghi nhận giới hạn MVP qua `// shortcut:`.
 
 ---
 
@@ -123,7 +133,7 @@ Kết quả quét toàn bộ kho mã nguồn bằng lệnh `git grep -nE '(#|//|
 8. `lib/rate-limit.ts:99` — Bộ đếm Prisma fixed-window thay cho sorted set sliding-window trên Redis. **Ceiling:** làm tròn theo cửa sổ cố định. **Upgrade:** dùng Upstash Redis khi chịu tải burst đa vùng.
 9. `lib/session/shield.ts:394` — Bộ luật regex/từ khóa chỉ kích hoạt **DUY NHẤT** khi chạm ngưỡng `DAILY_LLM_CALL_LIMIT`; các lượt quét bình thường luôn gọi `LLMProvider` thật. **Ceiling:** chỉ là chốt an toàn khi hết quota demo ngày. **Upgrade:** nâng hoặc gỡ giới hạn `DAILY_LLM_CALL_LIMIT` với billing trả phí.
 
-**Tổng cộng:** `9 markers, 0 with no trigger.`
+**Tổng cộng:** `25 markers, 0 with no trigger` trên toàn kho mã nguồn (Waves 0–5, tra cứu đầy đủ bằng lệnh `git grep` ở trên).
 
 ---
 

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>MoMo TrustLoop v2 — Hướng dẫn Sử dụng (1 Trang A4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap&subset=vietnamese" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #111a4a;
+      --ink: #3b3e47;
+      --steel: #5b5e68;
+      --line: #e3e4e8;
+      --canvas: #f6f6f8;
+      --surface: #ffffff;
+      --blue: #0b57d0;
+      --sea: #13705f;
+      --sea-wash: #e8f6f1;
+      --signal: #c2410c;
+      --signal-wash: #fdf0e9;
+      --sans: "Be Vietnam Pro", system-ui, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    @page { size: A4 portrait; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background: #e5e7eb;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto;
+      padding: 12mm 14mm 10mm;
+      background: var(--canvas);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    @media print { body { background: none; } .page { margin: 0; } }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 2px solid var(--navy);
+      padding-bottom: 8px;
+      margin-bottom: 9px;
+    }
+    .kicker {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 3px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+    .subtitle {
+      font-size: 10.5px;
+      color: var(--steel);
+      margin-top: 2px;
+    }
+    .badge-sim {
+      background: var(--signal-wash);
+      color: var(--signal);
+      border: 1px solid #f5c2a3;
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .access-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 8px;
+      margin-bottom: 9px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px 10px;
+    }
+    .card-accent {
+      border-left: 3.5px solid var(--blue);
+    }
+    .card-signal {
+      background: var(--signal-wash);
+      border: 1px solid #f5c2a3;
+      border-left: 3.5px solid var(--signal);
+    }
+    .card h2 {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 5px;
+    }
+    .link-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 10px;
+      margin-bottom: 4px;
+    }
+    .link-row:last-child { margin-bottom: 0; }
+    .mono {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      color: var(--blue);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .note-text {
+      font-size: 9.5px;
+      line-height: 1.42;
+      color: var(--ink);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 6px 0 5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9.5px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    th {
+      background: #eef0f6;
+      color: var(--navy);
+      font-weight: 600;
+      text-align: left;
+      padding: 4.5px 7px;
+      border-bottom: 1px solid var(--line);
+      font-size: 9px;
+    }
+    td {
+      padding: 4px 7px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.35;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .step-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 7px 9px;
+    }
+    .step-box .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 8.5px;
+      font-weight: 600;
+      padding: 1.5px 6px;
+      border-radius: 4px;
+      background: var(--sea-wash);
+      color: var(--sea);
+      margin-bottom: 3px;
+    }
+    .step-box .tag.hot {
+      background: var(--signal-wash);
+      color: var(--signal);
+    }
+    .step-box h3 {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 3px;
+    }
+    .step-box ul {
+      padding-left: 14px;
+      font-size: 9.3px;
+      line-height: 1.38;
+    }
+    .step-box li + li { margin-top: 2px; }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.8px;
+      color: var(--steel);
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div>
+      <!-- HEADER -->
+      <header class="header">
+        <div>
+          <p class="kicker">MoMo Tech Contest 2026 · Tài liệu Hướng dẫn Sử dụng (Sản phẩm)</p>
+          <h1>MoMo TrustLoop v2</h1>
+          <p class="subtitle">Vòng phòng vệ niềm tin số khép kín: B2C Phút 00 → Người giám hộ → War-Room 4 Agent → Miễn dịch 4 Lớp</p>
+        </div>
+        <span class="badge-sim">100% MẪU MÔ PHỎNG</span>
+      </header>
+
+      <!-- TRUY CẬP TRỰC TUYẾN & TÀI KHOẢN DÙNG THỬ -->
+      <section class="access-grid">
+        <div class="card card-accent">
+          <h2>1. Đường dẫn Truy cập Trực tuyến (Dùng ngay)</h2>
+          <div class="link-row">
+            <span><strong>Chế độ Kể chuyện 4 Chương (khuyên dùng, 2 phút):</strong></span>
+            <a class="mono" href="https://momo-trustloop.vercel.app/story">momo-trustloop.vercel.app/story</a>
+          </div>
+          <div class="link-row">
+            <span><strong>Không gian làm việc đầy đủ (tải ảnh tự do):</strong></span>
+            <a class="mono" href="https://momo-trustloop.vercel.app">momo-trustloop.vercel.app</a>
+          </div>
+          <div class="link-row">
+            <span><strong>Đồng bộ 2 thiết bị (Laptop + Điện thoại):</strong></span>
+            <span class="mono">?session=momo-bgk</span>
+          </div>
+        </div>
+
+        <div class="card card-signal">
+          <h2>2. Tài khoản Dùng thử &amp; Cô lập Phiên</h2>
+          <p class="note-text">
+            <strong>Không cần đăng nhập / mật khẩu.</strong> Mỗi trình duyệt được cấp phiên cô lập tự động (`tl_session`) để nhiều giám khảo chấm song song không đụng dữ liệu. Để khôi phục sạch dữ liệu mẫu, bấm <strong>Reset Dữ liệu Demo</strong> tại trang Tổng quan (<span class="mono">/</span>).
+          </p>
+        </div>
+      </section>
+
+      <!-- BẢNG 6 VAI MÔ PHỎNG -->
+      <p class="section-title">3. Danh sách 6 Vai Mô phỏng (Chuyển vai trực tiếp bằng 1 cú nhấp trên giao diện)</p>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:22%">Vai mô phỏng</th>
+            <th style="width:20%">Màn hình</th>
+            <th style="width:58%">Quyền hạn &amp; Điểm kiểm chứng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Bác Hùng (62t)</strong></td>
+            <td class="mono">/shield · /story</td>
+            <td>Bật Bảo vệ 24h (opt-in), quét ảnh chat Phút 00, xem đối chiếu Ẩn PII, tự hủy lệnh giữ chậm.</td>
+          </tr>
+          <tr>
+            <td><strong>Minh Anh (21t)</strong></td>
+            <td class="mono">/shield</td>
+            <td>Kiểm chứng kịch bản <code>CASE-02</code> dụ cài VNeID giả (<code>.apk</code>) và gửi báo cáo an ninh mạng.</td>
+          </tr>
+          <tr>
+            <td><strong>Người dùng mới</strong></td>
+            <td class="mono">/shield · /story</td>
+            <td>Tra cứu số tài khoản nhận tiền để nhận cảnh báo tức thì từ Kho Miễn dịch cộng đồng.</td>
+          </tr>
+          <tr>
+            <td><strong>Chị Minh (Giám hộ)</strong></td>
+            <td class="mono">/family</td>
+            <td>Chỉ xem số tiền &amp; bằng chứng đã Ẩn PII (<strong>0 số dư, 0 lịch sử</strong>); chỉ có quyền Chuyển cấp.</td>
+          </tr>
+          <tr>
+            <td><strong>Chị Huyền (Maker)</strong></td>
+            <td class="mono">/warroom</td>
+            <td>Chạy 4 Agent song song, xem đồ thị dòng tiền, Minh oan tiểu thương, soạn dự thảo STR &amp; đề xuất Chỉ báo.</td>
+          </tr>
+          <tr>
+            <td><strong>Anh Tuấn &amp; Chị Lan</strong></td>
+            <td class="mono">/checker</td>
+            <td>Tuấn duyệt Kích hoạt (Maker tự duyệt chặn <code>403</code>); Lan xét Khiếu nại &amp; Thu hồi (Tuấn tự xét chặn <code>403</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- KỊCH BẢN KIỂM CHỨNG 3 PHÚT -->
+      <p class="section-title">4. Lộ trình Kiểm chứng 3 Kịch bản Mẫu (3 Phút)</p>
+      <section class="steps-grid">
+        <div class="step-box">
+          <span class="tag hot">Nhịp 1–2 · CASE-01 Bác Hùng (Phút 00 → 89)</span>
+          <h3>B2C Khiên Phút 00 &amp; Người giám hộ (/shield, /family)</h3>
+          <ul>
+            <li>Bật <strong>Đồng ý quét ảnh</strong> &amp; <strong>Bảo vệ 24h (Opt-in)</strong> → chọn <em>CASE-01: Zalo giả Công an</em> (hoặc tải ảnh chat bất kỳ).</li>
+            <li>Xem AI chỉ ra dấu đỏ giả, bảng Ẩn PII (che CCCD/SĐT/số dư) → bấm chuyển <strong>9.500.000 đ</strong> → vào trạng thái giữ với thông báo trung tính (không mạo danh NHNN/Công an).</li>
+            <li>Mở <code>/family</code> (Chị Minh): xác nhận 0 lộ PII ví bố → bấm <strong>Xác nhận tạm giữ &amp; Chuyển MoMo Risk</strong>.</li>
+          </ul>
+        </div>
+
+        <div class="step-box">
+          <span class="tag">Nhịp 3 · CASE-03 Chị Hoa (Chống khóa oan)</span>
+          <h3>Phòng Tác chiến 4 Agent (/warroom)</h3>
+          <ul>
+            <li>Chạy <strong>Điều tra 4 Agent</strong> trên <code>CASE-01</code>: xem SSE streaming, đồ thị cụm ví trung gian 4×9,5M và Thẻ CSKH (đã lọc nhắc tới báo cáo STR).</li>
+            <li>Chuyển sang <code>CASE-03</code> (Tiểu thương livestream): <strong>FalsePositiveDefender</strong> phản biện 14 tháng bán hàng sạch → Maker bấm <strong>Minh oan</strong> để Giải phóng tạm giữ ngay.</li>
+          </ul>
+        </div>
+
+        <div class="step-box">
+          <span class="tag">Nhịp 4 · CASE-02 VNeID (.apk)</span>
+          <h3>Chặn 400 khi &lt;2 nguồn &amp; Lớp 1 (/checker)</h3>
+          <ul>
+            <li>Quét mẫu <code>CASE-02</code> (dụ cài VNeID <code>.apk</code> tên miền <code>.example</code>) → báo cáo sang War-Room.</li>
+            <li>Vì mới có <strong>1 nguồn</strong>, đẩy thẳng lên <code>ACTIVE</code> bị chặn <strong>HTTP 400</strong> → chỉ phát hành được Cảnh báo mềm 72h.</li>
+          </ul>
+        </div>
+
+        <div class="step-box">
+          <span class="tag">Vòng khép kín · Quản trị Miễn dịch 4 Lớp</span>
+          <h3>Maker ≠ Checker (403) &amp; Khiếu nại Thu hồi</h3>
+          <ul>
+            <li>Maker (Huyền) tự duyệt trên <code>/checker</code> bị chặn <strong>HTTP 403</strong>; Checker (Tuấn) duyệt <code>ACTIVE</code> → tra cứu TK <code>990123456789</code> ở B2C thấy cảnh báo ngay.</li>
+            <li>Thử gửi <strong>Khiếu nại</strong> → Chị Lan xét <strong>Thu hồi tức thì</strong>: cảnh báo gỡ ngay ở B2C, <code>AuditLog</code> lưu bất biến.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- LƯU Ý BẢO MẬT & RANH GIỚI -->
+      <div class="card" style="padding: 6.5px 10px;">
+        <p class="note-text">
+          <strong>Lưu ý an toàn cho Ban Giám Khảo:</strong> Tuyệt đối <strong>không</strong> tải ảnh chứa CCCD, số điện thoại hoặc sao kê ngân hàng thật lên bản demo. Các bước Quét ảnh Vision, Ẩn PII, Đồ thị dòng tiền, 4 Agent War-Room và Quản trị 4 Lớp chạy thật trực tuyến trên PostgreSQL &amp; LLM; cổng chuyển tiền, SIMO và gửi báo cáo STR là mô phỏng.
+        </p>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <span><strong>Đội thi ShiftGen</strong> · MoMo Tech Contest 2026 · Mã nguồn: <span class="mono" style="font-size:8.5px">github.com/Nor262/ShiftGen---MoMo-Tech-Contest</span></span>
+      <span>Trang 1 / 1 (A4)</span>
+    </footer>
+  </main>
+</body>
+</html>

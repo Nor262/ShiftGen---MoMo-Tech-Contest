@@ -1,8 +1,9 @@
 # MoMo TrustLoop v2 — Hướng dẫn Demo 1 Trang cho Ban Giám Khảo (3 Phút)
 
-> **Live URL:** `https://momo-trustloop.vercel.app`
-> **Đồng bộ 2 thiết bị (Laptop + Điện thoại):** Mở cùng URL với tham số `?session=momo-final` (ví dụ: `https://momo-trustloop.vercel.app/?session=momo-final`). Mọi dữ liệu đều là **`MẪU MÔ PHỎNG`** cô lập theo phiên.
-> **Lưu ý bảo mật:** Không tải ảnh chứa CCCD, số điện thoại hoặc sao kê ngân hàng thật lên bản demo.
+> **Trải nghiệm Kể chuyện 4 Chương (khuyên dùng, ~2 phút):** `https://momo-trustloop.vercel.app/story`
+> **Không gian làm việc đầy đủ (tự do tải ảnh thật & kiểm thử):** `https://momo-trustloop.vercel.app`
+> **Tài khoản dùng thử:** **Không cần đăng nhập / mật khẩu** — hệ thống tự cô lập phiên theo trình duyệt hoặc đồng bộ 2 thiết bị (Laptop + Điện thoại) qua tham số `?session=momo-final`.
+> **Lưu ý bảo mật:** Mọi dữ liệu đều là **`MẪU MÔ PHỎNG`**. Không tải ảnh chứa CCCD, số điện thoại hoặc sao kê ngân hàng thật lên bản demo.
 
 ---
 
