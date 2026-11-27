@@ -113,11 +113,10 @@
     }
     .link-row {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 6px;
-      font-size: 10px;
-      margin-bottom: 4px;
+      flex-direction: column;
+      gap: 1px;
+      font-size: 9.5px;
+      margin-bottom: 5px;
     }
     .link-row:last-child { margin-bottom: 0; }
     .mono {
@@ -126,6 +125,7 @@
       color: var(--blue);
       font-weight: 600;
       text-decoration: none;
+      white-space: nowrap;
     }
     .note-text {
       font-size: 9.5px;
@@ -239,14 +239,14 @@
           <h2>1. Đường dẫn Truy cập Trực tuyến (Dùng ngay)</h2>
           <div class="link-row">
             <span><strong>Chế độ Kể chuyện 4 Chương (khuyên dùng, 2 phút):</strong></span>
-            <a class="mono" href="https://momo-trustloop.vercel.app/story">momo-trustloop.vercel.app/story</a>
+            <a class="mono" href="https://momo-trustloop.vercel.app/story">https://momo-trustloop.vercel.app/story</a>
           </div>
           <div class="link-row">
             <span><strong>Không gian làm việc đầy đủ (tải ảnh tự do):</strong></span>
-            <a class="mono" href="https://momo-trustloop.vercel.app">momo-trustloop.vercel.app</a>
+            <a class="mono" href="https://momo-trustloop.vercel.app">https://momo-trustloop.vercel.app</a>
           </div>
-          <div class="link-row">
-            <span><strong>Đồng bộ 2 thiết bị (Laptop + Điện thoại):</strong></span>
+          <div class="link-row" style="flex-direction:row;justify-content:space-between;align-items:baseline;">
+            <span><strong>Đồng bộ 2 thiết bị:</strong></span>
             <span class="mono">?session=momo-bgk</span>
           </div>
         </div>
@@ -254,7 +254,7 @@
         <div class="card card-signal">
           <h2>2. Tài khoản Dùng thử &amp; Cô lập Phiên</h2>
           <p class="note-text">
-            <strong>Không cần đăng nhập / mật khẩu.</strong> Mỗi trình duyệt được cấp phiên cô lập tự động (`tl_session`) để nhiều giám khảo chấm song song không đụng dữ liệu. Để khôi phục sạch dữ liệu mẫu, bấm <strong>Reset Dữ liệu Demo</strong> tại trang Tổng quan (<span class="mono">/</span>).
+            <strong>Không cần đăng nhập / mật khẩu.</strong> Mỗi trình duyệt được cấp phiên cô lập tự động (<code>tl_session</code>) để nhiều giám khảo chấm song song không đụng dữ liệu. Để khôi phục sạch dữ liệu mẫu, bấm <strong>Reset Dữ liệu Demo</strong> tại trang Tổng quan (<code>/</code>).
           </p>
         </div>
       </section>
