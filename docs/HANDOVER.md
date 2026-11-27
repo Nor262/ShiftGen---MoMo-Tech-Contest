@@ -1,7 +1,8 @@
 # MoMo TrustLoop v2 — Tài liệu Bàn giao Dự án (Handover)
 
-> **Trạng thái mã nguồn:** Hoàn thành Waves 0–4 trên nhánh `main` (commit `0ba6b0f`); Wave 5 (`wave5/glossary-fixes`, commit `11a74f4`) căn chỉnh Giải phóng tạm giữ & người xét Khiếu nại theo [GLOSSARY.md](../GLOSSARY.md)  
-> **Kiểm định cục bộ:** `npm test` **77/77 PASS** (7 file test) · `npm run typecheck` **0 lỗi** · `next build` **PASS**
+> **Trạng thái mã nguồn:** Hoàn thành Waves 0–5 trên nhánh `main` (tính tới `65d8572`, gồm `/story`, đồng ý quét ảnh + nhãn AI, mời/thu hồi Người giám hộ, dự thảo STR, hướng dẫn trình báo công an, Signal Orange 700, và [TrustLoop-pitch.pdf](./pitch/TrustLoop-pitch.pdf))  
+> **Kiểm định cục bộ (27/11/2026):** `npm test` **246/246 PASS** (25 file test) · `npm run typecheck` **0 lỗi** · `next build` **PASS**  
+> **Kiểm định live (`https://momo-trustloop.vercel.app`):** HTTP `200` trên `/`, `/story`, `/shield`, `/family`, `/warroom`, `/checker` & `/api/health` (`db: connected`, `configured: true`)
 
 ---
 
@@ -56,15 +57,13 @@
 
 ---
 
-## 4. Việc Cần Làm Tiếp Khi Tiếp Nhận
+## 4. Việc Cần Làm Tiếp (Trước Sơ khảo 03/12 & Chung kết 11/12/2026)
 
-> Mốc: sơ khảo kết thúc **03/12/2026**, chung kết **11/12/2026** tại TP.HCM. Thứ tự ưu tiên: (1) sửa nội dung & căn cứ pháp lý → (2) chuyển sang AWS → (3) nút "Yêu cầu xét lại tạm giữ" → (4) deploy + đo độ trễ thật → (5) tính năng từ luật → (6) pitch. Danh sách đầy đủ ở [PRODUCT_IDEA.md mục 10](./PRODUCT_IDEA.md#10-lộ-trình).
+> Mốc: sơ khảo kết thúc **03/12/2026**, chung kết **11/12/2026** tại TP.HCM. Đã hoàn thành: đẩy repo lên GitHub (`Nor262/ShiftGen---MoMo-Tech-Contest`), auto-deploy Vercel, bộ tính năng Wave 5 (`#1`, `#5–#8`, `#10–#11`, `#15`, `#18–#22`, `#39`), đo độ trễ thật 10/10 lượt (`#4`) và xuất PDF pitch 10 trang (`#9`).
 
-1. **Đẩy mã nguồn lên GitHub:**
-   - Đăng nhập GitHub CLI (`gh auth login`) hoặc thêm remote repo (`git remote add origin <url>`), sau đó `git push -u origin main`.
-2. **Bedrock (khi BTC cấp quyền, #17):**
-   - Đổi `LLM_BACKEND=bedrock` trên Vercel kèm khóa AWS; giữ FPT làm `LLM_FALLBACK_BACKEND`.
-3. **Đo lại độ trễ trước khi xuất Slide 9 (đã đo lần đầu 24/11, #4):**
-   - `node scripts/measure-latency.mjs https://momo-trustloop.vercel.app 10 > .superpowers/latency.json`, rồi cập nhật `docs/MEASURED_LATENCIES.md`.
-4. **Giữ Supabase Free không tự tạm dừng:**
+1. **Bedrock (khi BTC cấp quyền, `#17`):**
+   - Đổi `LLM_BACKEND=bedrock` trên Vercel kèm khóa AWS; giữ FPT làm `LLM_FALLBACK_BACKEND`, rồi đo lại bằng `node scripts/measure-latency.mjs https://momo-trustloop.vercel.app 10 > .superpowers/latency.json` và cập nhật `docs/MEASURED_LATENCIES.md`.
+2. **Giữ Supabase Free không tự tạm dừng:**
    - Đặt lịch ping `GET https://momo-trustloop.vercel.app/api/health` mỗi **1–2 ngày** cho tới hết **11/12/2026**.
+3. **Tập diễn demo 3 phút:**
+   - Chạy thử mạch `/story` và [ONE_PAGE_GUIDE.md](./ONE_PAGE_GUIDE.md) với `?session=momo-final` trước hạn nộp sơ khảo.

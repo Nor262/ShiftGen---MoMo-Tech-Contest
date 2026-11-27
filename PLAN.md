@@ -42,18 +42,15 @@
 
 ## 3a. Wave 5 — Contest Finish (qualifier closes 03/12/2026; final 11/12/2026, TP.HCM)
 
-Done on `wave5/glossary-fixes`: hold expiry → `RELEASED`; Minh oan (`DISMISS_FP`) releases the case's held tx; appeal reviewer ≠ activating Checker.
+**Completed on `main` (through `65d8572`):**
+- **Glossary & Legal Fixes (`#12`, `#1`):** Hold expiry → `RELEASED`; Minh oan (`DISMISS_FP`) releases the case's held tx; appeal reviewer ≠ activating Checker (`RISK_CHECKER_LAN`); `data/vnPolicies.json` & copy aligned to `docs/RESEARCH_LEGAL.md`; `CASE-02` reworked as a fake VNeID remote-access `.apk` (text only, `.example` domain).
+- **Compliance & Human-in-the-Loop Features (`#5–#8`, `#15`, `#23`):** Separate scan consent + AI label + "Yêu cầu xét lại tạm giữ" (`#5`); Guardian invitation/acceptance/revocation (`#6`); STR draft with legal deadline (`#7`); Police report guide & PII-redacted evidence pack (`#8`); `CANCELLED_BY_B2E` & labelled real-run replay (`#11`, `#15`).
+- **Design, Storytelling & Telemetry (`#9`, `#10`, `#11`, `#18–#22`, `#39`):** TrustLoop design system (`DESIGN.md`), Signal Orange 700 accents, plain-language mode, `/story` 4-chapter stage + home lanes, 10/10 live latency measurements on Vercel (`docs/MEASURED_LATENCIES.md`), and 10-page pitch PDF (`docs/pitch/TrustLoop-pitch.pdf`).
 
-Priority order:
-1. **Copy & legal fixes** — docs, UI copy, `data/vnPolicies.json` cleaned to law summaries only (QĐ 2345 was repealed by QĐ 2872 from 01/01/2025; legal citations follow `docs/RESEARCH_LEGAL.md`).
-2. **AWS Sandbox migration** (mandatory for the contest) — `LLM_BACKEND=bedrock`, Docker on EC2/Amplify `ap-southeast-1`; Vercel kept as backup.
-3. **"Yêu cầu xét lại tạm giữ" button** — user asks a human to review an automated hold; only a human may release early.
-4. **Deploy + measure real latency** into `docs/MEASURED_LATENCIES.md`.
-5. **Law-derived features** (roadmap in `docs/PRODUCT_IDEA.md` §10).
-6. **Pitch** (10-page PDF).
-
-Also planned: `CANCELLED_BY_B2E` on Kết luận rủi ro cao; 3-working-day B2E decision deadline for escalated holds; evidence sources typed as `TYPE:detail` and counted by distinct type; `/checker` raw-count block (`MẪU MÔ PHỎNG`, no percentages).
-Done: CASE-02 reworked as a fake VNeID remote-access APK (text only, `.example` domain) — #1.
+**Remaining Operational / Contest Tasks:**
+1. **AWS Sandbox migration** (mandatory when BTC grants Bedrock model access, `#17`) — switch `LLM_BACKEND=bedrock` on Vercel, keep FPT as `LLM_FALLBACK_BACKEND`, re-measure latency.
+2. **Supabase Free keep-alive** — ping `GET https://momo-trustloop.vercel.app/api/health` every 1–2 days through `11/12/2026` to avoid 7-day auto-pause.
+3. **Optional law-derived backlog** (`docs/PRODUCT_IDEA.md` §10) — monthly SIMO sync, Law 91 data rights center, 72h incident playbook.
 
 ## 4. Directory Ownership
 See [contracts/OWNERSHIP.md](./contracts/OWNERSHIP.md) for the locked per-agent directory ownership table. All agents run at ponytail level `full`.
